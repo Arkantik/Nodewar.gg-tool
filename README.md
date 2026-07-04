@@ -11,9 +11,9 @@
  A powerful tool for Black Desert Online that captures and logs combat messages during PvP activities such as Node Wars, Sieges, and War of the Roses.
  <br />
  <br />
- <a href="https://github.com/Arkantik/ikusa_logger/issues">Report Bug</a>
+ <a href="https://github.com/Arkantik/Nodewar.gg-tool/issues">Report Bug</a>
  ·
- <a href="https://github.com/Arkantik/ikusa_logger/issues">Request Feature</a>
+ <a href="https://github.com/Arkantik/Nodewar.gg-tool/issues">Request Feature</a>
 </p>
 
 > New here? The [Quick Start Guide](docs/QUICKSTART.md) gets you installed and recording your first session in under 5 minutes.
@@ -92,7 +92,7 @@ The BDO Combat Logger:
 
 #### Step 1: Download the Installer
 
-Go to the [Releases page](https://github.com/Arkantik/ikusa_logger/releases/latest) and download:
+Go to the [Releases page](https://github.com/Arkantik/Nodewar.gg-tool/releases/latest) and download:
 - **`bdo-combat-installer.exe`** (or the latest version)
 
 #### Step 2: Run the Installer
@@ -152,7 +152,7 @@ cd ikusa_logger
 
 **Method B: Download as ZIP**
 
-1. Download the project: [bdo-combat-logger.zip](https://github.com/Arkantik/ikusa_logger/archive/refs/heads/main.zip)
+1. Download the project: [bdo-combat-logger.zip](https://github.com/Arkantik/Nodewar.gg-tool/archive/refs/heads/main.zip)
 2. Extract the ZIP file to a folder of your choice
 3. Open the extracted folder
 
@@ -365,7 +365,7 @@ A: No! The installer method is completely standalone. You only need Python and N
 If you're experiencing issues or have questions:
 
 - **Discord**: Join our community server: [discord.gg/CUc38nKyDU](https://discord.gg/CUc38nKyDU)
-- **GitHub Issues**: Report bugs on the [Issues page](https://github.com/Arkantik/ikusa_logger/issues)
+- **GitHub Issues**: Report bugs on the [Issues page](https://github.com/Arkantik/Nodewar.gg-tool/issues)
 
 When asking for help, please provide:
 
@@ -381,7 +381,7 @@ When asking for help, please provide:
 
 - **Original Creator**: ORACLE (sch-28)
 - **Current Maintainer**: ArkantiK
-- **Visualization Website**: [Nodewar.gg](https://nodewar.gg/combat-log)
+- **Visualization Website**: [Nodewar.gg](https://nodewar.gg/)
 
 ---
 
@@ -418,19 +418,19 @@ See [docs/BUILDING.md](docs/BUILDING.md) for the full build guide, including tro
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[version-shield]: https://img.shields.io/github/v/release/Arkantik/ikusa_logger.svg?style=for-the-badge
-[version-url]: https://github.com/Arkantik/ikusa_logger/releases
-[commit-shield]: https://img.shields.io/github/last-commit/Arkantik/ikusa_logger.svg?style=for-the-badge
-[commit-url]: https://github.com/Arkantik/ikusa_logger/commits/main/
-[contributors-shield]: https://img.shields.io/github/contributors/Arkantik/ikusa_logger.svg?style=for-the-badge
-[contributors-url]: https://github.com/Arkantik/ikusa_logger/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Arkantik/ikusa_logger.svg?style=for-the-badge
-[forks-url]: https://github.com/Arkantik/ikusa_logger/network/members
-[stars-shield]: https://img.shields.io/github/stars/Arkantik/ikusa_logger.svg?style=for-the-badge
-[stars-url]: https://github.com/Arkantik/ikusa_logger/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Arkantik/ikusa_logger.svg?style=for-the-badge
-[issues-url]: https://github.com/Arkantik/ikusa_logger/issues
-[license-shield]: https://img.shields.io/github/license/Arkantik/ikusa_logger.svg?style=for-the-badge
-[license-url]: https://github.com/Arkantik/ikusa_logger/blob/main/LICENSE.txt
+[version-shield]: https://img.shields.io/github/v/release/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[version-url]: https://github.com/Arkantik/Nodewar.gg-tool/releases
+[commit-shield]: https://img.shields.io/github/last-commit/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[commit-url]: https://github.com/Arkantik/Nodewar.gg-tool/commits/main/
+[contributors-shield]: https://img.shields.io/github/contributors/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[contributors-url]: https://github.com/Arkantik/Nodewar.gg-tool/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[forks-url]: https://github.com/Arkantik/Nodewar.gg-tool/network/members
+[stars-shield]: https://img.shields.io/github/stars/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[stars-url]: https://github.com/Arkantik/Nodewar.gg-tool/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[issues-url]: https://github.com/Arkantik/Nodewar.gg-tool/issues
+[license-shield]: https://img.shields.io/github/license/Arkantik/Nodewar.gg-tool.svg?style=for-the-badge
+[license-url]: https://github.com/Arkantik/Nodewar.gg-tool/blob/main/LICENSE.txt
 
 ---

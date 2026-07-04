@@ -34,7 +34,7 @@ jobs:
 
       - name: Create dependencies folder
         run: |
-          mkdir -p dependencies
+          New-Item -ItemType Directory -Force -Path dependencies | Out-Null
 
       - name: Download Npcap installer
         run: |

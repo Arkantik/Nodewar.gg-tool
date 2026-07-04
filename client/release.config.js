@@ -20,7 +20,7 @@ module.exports = {
       "@semantic-release/github",
       {
         assets: [
-          { path: "dist/bdo-combat-installer-v${nextRelease.version}.exe", label: "Windows Installer" },
+          { path: "dist/*.exe", label: "Windows Installer" },
           { path: "dist/latest.yml", label: "latest.yml" }
         ]
       }

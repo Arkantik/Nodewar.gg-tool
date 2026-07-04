@@ -146,8 +146,8 @@ Choose one of these methods:
 **Method A: Clone with Git**
 
 ```bash
-git clone https://github.com/Arkantik/ikusa_logger.git
-cd ikusa_logger
+git clone https://github.com/Arkantik/Nodewar.gg-tool.git
+cd Nodewar.gg-tool
 ```
 
 **Method B: Download as ZIP**

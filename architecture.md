@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-BDO Combat Logger ("ikusa_logger") is a Windows desktop application that passively sniffs Black Desert Online's network traffic to capture PvP kill/death events (Node Wars, Sieges, War of the Roses), lets the user correct player/guild name ordering, and exports a `.log` file for upload to the companion website [nodewar.gg](https://nodewar.gg).
+BDO Combat Logger is a Windows desktop application that passively sniffs Black Desert Online's network traffic to capture PvP kill/death events (Node Wars, Sieges, War of the Roses), lets the user correct player/guild name ordering, and exports a `.log` file for upload to the companion website [nodewar.gg](https://nodewar.gg).
 
 The app is a **hybrid two-process system**:
 

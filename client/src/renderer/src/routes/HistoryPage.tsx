@@ -4,6 +4,7 @@ import { LuChartPie, LuDownload, LuHistory, LuSkull, LuSword, LuTrash2 } from "r
 import { get_formatted_date } from "../components/create-config/config";
 import Button from "../components/ui/Button";
 import Icon from "../components/ui/Icon";
+import PageHeader from "../components/ui/PageHeader";
 import { open_save_location } from "../logic/file";
 import { useHistoryStore, type HistoryEntry } from "../logic/history-store";
 
@@ -35,17 +36,7 @@ function HistoryPage() {
 
 	return (
 		<div className="flex flex-col h-full w-full p-8 gap-4">
-			<div className="glass-card rounded-md p-8 border border-white/10">
-				<div className="flex items-center gap-3">
-					<div className="p-3 bg-white/5 border border-white/10 rounded-md">
-						<Icon icon={LuHistory} className="text-gray-300" size="lg" />
-					</div>
-					<div>
-						<h2 className="text-2xl font-bold text-white">{t("history.title")}</h2>
-						<p className="text-sm text-gray-400">{t("history.subtitle")}</p>
-					</div>
-				</div>
-			</div>
+			<PageHeader icon={LuHistory} title={t("history.title")} subtitle={t("history.subtitle")} />
 
 			<div className="flex-1 glass-card rounded-md border border-white/10 overflow-hidden flex flex-col">
 				{!loading && entries.length === 0 ? (
@@ -89,8 +80,7 @@ function HistoryPage() {
 									<button
 										onClick={() => handleDelete(entry)}
 										className="cursor-pointer p-2 rounded-md hover:bg-red-500/20 text-gray-400 hover:text-red-400 border border-white/10 transition-all duration-150 ease-out hover:border-red-400/20 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
-										title={t("history.delete")}
-									>
+										title={t("history.delete")}>
 										<Icon icon={LuTrash2} size="sm" />
 									</button>
 								</div>

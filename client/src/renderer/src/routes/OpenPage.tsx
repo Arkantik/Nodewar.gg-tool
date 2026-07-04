@@ -8,6 +8,7 @@ import Logger from "../components/create-config/Logger";
 import Button from "../components/ui/Button";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
+import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { open_file } from "../logic/file";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
@@ -125,23 +126,17 @@ function OpenPage() {
 
 	return (
 		<div className="flex flex-col h-full w-full p-8 gap-4">
-			<div className="glass-card rounded-md p-2 border border-white/10">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<div className="p-2 bg-white/5 border border-white/10 rounded-md">
-							<Icon icon={fileName ? LuFileText : LuFolder} size="sm" className="text-gray-400" />
-						</div>
-						<div>
-							<div className="text-xs text-gray-400">{t("open.fileSelection.selectedFile")}</div>
-							<div className="text-sm font-semibold text-white">{fileName || t("open.fileSelection.noFileSelected")}</div>
-						</div>
-					</div>
-					<Button onClick={openPcap} size="md" color="primary">
+			<PageHeader
+				icon={fileName ? LuFileText : LuFolder}
+				title={t("open.fileSelection.selectedFile")}
+				subtitle={fileName || t("open.fileSelection.noFileSelected")}
+				action={
+					<Button onClick={openPcap} size="sm" color="primary">
 						<Icon icon={LuFolder} size="sm" className="mr-2" />
 						{t("open.fileSelection.importFile")}
 					</Button>
-				</div>
-			</div>
+				}
+			/>
 
 			{(logs.length > 0 || combatLogs.length > 0) && (
 				<>

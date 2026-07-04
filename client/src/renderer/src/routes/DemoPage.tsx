@@ -1,3 +1,4 @@
+import Button from "@/components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuActivity, LuChartPie, LuInfo, LuOctagonPause, LuPlay, LuSkull, LuSword } from "react-icons/lu";
@@ -6,6 +7,7 @@ import Logger from "../components/create-config/Logger";
 import GuildStats from "../components/ui/GuildStats";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
+import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { DemoLogGenerator } from "../logic/demoGenerator";
 
@@ -58,18 +60,13 @@ function DemoPage() {
 
 	return (
 		<div className="flex flex-col h-full w-full p-8 gap-4">
-			<div className="glass-card rounded-md p-4 border border-cta-500/50 bg-cta-500/5">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-3">
-						<div className="p-2 bg-cta-500/10 rounded-md">
-							<Icon icon={LuInfo} className="text-cta-400" />
-						</div>
-						<div>
-							<h3 className="text-sm font-bold text-white">{t("demo.title")}</h3>
-							<p className="text-xs text-gray-400">{t("demo.description")}</p>
-						</div>
-					</div>
-
+			<PageHeader
+				icon={LuInfo}
+				title={t("demo.title")}
+				subtitle={t("demo.description")}
+				cardHighlight
+				iconAccent
+				action={
 					<div className="flex items-center gap-2">
 						{logs.length > 0 && (
 							<button
@@ -80,23 +77,19 @@ function DemoPage() {
 						)}
 
 						{!isRunning ? (
-							<button
-								onClick={handleStart}
-								className="cursor-pointer flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-md transition-all duration-150 ease-out active:scale-[0.97] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50 text-sm font-medium">
+							<Button onClick={handleStart} size="sm" className="bg-green-600 hover:bg-green-500 text-white">
 								<Icon icon={LuPlay} size="sm" />
 								{t("demo.controls.startDemo")}
-							</button>
+							</Button>
 						) : (
-							<button
-								onClick={handleStop}
-								className="cursor-pointer flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-md transition-all duration-150 ease-out active:scale-[0.97] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50 text-sm font-medium">
+							<Button onClick={handleStop} size="sm" className="bg-red-600 hover:bg-red-500 text-white">
 								<Icon icon={LuOctagonPause} size="sm" />
 								{t("demo.controls.stopDemo")}
-							</button>
+							</Button>
 						)}
 					</div>
-				</div>
-			</div>
+				}
+			/>
 
 			<div className="grid grid-cols-4 gap-4">
 				<StatCard label={t("record.stats.events")} value={logs.length} icon={LuActivity} />

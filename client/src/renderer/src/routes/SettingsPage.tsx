@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { LuCircleCheckBig, LuInfo, LuNetwork } from "react-icons/lu";
 import { useConfigStore } from "../components/create-config/config-store";
 import Icon from "../components/ui/Icon";
+import PageHeader from "../components/ui/PageHeader";
 import ToggleSwitch from "../components/ui/ToggleSwitch";
 
 function SettingsPage() {
@@ -37,18 +38,8 @@ function SettingsPage() {
 
 	return (
 		<div className="flex flex-col h-full w-full p-8">
-			<div className="max-w-3xl mx-auto w-full space-y-6">
-				<div className="glass-card rounded-md p-6 border border-white/10">
-					<div className="flex items-center gap-4">
-						<div className="p-3 bg-cta-500/10 rounded-md">
-							<Icon icon={LuInfo} size="lg" className="text-cta-400" />
-						</div>
-						<div>
-							<h2 className="text-2xl font-bold text-white mb-1">{t("settings.title")}</h2>
-							<p className="text-sm text-gray-400">{t("settings.subtitle")}</p>
-						</div>
-					</div>
-				</div>
+			<div className="w-full space-y-6">
+				<PageHeader icon={LuInfo} title={t("settings.title")} subtitle={t("settings.subtitle")} iconAccent />
 
 				<div className="glass-card rounded-md p-6 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
 					<div className="flex items-center justify-between">

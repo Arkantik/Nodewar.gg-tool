@@ -229,7 +229,7 @@ function DocsPage() {
 									<span className="text-gray-500">•</span>
 									<span>
 										<strong className="text-white">{t("docs.help.github")}</strong> {t("docs.help.githubText")}{" "}
-										<a href="https://github.com/Arkantik/ikusa_logger/issues" className="text-cta-400 hover:text-cta-300 underline">
+										<a href="https://github.com/Arkantik/Nodewar.gg-tool/issues" className="text-cta-400 hover:text-cta-300 underline">
 											{t("docs.help.issuesPage")}
 										</a>
 									</span>

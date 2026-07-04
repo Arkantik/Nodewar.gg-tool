@@ -149,6 +149,6 @@ When you distribute `bdo-combat-installer-v<version>.exe`, users:
 ## 📞 Need Help?
 
 - **Discord**: https://discord.gg/CUc38nKyDU
-- **GitHub Issues**: https://github.com/Arkantik/ikusa_logger/issues
+- **GitHub Issues**: https://github.com/Arkantik/Nodewar.gg-tool/issues
 
 ---

@@ -6,7 +6,7 @@ Get up and running in under 5 minutes.
 
 ## 1️⃣ Install
 
-1. Download the latest installer from the [Releases page](https://github.com/Arkantik/ikusa_logger/releases/latest)
+1. Download the latest installer from the [Releases page](https://github.com/Arkantik/Nodewar.gg-tool/releases/latest)
 2. **Right-click** `bdo-combat-installer.exe` and select **Run as administrator**
 3. If Windows SmartScreen warns you, click **More info** → **Run anyway** (expected for unsigned open-source apps - see the [README](../README.md#-installation) for why)
 4. Follow the installer - it also installs the Npcap driver for you, so there's nothing else to set up
@@ -28,4 +28,4 @@ Get up and running in under 5 minutes.
 
 - Full feature list, troubleshooting, and FAQ: see the [README](../README.md)
 - Past sessions, re-downloading a `.log`, or deleting one: open **History** in the sidebar
-- Questions? Join [Discord](https://discord.gg/CUc38nKyDU) or open a [GitHub issue](https://github.com/Arkantik/ikusa_logger/issues)
+- Questions? Join [Discord](https://discord.gg/CUc38nKyDU) or open a [GitHub issue](https://github.com/Arkantik/Nodewar.gg-tool/issues)

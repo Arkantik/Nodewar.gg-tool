@@ -39,7 +39,7 @@ function Sidebar() {
 	const socialLinks = [
 		{ icon: LuGlobe, url: "https://nodewar.gg", title: t("home.social.nodewarggWebsite") },
 		{ icon: FaDiscord, url: "https://discord.gg/yWYKYRzBt6", title: t("home.social.joinDiscord") },
-		{ icon: LuGithub, url: "https://github.com/Arkantik/ikusa_logger", title: t("home.social.viewOnGitHub") },
+		{ icon: LuGithub, url: "https://github.com/Arkantik/Nodewar.gg-tool", title: t("home.social.viewOnGitHub") },
 	];
 
 	const labelClass = collapsed ? "hidden" : "hidden lg:inline";

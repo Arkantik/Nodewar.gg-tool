@@ -17,7 +17,7 @@ extraResources:
       - npcap-*.exe
 
 win:
-  icon: ../logger/icon/icon-2.ico
+  icon: build/icon.png
   executableName: bdo-combat-logger-win_x64
   target:
     - target: nsis

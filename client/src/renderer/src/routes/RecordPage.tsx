@@ -151,7 +151,7 @@ function RecordPage() {
 			</div>
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
-				<Logger logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} />
+				<Logger logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} saveToHistory />
 			</div>
 
 			<div className="hidden lg:block overflow-hidden min-h-0">

@@ -32,6 +32,7 @@ export interface LoggerProps {
   }) => void;
   onDeleteLog?: (index: number) => void;
   onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void;
+  saveToHistory?: boolean;
 }
 
 export interface LoggerRowProps {
@@ -61,6 +62,7 @@ function Logger({
   onStatsUpdate,
   onDeleteLog,
   onIndicesChange,
+  saveToHistory = false,
 }: LoggerProps) {
   const { t } = useTranslation();
   const [possibleNameOffsets, setPossibleNameOffsets] = useState<
@@ -292,6 +294,8 @@ function Logger({
     if (!path) return;
     const text = getLogsString();
     await window.api.fs.writeFile(path, text);
+
+    if (!saveToHistory) return;
 
     let kills = 0;
     let deaths = 0;

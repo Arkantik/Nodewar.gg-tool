@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChartPie, LuDownload, LuHistory, LuSkull, LuSword, LuTrash2 } from "react-icons/lu";
 import { get_formatted_date } from "../components/create-config/config";
-import Button from "../components/ui/Button";
 import Icon from "../components/ui/Icon";
 import PageHeader from "../components/ui/PageHeader";
 import { open_save_location } from "../logic/file";
@@ -53,17 +52,17 @@ function HistoryPage() {
 								</div>
 
 								<div className="flex items-center gap-4 shrink-0">
-									<div className="flex items-center gap-1.5 text-blue-400 text-sm">
+									<div className="flex items-center gap-1.5 w-10 text-blue-400 text-sm">
 										<Icon icon={LuSword} size="sm" />
-										{entry.kills}
+										<span className="tabular-nums">{entry.kills}</span>
 									</div>
-									<div className="flex items-center gap-1.5 text-red-400 text-sm">
+									<div className="flex items-center gap-1.5 w-10 text-red-400 text-sm">
 										<Icon icon={LuSkull} size="sm" />
-										{entry.deaths}
+										<span className="tabular-nums">{entry.deaths}</span>
 									</div>
-									<div className={`flex items-center gap-1.5 text-sm ${entry.kdr >= 1 ? "text-green-400" : "text-red-400"}`}>
+									<div className={`flex items-center gap-1.5 w-12 text-sm ${entry.kdr >= 1 ? "text-green-400" : "text-red-400"}`}>
 										<Icon icon={LuChartPie} size="sm" />
-										{entry.kdr}
+										<span className="tabular-nums">{entry.kdr}</span>
 									</div>
 								</div>
 
@@ -74,9 +73,12 @@ function HistoryPage() {
 								</div>
 
 								<div className="flex items-center gap-2 shrink-0">
-									<Button size="sm" color="secondary" onClick={() => handleDownload(entry)} title={t("history.download")}>
+									<button
+										onClick={() => handleDownload(entry)}
+										className="cursor-pointer p-2 rounded-md hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 transition-all duration-150 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
+										title={t("history.download")}>
 										<Icon icon={LuDownload} size="sm" />
-									</Button>
+									</button>
 									<button
 										onClick={() => handleDelete(entry)}
 										className="cursor-pointer p-2 rounded-md hover:bg-red-500/20 text-gray-400 hover:text-red-400 border border-white/10 transition-all duration-150 ease-out hover:border-red-400/20 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"

@@ -1,0 +1,267 @@
+{
+    "header": {
+        "appName": "NodewarGG x Ikusa",
+        "version": "Versión {{version}}",
+        "updateAvailable": "Actualización disponible",
+        "updating": "Actualizando...",
+        "updateToVersion": "Actualizar a v{{version}}",
+        "updateFailed": "La actualización falló. Por favor, inténtalo de nuevo.",
+        "help": "Ayuda",
+        "changeLanguage": "Cambiar idioma"
+    },
+    "home": {
+        "systemStatus": {
+            "title": "Estado del sistema",
+            "subtitle": "Monitorea la configuración de tu logger"
+        },
+        "npcap": {
+            "label": "Controlador Npcap",
+            "installed": "Instalado",
+            "downloadNpcap": "Descargar Npcap"
+        },
+        "actions": {
+            "record": {
+                "title": "Grabar",
+                "description": "Iniciar captura en vivo"
+            },
+            "openFile": {
+                "title": "Abrir archivo",
+                "description": "Importar datos existentes"
+            },
+            "demo": {
+                "title": "Demo",
+                "description": "Probar con datos simulados"
+            },
+            "settings": {
+                "title": "Configuración",
+                "description": "Configurar opciones"
+            },
+            "history": {
+                "title": "Historial",
+                "description": "Ver sesiones anteriores"
+            }
+        },
+        "social": {
+            "joinDiscord": "Unirse a Discord",
+            "viewOnGitHub": "Ver en GitHub",
+            "nodewarggWebsite": "Visitar NodewarGG"
+        }
+    },
+    "record": {
+        "stats": {
+            "events": "Eventos",
+            "kills": "Asesinatos",
+            "deaths": "Muertes",
+            "kdRatio": "Ratio K/D"
+        },
+        "status": {
+            "recording": "Grabando",
+            "stopped": "Detenido"
+        },
+        "stopRecording": "Detener grabación",
+        "recap": {
+            "title": "Resumen de la sesión",
+            "summary": "{{duration}} · {{kills}} asesinatos · {{deaths}} muertes · {{kdr}} K/D",
+            "topGuild": "Gremio enemigo más frecuente: {{guild}}",
+            "topEnemy": "Enemigo más frecuente: {{enemy}}"
+        },
+        "errors": {
+            "networkError": "Error al leer la red. Por favor, notifícame en Discord.",
+            "loggerError": "Ocurrió un error al intentar iniciar el logger. Mensaje de error: {{message}}\nEl logger se reiniciará.",
+            "loggerFailedRetry": "No se pudo iniciar el logger después de 3 intentos. Por favor, inténtalo de nuevo."
+        }
+    },
+    "open": {
+        "fileSelection": {
+            "selectedFile": "Archivo seleccionado",
+            "noFileSelected": "Ningún archivo seleccionado",
+            "importFile": "Importar archivo"
+        }
+    },
+    "demo": {
+        "title": "Modo demo",
+        "description": "Eventos de combate simulados para pruebas y demostración",
+        "controls": {
+            "clearLogs": "Borrar logs",
+            "startDemo": "Iniciar demo",
+            "stopDemo": "Detener demo"
+        }
+    },
+    "settings": {
+        "title": "Configuración de red",
+        "subtitle": "Configura cómo el logger captura el tráfico de red",
+        "allInterfaces": {
+            "title": "Todas las interfaces de red",
+            "description": "Captura tráfico de todas las interfaces de red disponibles. Desactiva para usar solo la interfaz predeterminada."
+        },
+        "saved": "Configuración guardada exitosamente",
+        "configInfo": {
+            "title": "Información de configuración",
+            "patchDate": "Fecha del parche",
+            "identifier": "Identificador",
+            "autoScroll": "Desplazamiento automático",
+            "na": "N/D",
+            "enabled": "Habilitado",
+            "disabled": "Deshabilitado"
+        }
+    },
+    "docs": {
+        "title": "Documentación",
+        "subtitle": "Todo lo que necesitas saber sobre el Combat Logger",
+        "important": {
+            "title": "Importante: Optimiza tus logs",
+            "enableCharacters": "Habilitar nombres de personajes:",
+            "enableCharactersText": "Recomendamos encarecidamente habilitar la casilla \"Personajes\" en las opciones de grabación (haz clic en el icono del engranaje). Esto proporciona datos adicionales de personajes que mejoran tu análisis de logs de combate en NodewarGG.",
+            "followFormat": "Seguir el formato correcto:",
+            "followFormatText": "Asegúrate siempre de que tus logs sigan el formato mostrado sobre los eventos grabados:",
+            "formatLabel": "Formato:",
+            "formatNote": "Si no aplicaste el formato correcto durante la grabación, ¡no te preocupes! Puedes abrir el archivo de log guardado y actualizarlo antes de subirlo a NodewarGG. Usar el formato incorrecto resultará en identificación de clase incorrecta y visualización de datos errónea en el sitio web."
+        },
+        "troubleshooting": {
+            "title": "Solución de problemas",
+            "startupIssues": {
+                "title": "Problemas de inicio",
+                "problem": "Problema: El logger no inicia o muestra errores inmediatamente",
+                "checkNpcap": "Verifica si Npcap está instalado correctamente:",
+                "openLogger": "Abre el logger",
+                "checkStatus": "Verifica el mensaje de estado en la pantalla de inicio",
+                "downloadNpcap": "Si dice \"Npcap no está instalado\", descárgalo e instálalo desde"
+            },
+            "pathError": {
+                "title": "Error \"El sistema no puede encontrar la ruta especificada\"",
+                "description": "Este error generalmente significa que Python no está agregado a tu PATH del sistema:",
+                "step1": "Sigue esta guía para agregar Python al PATH:",
+                "step1Link": "Guía de configuración del PATH de Python",
+                "step2": "Después de agregar Python al PATH, reinicia tu computadora",
+                "step3": "Intenta de nuevo"
+            },
+            "noLogs": {
+                "title": "No se están capturando logs",
+                "vpn": {
+                    "title": "VPN o software que altera tu red:",
+                    "text": "Si estás usando una VPN o cualquier software que altere tu red normal, evitará que la herramienta capture eventos durante tu sesión de grabación."
+                },
+                "outdatedConfig": {
+                    "title": "La configuración está desactualizada:",
+                    "text": "BDO cambia su estructura de red después de cada mantenimiento semanal",
+                    "waitUpdate": "Espera una actualización de configuración",
+                    "checkDiscord": "Revisa Discord para anuncios",
+                    "useWireshark": "Como respaldo, usa Wireshark para grabar la sesión, luego analiza el archivo .pcap más tarde"
+                },
+                "wrongInterface": {
+                    "title": "Interfaz de red incorrecta seleccionada:",
+                    "goToSettings": "Ve a Configuración",
+                    "trySwitching": "Intenta cambiar entre interfaces de red \"Todas\" y \"Predeterminada\"",
+                    "restartRecording": "Reinicia la grabación"
+                },
+                "firewall": {
+                    "title": "Firewall o antivirus bloqueando:",
+                    "addException": "Agrega una excepción para el logger en tu antivirus",
+                    "runAdmin": "Ejecuta el logger como Administrador"
+                }
+            },
+            "wrongNames": {
+                "title": "Los logs tienen nombres incorrectos",
+                "step1": "En la visualización de logs, usa los menús desplegables para reordenar los nombres",
+                "step2": "El formato correcto es:",
+                "step3": "Guarda los logs corregidos"
+            },
+            "cantSave": {
+                "title": "No se pueden guardar los logs / Logs no encontrados",
+                "step1": "Asegúrate de haber ajustado los nombres correctamente",
+                "step2": "Verifica que tienes permisos de escritura en la ubicación de guardado",
+                "step3": "Intenta guardar en una carpeta diferente (como Documentos)"
+            }
+        },
+        "faq": {
+            "title": "Preguntas frecuentes",
+            "safe": {
+                "title": "¿Es seguro usar esta herramienta?",
+                "answer": "Sí, el logger solo lee paquetes de red y no modifica ni inyecta nada en el juego."
+            },
+            "banned": {
+                "title": "¿Me banearán por usar esto?",
+                "answer": "La herramienta opera de manera similar a Wireshark y solo observa el tráfico de red. Sin embargo, úsala bajo tu propia discreción."
+            },
+            "outdatedConfig": {
+                "title": "¿Por qué la configuración está desactualizada después del mantenimiento?",
+                "answer": "BDO cambia la estructura de sus paquetes de red durante el mantenimiento semanal. La configuración necesita actualizarse para coincidir con estos cambios. Revisa Discord para actualizaciones."
+            },
+            "anyPvp": {
+                "title": "¿Puedo usar esto durante cualquier actividad PvP?",
+                "answer": "¡Sí! Funciona durante Node Wars, Asedios y GvG."
+            },
+            "editLogs": {
+                "title": "¿Puedo editar los logs después de guardarlos?",
+                "answer": "¡Sí! Usa la función Abrir para cargar tu archivo .log, ajusta los nombres y guarda de nuevo."
+            },
+            "accidentalClose": {
+                "title": "¿Qué pasa si cierro accidentalmente el logger mientras grabo?",
+                "answer": "Debería aparecer un mensaje de advertencia pidiéndote confirmación. Si pierdes datos, puedes usar tu grabación de Wireshark como respaldo (si hiciste una)."
+            }
+        },
+        "help": {
+            "title": "¿Necesitas más ayuda?",
+            "description": "Si estás experimentando problemas o tienes preguntas no cubiertas aquí:",
+            "discord": "Discord:",
+            "discordText": "Únete a nuestro servidor comunitario en",
+            "github": "GitHub:",
+            "githubText": "Reporta errores en la",
+            "issuesPage": "página de Issues",
+            "whenAsking": "Cuando pidas ayuda, por favor proporciona:",
+            "windowsVersion": "Tu versión de Windows",
+            "errorMessage": "El mensaje de error exacto (si lo hay)",
+            "whatDoing": "Qué estabas haciendo cuando ocurrió el problema",
+            "screenshots": "Capturas de pantalla si es posible"
+        }
+    },
+    "logger": {
+        "autoScroll": "Desplazamiento automático",
+        "formatHint": "Ajusta los logs a:",
+        "formatTemplate": "{{playerOne}} killed/died to {{playerTwo}} from {{guild}}",
+        "advancedConfig": "Configuración avanzada",
+        "waitingForLogs": "Esperando logs...",
+        "saveLogs": "Guardar logs",
+        "uploadToNodewarGG": "Subir a NodewarGG",
+        "killed": "mató",
+        "diedTo": "murió ante",
+        "from": "de",
+        "deleteEntry": "Eliminar entrada",
+        "table": {
+            "time": "Hora",
+            "playerOne": "Jugador Uno",
+            "result": "Resultado",
+            "playerTwo": "Jugador Dos",
+            "guild": "Gremio"
+        }
+    },
+    "config": {
+        "title": "Configuración",
+        "characters": "Personajes",
+        "copyToClipboard": "Copiar al portapapeles"
+    },
+    "guildStats": {
+        "title": "Miembros por gremio",
+        "empty": "Esperando datos..."
+    },
+    "enemyStats": {
+        "title": "Enemigos más frecuentes",
+        "empty": "Esperando datos..."
+    },
+    "history": {
+        "title": "Historial de sesiones",
+        "subtitle": "Tus últimas 7 sesiones grabadas",
+        "empty": "Aún no hay sesiones guardadas",
+        "download": "Descargar .log",
+        "delete": "Eliminar",
+        "confirmDelete": "¿Eliminar esta sesión del historial? Esta acción no se puede deshacer.",
+        "topGuild": "Gremio principal: {{guild}}",
+        "topEnemy": "Más frecuente: {{enemy}}"
+    },
+    "common": {
+        "killed": "mató",
+        "diedTo": "murió ante",
+        "from": "de",
+        "kills": "asesinatos"
+    }
+}

@@ -1,0 +1,68 @@
+name: Build Installer
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Extract version
+        id: get_version
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./client/package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Create dependencies folder
+        run: |
+          mkdir -p dependencies
+
+      - name: Download Npcap installer
+        run: |
+          Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OutFile "dependencies\npcap-1.87.exe"
+        shell: powershell
+
+      - name: Build Python logger
+        run: |
+          cd logger
+          python -m venv .venv
+          .\.venv\Scripts\activate
+          pip install scapy pyinstaller
+          pyinstaller logger.spec -y
+          cd ..
+        shell: powershell
+
+      - name: Install frontend/Electron dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Build and package (installer + unpacked)
+        run: |
+          cd client
+          npm run build:win
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bdo-combat-logger-installer
+          path: client/dist/bdo-combat-installer-v${{ steps.get_version.outputs.VERSION }}.exe

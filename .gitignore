@@ -1,0 +1,11 @@
+# Developer tools' files
+.lite_workspace.lua
+
+*.log
+
+.venv
+.tmp
+__pycache__
+dist
+/logger/build
+test-data

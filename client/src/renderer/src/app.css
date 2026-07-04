@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+
+  /* Near-black flat dashboard base (nodewar.gg-aligned), not the previous navy/purple gradient. */
+  --color-background: #0a0a0c;
+  --color-background-secondary: #161619;
+  --color-background-glass: rgba(255, 255, 255, 0.04);
+
+  --color-foreground: rgb(255, 255, 255, 0.95);
+  --color-foreground-secondary: rgb(255, 255, 255, 0.7);
+
+  --color-gold-50: #fbfaf3;
+  --color-gold-100: #f9efb8;
+  --color-gold-200: #f1dc7b;
+  --color-gold-300: #f5cd40;
+  --color-gold-400: #bd8e28;
+  --color-gold-500: #9e6f14;
+  --color-gold-600: #81560d;
+  --color-gold-700: #63400c;
+  --color-gold-800: #442c0b;
+  --color-gold-900: #2e1c08;
+  --color-gold: #f5cd40;
+  --color-gold-muted: #bd8e28;
+
+  --color-submarine-50: #eff5f5;
+  --color-submarine-100: #d0eff3;
+  --color-submarine-200: #9ae5e4;
+  --color-submarine-300: #61cbc4;
+  --color-submarine-400: #27ac9d;
+  --color-submarine-500: #1c9177;
+  --color-submarine-600: #197a5e;
+  --color-submarine-700: #185e4a;
+  --color-submarine-800: #124037;
+  --color-submarine-900: #0c2829;
+
+  /* Primary brand accent - the app's single dominant color (logo, active nav, primary buttons). */
+  --color-cta-50: oklch(0.97 0.02 41.83);
+  --color-cta-100: oklch(0.93 0.04 41.83);
+  --color-cta-200: oklch(0.86 0.08 41.83);
+  --color-cta-300: oklch(0.78 0.12 41.83);
+  --color-cta-400: oklch(0.73 0.14 41.83);
+  --color-cta-500: oklch(0.68 0.1583 41.83);
+  --color-cta-600: oklch(0.58 0.14 41.83);
+  --color-cta-700: oklch(0.48 0.12 41.83);
+  --color-cta-800: oklch(0.38 0.09 41.83);
+  --color-cta-900: oklch(0.28 0.06 41.83);
+  --color-cta-950: oklch(0.18 0.03 41.83);
+  --color-cta: oklch(0.68 0.1583 41.83);
+  --color-cta-muted: oklch(0.58 0.14 41.83);
+
+  /* Kept for categorical/multi-series accents (e.g. per-guild dots, stat icons) - not the brand color. */
+  --color-purple-500: #8b5cf6;
+  --color-purple-600: #7c3aed;
+  --color-pink-500: #ec4899;
+  --color-pink-600: #db2777;
+}
+
+html,
+body {
+  @apply bg-background;
+  color: #ffffff;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+/* Flat dashboard panels - a thin border and subtle depth, not heavy glassmorphism/blur/glow. */
+.glass-card {
+  background: var(--color-background-secondary);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card-hover {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.glass-card-hover:hover {
+  background: #1c1c21;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Thin scrollbar variant */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3rem);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Entrance animation for dropdowns/menus - makes them feel like they respond instantly, not just appear. */
+.pop-in {
+  animation: pop-in 0.12s ease-out;
+  transform-origin: top right;
+}
+
+/* Small-caps section header label, matching the nodewar.gg card-header style. */
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.5);
+}

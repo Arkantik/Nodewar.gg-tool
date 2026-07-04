@@ -1,0 +1,1 @@
+pyinstaller logger.spec -y

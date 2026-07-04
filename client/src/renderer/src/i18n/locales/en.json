@@ -1,0 +1,267 @@
+{
+    "header": {
+        "appName": "NodewarGG x Ikusa",
+        "version": "Version {{version}}",
+        "updateAvailable": "Update Available",
+        "updating": "Updating...",
+        "updateToVersion": "Update to v{{version}}",
+        "updateFailed": "Update failed. Please try again.",
+        "help": "Help",
+        "changeLanguage": "Change Language"
+    },
+    "home": {
+        "systemStatus": {
+            "title": "System Status",
+            "subtitle": "Monitor your logger configuration"
+        },
+        "npcap": {
+            "label": "Npcap Driver",
+            "installed": "Installed",
+            "downloadNpcap": "Download Npcap"
+        },
+        "actions": {
+            "record": {
+                "title": "Record",
+                "description": "Start live capture"
+            },
+            "openFile": {
+                "title": "Open File",
+                "description": "Import existing data"
+            },
+            "demo": {
+                "title": "Demo",
+                "description": "Test with simulated data"
+            },
+            "settings": {
+                "title": "Settings",
+                "description": "Configure options"
+            },
+            "history": {
+                "title": "History",
+                "description": "View past sessions"
+            }
+        },
+        "social": {
+            "joinDiscord": "Join Discord",
+            "viewOnGitHub": "View on GitHub",
+            "nodewarggWebsite": "Visit NodewarGG"
+        }
+    },
+    "record": {
+        "stats": {
+            "events": "Events",
+            "kills": "Kills",
+            "deaths": "Deaths",
+            "kdRatio": "K/D Ratio"
+        },
+        "status": {
+            "recording": "Recording",
+            "stopped": "Stopped"
+        },
+        "stopRecording": "Stop Recording",
+        "recap": {
+            "title": "Session Recap",
+            "summary": "{{duration}} · {{kills}} kills · {{deaths}} deaths · {{kdr}} K/D",
+            "topGuild": "Top guild fought: {{guild}}",
+            "topEnemy": "Most encountered enemy: {{enemy}}"
+        },
+        "errors": {
+            "networkError": "Error while reading network. Please notify me on Discord.",
+            "loggerError": "An error occurred while trying to start the logger. Error message: {{message}}\nLogger will be restarted.",
+            "loggerFailedRetry": "Tried to start logger 3 times, but failed. Please try again."
+        }
+    },
+    "open": {
+        "fileSelection": {
+            "selectedFile": "Selected File",
+            "noFileSelected": "No file selected",
+            "importFile": "Import File"
+        }
+    },
+    "demo": {
+        "title": "Demo Mode",
+        "description": "Simulated combat events for testing and demonstration purposes",
+        "controls": {
+            "clearLogs": "Clear Logs",
+            "startDemo": "Start Demo",
+            "stopDemo": "Stop Demo"
+        }
+    },
+    "settings": {
+        "title": "Network Settings",
+        "subtitle": "Configure how the logger captures network traffic",
+        "allInterfaces": {
+            "title": "All Network Interfaces",
+            "description": "Capture traffic from all available network interfaces. Disable to use only the default interface."
+        },
+        "saved": "Settings saved successfully",
+        "configInfo": {
+            "title": "Configuration Information",
+            "patchDate": "Patch Date",
+            "identifier": "Identifier",
+            "autoScroll": "Auto Scroll",
+            "na": "N/A",
+            "enabled": "Enabled",
+            "disabled": "Disabled"
+        }
+    },
+    "docs": {
+        "title": "Documentation",
+        "subtitle": "Everything you need to know about the Combat Logger",
+        "important": {
+            "title": "Important: Optimize Your Logs",
+            "enableCharacters": "Enable Character Names:",
+            "enableCharactersText": "We strongly recommend enabling the Characters checkbox in the recording options (click the cog wheel icon). This provides additional character data that enhances your combat log analysis on NodewarGG.",
+            "followFormat": "Follow the Correct Format:",
+            "followFormatText": "Always ensure your logs follow the format shown above the recorded events:",
+            "formatLabel": "Format:",
+            "formatNote": "If you didn't apply the correct format during recording, don't worry! You can open the saved log file and update it before uploading to NodewarGG. Using the wrong format will result in incorrect class identification and data display on the website."
+        },
+        "troubleshooting": {
+            "title": "Troubleshooting",
+            "startupIssues": {
+                "title": "Startup Issues",
+                "problem": "Problem: Logger won't start or shows errors immediately",
+                "checkNpcap": "Check if Npcap is properly installed:",
+                "openLogger": "Open the logger",
+                "checkStatus": "Check the status message on the home screen",
+                "downloadNpcap": "If it says \"Npcap is not installed\", download and install from"
+            },
+            "pathError": {
+                "title": "\"The system cannot find the path specified\" Error",
+                "description": "This error usually means Python is not added to your system PATH:",
+                "step1": "Follow this guide to add Python to PATH:",
+                "step1Link": "Python PATH Configuration Guide",
+                "step2": "After adding Python to PATH, restart your computer",
+                "step3": "Try building again"
+            },
+            "noLogs": {
+                "title": "No Logs Being Captured",
+                "vpn": {
+                    "title": "VPN or Software altering your network:",
+                    "text": "If you are using a VPN or any software that alters your normal network, it will prevent the tool from picking up events during your record session."
+                },
+                "outdatedConfig": {
+                    "title": "Config is outdated:",
+                    "text": "BDO changes its network structure after each weekly maintenance",
+                    "waitUpdate": "Wait for a config update",
+                    "checkDiscord": "Check the Discord for announcements",
+                    "useWireshark": "As a backup, use Wireshark to record the session, then analyze the .pcap file later"
+                },
+                "wrongInterface": {
+                    "title": "Wrong network interface selected:",
+                    "goToSettings": "Go to Settings",
+                    "trySwitching": "Try switching between \"All\" and \"Default\" network interfaces",
+                    "restartRecording": "Restart recording"
+                },
+                "firewall": {
+                    "title": "Firewall or antivirus blocking:",
+                    "addException": "Add an exception for the logger in your antivirus",
+                    "runAdmin": "Run the logger as Administrator"
+                }
+            },
+            "wrongNames": {
+                "title": "Logs Have Wrong Names",
+                "step1": "In the log display, use the dropdown menus to reorder the names",
+                "step2": "The correct format is:",
+                "step3": "Save the corrected logs"
+            },
+            "cantSave": {
+                "title": "Can't Save Logs / Logs Not Found",
+                "step1": "Make sure you've adjusted the names correctly",
+                "step2": "Check that you have write permissions in the save location",
+                "step3": "Try saving to a different folder (like Documents)"
+            }
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "safe": {
+                "title": "Is this tool safe to use?",
+                "answer": "Yes, the logger only reads network packets and doesn't modify or inject anything into the game."
+            },
+            "banned": {
+                "title": "Will I get banned for using this?",
+                "answer": "The tool operates similarly to Wireshark and only observes network traffic. However, use at your own discretion."
+            },
+            "outdatedConfig": {
+                "title": "Why is the config outdated after maintenance?",
+                "answer": "BDO changes its network packet structure during weekly maintenance. The config needs to be updated to match these changes. Check Discord for updates."
+            },
+            "anyPvp": {
+                "title": "Can I use this during any PvP activity?",
+                "answer": "Yes! It works during Node Wars, Sieges and GvG."
+            },
+            "editLogs": {
+                "title": "Can I edit logs after saving them?",
+                "answer": "Yes! Use the Open function to load your .log file, adjust the names, and save again."
+            },
+            "accidentalClose": {
+                "title": "What if I accidentally close the logger while recording?",
+                "answer": "A warning message should appear asking you to confirm. If you lose data, you can use your Wireshark recording as backup (if you made one)."
+            }
+        },
+        "help": {
+            "title": "Need More Help?",
+            "description": "If you're experiencing issues or have questions not covered here:",
+            "discord": "Discord:",
+            "discordText": "Join our community server at",
+            "github": "GitHub:",
+            "githubText": "Report bugs on the",
+            "issuesPage": "Issues page",
+            "whenAsking": "When asking for help, please provide:",
+            "windowsVersion": "Your Windows version",
+            "errorMessage": "The exact error message (if any)",
+            "whatDoing": "What you were doing when the problem occurred",
+            "screenshots": "Screenshots if possible"
+        }
+    },
+    "logger": {
+        "autoScroll": "Auto scroll",
+        "formatHint": "Adjust the Logs to:",
+        "formatTemplate": "{{playerOne}} killed/died to {{playerTwo}} from {{guild}}",
+        "advancedConfig": "Advanced Config",
+        "waitingForLogs": "Waiting for logs...",
+        "saveLogs": "Save Logs",
+        "uploadToNodewarGG": "Upload to NodewarGG",
+        "killed": "killed",
+        "diedTo": "died to",
+        "from": "from",
+        "deleteEntry": "Delete entry",
+        "table": {
+            "time": "Time",
+            "playerOne": "Player One",
+            "result": "Result",
+            "playerTwo": "Player Two",
+            "guild": "Guild"
+        }
+    },
+    "config": {
+        "title": "Config",
+        "characters": "Characters",
+        "copyToClipboard": "Copy to Clipboard"
+    },
+    "guildStats": {
+        "title": "Members per guilds",
+        "empty": "Waiting for data..."
+    },
+    "enemyStats": {
+        "title": "Most Encountered Enemies",
+        "empty": "Waiting for data..."
+    },
+    "history": {
+        "title": "Session History",
+        "subtitle": "Your last 7 recorded sessions",
+        "empty": "No sessions saved yet",
+        "download": "Download .log",
+        "delete": "Delete",
+        "confirmDelete": "Delete this session from history? This cannot be undone.",
+        "topGuild": "Top guild: {{guild}}",
+        "topEnemy": "Most encountered: {{enemy}}"
+    },
+    "common": {
+        "killed": "killed",
+        "diedTo": "died to",
+        "from": "from",
+        "kills": "kills"
+    }
+}

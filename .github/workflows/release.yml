@@ -33,7 +33,13 @@ jobs:
 
       - name: Download Npcap installer
         run: |
+          $expectedHash = "142C234F09A9618D7CDC2C37F607D6FC06615FAD5581F728B60D4AD659F906BD"
           Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OutFile "dependencies\npcap-1.87.exe"
+          $actualHash = (Get-FileHash "dependencies\npcap-1.87.exe" -Algorithm SHA256).Hash
+          if ($actualHash -ne $expectedHash) {
+            Write-Error "Npcap installer hash mismatch! Expected $expectedHash but got $actualHash. Aborting - the download may be corrupted or tampered with."
+            exit 1
+          }
         shell: powershell
 
       - name: Install UPX
@@ -45,7 +51,7 @@ jobs:
           cd logger
           python -m venv .venv
           .\.venv\Scripts\activate
-          pip install scapy pyinstaller
+          pip install scapy==2.7.0 pyinstaller==6.21.0
           pyinstaller logger.spec -y
         shell: powershell
 
@@ -90,7 +96,7 @@ jobs:
           cd logger
           python -m venv .venv
           source .venv/bin/activate
-          pip install scapy pyinstaller
+          pip install scapy==2.7.0 pyinstaller==6.21.0
           pyinstaller logger.spec -y
         shell: bash
 

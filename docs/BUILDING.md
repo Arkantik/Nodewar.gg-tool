@@ -134,7 +134,7 @@ There's no `setup-wizard.bat` equivalent for Linux yet - build from the command 
 cd logger
 python3 -m venv .venv
 source .venv/bin/activate
-pip install scapy pyinstaller
+pip install scapy==2.7.0 pyinstaller==6.21.0
 pyinstaller logger.spec -y
 cd ..
 

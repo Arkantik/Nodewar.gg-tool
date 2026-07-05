@@ -1,8 +1,11 @@
 import os
 from scapy.all import sniff, rdpcap
-from .. import parser
+from .. import config, parser
 
 def open_pcap(file, output):
+    if config.config.invalid:
+        print("Could not locate config file or config is invalid", flush=True)
+        return
     if file != None and not os.path.isfile(file):
         print("Invalid file", flush=True)
         return

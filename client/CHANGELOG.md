@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.2...v1.2.3) (2026-07-05)
+
+
+### Bug Fixes
+
+* switch to one-click installer for silent updates ([09f4655](https://github.com/Arkantik/Nodewar.gg-tool/commit/09f46557510a6afa82bff09fb0f6483a2047dcd3))
+
 ## [1.2.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.1...v1.2.2) (2026-07-05)
 
 

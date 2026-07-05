@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.0.2...v1.1.0) (2026-07-05)
+
+
+### Features
+
+* Add Linux AppImage build and release ([cc1875c](https://github.com/Arkantik/Nodewar.gg-tool/commit/cc1875cc30491f11fe6c5d8e51ef0da9f3197f33))
+* **home:** add welcome and last session UI ([84de4af](https://github.com/Arkantik/Nodewar.gg-tool/commit/84de4af2849690a1ef912d6d6f36fef692fe4798))
+* **ui:** implement global system status indicator ([ec98548](https://github.com/Arkantik/Nodewar.gg-tool/commit/ec98548758555173c28409b83035374cb4496e7c))
+
 ## [1.0.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.0.1...v1.0.2) (2026-07-05)
 
 

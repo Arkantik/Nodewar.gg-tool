@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuActivity, LuChartPie, LuSkull, LuSquare, LuSword } from "react-icons/lu";
 import { useConfigStore } from "../components/create-config/config-store";
-import type { LogType } from "../components/create-config/config";
+import type { LogType, NamedLog } from "../components/create-config/config";
 import Logger from "../components/create-config/Logger";
 import Button from "../components/ui/Button";
 import EnemyStats from "../components/ui/EnemyStats";
@@ -10,7 +10,7 @@ import GuildStats from "../components/ui/GuildStats";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import StatCard from "../components/ui/StatCard";
-import { getNetworkDeathLogs } from "../logic/deathLogs";
+import { getNetworkDeathLogs, getNetworkIsKill } from "../logic/deathLogs";
 import { appendUniqueLog, parseLoggerLine } from "../logic/logParsing";
 import { mostFrequent } from "../logic/util";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
@@ -91,6 +91,11 @@ function RecordPage() {
 
 	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
 
+	const enrichedLogs: NamedLog[] = useMemo(
+		() => logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, killOffset) })),
+		[logs, killOffset],
+	);
+
 	const recap = useMemo(() => {
 		if (sessionActive) return null;
 		return {
@@ -139,7 +144,7 @@ function RecordPage() {
 			</div>
 
 			<div className="hidden lg:block overflow-hidden min-h-0">
-				<GuildStats logs={logs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
+				<GuildStats logs={enrichedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
 			</div>
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
@@ -147,7 +152,7 @@ function RecordPage() {
 			</div>
 
 			<div className="hidden lg:block overflow-hidden min-h-0">
-				<EnemyStats logs={deathLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
+				<EnemyStats logs={enrichedLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
 			</div>
 		</div>
 	);

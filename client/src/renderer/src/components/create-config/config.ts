@@ -26,6 +26,7 @@ export type Log = {
 
 export type NamedLog = {
 	names: { name: string }[];
+	isKill?: boolean;
 };
 
 const CONFIG_STORAGE_KEY = "config";

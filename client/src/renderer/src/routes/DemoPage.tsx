@@ -2,7 +2,7 @@ import Button from "@/components/ui/Button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuActivity, LuChartPie, LuInfo, LuOctagonPause, LuPlay, LuSkull, LuSword } from "react-icons/lu";
-import type { LogType } from "../components/create-config/config";
+import type { LogType, NamedLog } from "../components/create-config/config";
 import Logger from "../components/create-config/Logger";
 import EnemyStats from "../components/ui/EnemyStats";
 import GuildStats from "../components/ui/GuildStats";
@@ -11,7 +11,7 @@ import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { DemoLogGenerator } from "../logic/demoGenerator";
-import { getNetworkDeathLogs } from "../logic/deathLogs";
+import { getNetworkIsKill } from "../logic/deathLogs";
 import { useElementHeight } from "../logic/useElementHeight";
 
 function DemoPage() {
@@ -63,7 +63,10 @@ function DemoPage() {
 		setStats({ kills: 0, deaths: 0, kdr: 0 });
 	};
 
-	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
+	const enrichedLogs: NamedLog[] = useMemo(
+		() => logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, killOffset) })),
+		[logs, killOffset],
+	);
 
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">
@@ -115,10 +118,10 @@ function DemoPage() {
 
 			<div className="hidden lg:flex lg:flex-col gap-4 overflow-hidden min-h-0 row-span-2">
 				<div className="shrink-0 overflow-hidden" style={{ height: headerBlockHeight || undefined }}>
-					<GuildStats logs={logs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
+					<GuildStats logs={enrichedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
 				</div>
 				<div className="flex-1 min-h-0 overflow-hidden">
-					<EnemyStats logs={deathLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
+					<EnemyStats logs={enrichedLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
 				</div>
 			</div>
 

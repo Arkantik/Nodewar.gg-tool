@@ -265,8 +265,11 @@
         "empty": "Waiting for data..."
     },
     "enemyStats": {
-        "title": "Deadliest Players",
+        "title": "Top Rivals",
         "empty": "Waiting for data..."
+    },
+    "kdTimeline": {
+        "rate": "{{kills}} kills/min · {{deaths}} deaths/min"
     },
     "history": {
         "title": "Session History",

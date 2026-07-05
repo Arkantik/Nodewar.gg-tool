@@ -13,7 +13,8 @@ interface EnemyStatsProps {
 interface PlayerData {
 	name: string;
 	guild: string;
-	count: number;
+	kills: number;
+	deaths: number;
 }
 
 const MAX_PLAYERS = 10;
@@ -32,21 +33,22 @@ function EnemyStats({ logs, playerIndex, guildIndex }: EnemyStatsProps) {
 
 				const guildName = names.length > guildIndex ? names[guildIndex] : undefined;
 				const existing = playerMap.get(name);
-				if (existing) {
-					existing.count += 1;
-				} else {
-					playerMap.set(name, { name, guild: guildName && guildName !== "-1" ? guildName : "", count: 1 });
-				}
+				const player = existing ?? { name, guild: guildName && guildName !== "-1" ? guildName : "", kills: 0, deaths: 0 };
+
+				if (log.isKill === true) player.kills++;
+				else if (log.isKill === false) player.deaths++;
+
+				playerMap.set(name, player);
 			}
 		});
 
 		return playerMap;
 	}, [logs, playerIndex, guildIndex]);
 
+	// Deadliest-to-you first (most deaths), ties broken by who you've killed the most.
 	const sortedPlayers = Array.from(players.values())
-		.sort((a, b) => b.count - a.count)
+		.sort((a, b) => b.deaths - a.deaths || b.kills - a.kills)
 		.slice(0, MAX_PLAYERS);
-	const maxCount = sortedPlayers[0]?.count ?? 0;
 
 	return (
 		<div className="glass-card rounded-md p-4 border border-white/10 h-full flex flex-col">
@@ -62,18 +64,32 @@ function EnemyStats({ logs, playerIndex, guildIndex }: EnemyStatsProps) {
 					</div>
 				) : (
 					<div className="h-full overflow-y-auto space-y-0.5">
-						{sortedPlayers.map(({ name, guild, count }) => (
-							<div key={name} className="flex items-center py-0.5 px-2 gap-1">
-								<div className="flex-1 min-w-0">
-									<p className="text-xs font-medium text-white truncate">{name}</p>
-									{guild && <p className="text-[11px] text-gray-500 truncate">{guild}</p>}
+						{sortedPlayers.map(({ name, guild, kills, deaths }) => {
+							const total = kills + deaths;
+							const killShare = total > 0 ? (kills / total) * 100 : 0;
+
+							return (
+								<div key={name} className="flex items-center py-0.5 px-2 gap-2">
+									<div className="flex-1 min-w-0">
+										<p className="text-xs font-medium text-white truncate">{name}</p>
+										{guild && <p className="text-[11px] text-gray-500 truncate">{guild}</p>}
+									</div>
+
+									<span className="text-xs font-semibold text-green-400/80 w-5 text-right shrink-0">{kills}</span>
+
+									{total > 0 ? (
+										<div className="w-10 h-1 rounded-full bg-white/5 overflow-hidden shrink-0 flex">
+											<div className="h-full bg-green-500/70" style={{ width: `${killShare}%` }} />
+											<div className="h-full bg-red-500/70" style={{ width: `${100 - killShare}%` }} />
+										</div>
+									) : (
+										<div className="w-10 h-1 rounded-full bg-white/10 shrink-0" />
+									)}
+
+									<span className="text-xs font-semibold text-red-400/80 w-5 shrink-0">{deaths}</span>
 								</div>
-								<div className="w-12 h-1 rounded-full bg-white/5 overflow-hidden shrink-0">
-									<div className="h-full bg-cta-500 rounded-full" style={{ width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%` }} />
-								</div>
-								<span className="text-xs font-semibold text-gray-400 w-4 text-right shrink-0">{count}</span>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				)}
 			</div>

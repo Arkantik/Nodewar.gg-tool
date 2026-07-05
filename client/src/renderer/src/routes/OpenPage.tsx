@@ -13,7 +13,7 @@ import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
-import { getCombatDeathLogs, getNetworkDeathLogs } from "../logic/deathLogs";
+import { getNetworkIsKill } from "../logic/deathLogs";
 import { open_file } from "../logic/file";
 import { appendUniqueLog, parseLoggerLine, parseTextLog } from "../logic/logParsing";
 import { useElementHeight } from "../logic/useElementHeight";
@@ -55,13 +55,9 @@ function OpenPage() {
 
 	const stats = isNetwork ? networkStats : combatLogStats;
 
-	const namedLogs: NamedLog[] = useMemo(() => {
-		return isNetwork ? logs : combatLogs.map((log) => ({ names: log.names.map((name) => ({ name })) }));
-	}, [isNetwork, logs, combatLogs]);
-
-	const deathLogs: NamedLog[] = useMemo(() => {
-		if (isNetwork) return getNetworkDeathLogs(logs, killOffset);
-		return getCombatDeathLogs(combatLogs).map((log) => ({ names: log.names.map((name) => ({ name })) }));
+	const enrichedLogs: NamedLog[] = useMemo(() => {
+		if (isNetwork) return logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, killOffset) }));
+		return combatLogs.map((log) => ({ names: log.names.map((name) => ({ name })), isKill: log.kill }));
 	}, [isNetwork, logs, combatLogs, killOffset]);
 
 	const loggerCallback: LoggerSessionCallback = (data, status) => {
@@ -151,10 +147,10 @@ function OpenPage() {
 
 			<div className="hidden lg:flex lg:flex-col gap-4 overflow-hidden min-h-0 row-span-2">
 				<div className="shrink-0 overflow-hidden" style={{ height: headerBlockHeight || undefined }}>
-					<GuildStats logs={namedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
+					<GuildStats logs={enrichedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
 				</div>
 				<div className="flex-1 min-h-0 overflow-hidden">
-					<EnemyStats logs={deathLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
+					<EnemyStats logs={enrichedLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
 				</div>
 			</div>
 

@@ -265,8 +265,11 @@
         "empty": "En attente de données..."
     },
     "enemyStats": {
-        "title": "Joueurs les plus meurtriers",
+        "title": "Meilleurs rivaux",
         "empty": "En attente de données..."
+    },
+    "kdTimeline": {
+        "rate": "{{kills}} élim./min · {{deaths}} morts/min"
     },
     "history": {
         "title": "Historique des sessions",

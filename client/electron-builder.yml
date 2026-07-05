@@ -28,9 +28,8 @@ win:
 
 nsis:
   include: build/installer.nsh
-  oneClick: false
+  oneClick: true
   perMachine: false
-  allowToChangeInstallationDirectory: true
   createDesktopShortcut: always
   artifactName: bdo-combat-installer-v${version}.${ext}
 

@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.1.1...v1.2.0) (2026-07-05)
+
+
+### Features
+
+* **stats:** show deadliest players with guild info ([0b4931e](https://github.com/Arkantik/Nodewar.gg-tool/commit/0b4931ec0dedc03a10ae3eb3b68b978537281cbd))
+
 ## [1.1.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.1.0...v1.1.1) (2026-07-05)
 
 

@@ -34,6 +34,7 @@ function OpenPage() {
 	const [fileName, setFileName] = useState<string>(() => initialNavState?.fileName ?? "");
 	const [networkStats, setNetworkStats] = useState({ kills: 0, deaths: 0, kdr: 0 });
 	const [guildStatsKey, setGuildStatsKey] = useState({ playerTwo: 1, guild: 2 });
+	const [killOffset, setKillOffset] = useState<number>();
 	const [timelineKey, setTimelineKey] = useState(0);
 	const { start } = useLoggerSession();
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
@@ -57,6 +58,14 @@ function OpenPage() {
 		return isNetwork ? logs : combatLogs.map((log) => ({ names: log.names.map((name) => ({ name })) }));
 	}, [isNetwork, logs, combatLogs]);
 
+	const deathLogs: NamedLog[] = useMemo(() => {
+		if (isNetwork) {
+			if (killOffset === undefined) return [];
+			return logs.filter((log) => log.hex.length > killOffset && log.hex[killOffset] !== "1");
+		}
+		return combatLogs.filter((log) => !log.kill).map((log) => ({ names: log.names.map((name) => ({ name })) }));
+	}, [isNetwork, logs, combatLogs, killOffset]);
+
 	const loggerCallback: LoggerSessionCallback = (data, status) => {
 		if (status === "running") {
 			const newLog = parseLoggerLine(data);
@@ -75,6 +84,7 @@ function OpenPage() {
 		setFileName("");
 		setNetworkStats({ kills: 0, deaths: 0, kdr: 0 });
 		setGuildStatsKey({ playerTwo: 1, guild: 2 });
+		setKillOffset(undefined);
 		setTimelineKey((prev) => prev + 1);
 
 		const filePaths = await open_file();
@@ -146,13 +156,13 @@ function OpenPage() {
 					<GuildStats logs={namedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
 				</div>
 				<div className="flex-1 min-h-0 overflow-hidden">
-					<EnemyStats logs={namedLogs} playerIndex={guildStatsKey.playerTwo} />
+					<EnemyStats logs={deathLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
 				</div>
 			</div>
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
 				{isNetwork ? (
-					<Logger logs={logs} loading={loading} onStatsUpdate={setNetworkStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} />
+					<Logger logs={logs} loading={loading} onStatsUpdate={setNetworkStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} onKillOffsetChange={setKillOffset} />
 				) : (
 					<LogEditor logs={combatLogs} loading={loading} onDeleteLog={handleDeleteCombatLog} onIndicesChange={handleIndicesChange} />
 				)}

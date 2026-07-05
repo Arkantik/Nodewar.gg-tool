@@ -66,10 +66,9 @@ function GuildStats({ logs, guildIndex, playerIndex }: GuildStatsProps) {
 					</div>
 				) : (
 					<div className="h-full overflow-y-auto space-y-1.5">
-						{sortedGuilds.map((guild, index) => (
-							<div key={guild.name} className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-white/5">
-								<span className="w-5 h-5 flex items-center justify-center rounded bg-white/5 text-[10px] font-semibold text-gray-400 shrink-0">{index + 1}</span>
-								<span className="flex-1 text-sm font-medium text-white truncate">{guild.name}</span>
+						{sortedGuilds.map((guild) => (
+							<div key={guild.name} className="flex items-center py-1.5 px-2 gap-1">
+								<span className="flex-1 text-xs font-medium text-white truncate">{guild.name}</span>
 								<div className="w-12 h-1 rounded-full bg-white/5 overflow-hidden shrink-0">
 									<div className="h-full bg-cta-500 rounded-full" style={{ width: `${maxMembers > 0 ? (guild.members.size / maxMembers) * 100 : 0}%` }} />
 								</div>

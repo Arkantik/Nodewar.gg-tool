@@ -32,6 +32,7 @@ export interface LoggerProps {
   }) => void;
   onDeleteLog?: (index: number) => void;
   onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void;
+  onKillOffsetChange?: (offset: number | undefined) => void;
   saveToHistory?: boolean;
 }
 
@@ -62,6 +63,7 @@ function Logger({
   onStatsUpdate,
   onDeleteLog,
   onIndicesChange,
+  onKillOffsetChange,
   saveToHistory = false,
 }: LoggerProps) {
   const { t } = useTranslation();
@@ -125,6 +127,10 @@ function Logger({
   useEffect(() => {
     if (stats) onStatsUpdate?.(stats);
   }, [stats, onStatsUpdate]);
+
+  useEffect(() => {
+    onKillOffsetChange?.(possibleKillOffsets[killIndex]);
+  }, [possibleKillOffsets, killIndex, onKillOffsetChange]);
 
   function setAutoScrollAndPersist(checked: boolean) {
     setAutoScroll(checked);

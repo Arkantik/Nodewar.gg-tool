@@ -31,6 +31,7 @@ function RecordPage() {
 	const retryCountRef = useRef(0);
 	const [stats, setStats] = useState({ kills: 0, deaths: 0, kdr: 0 });
 	const [guildStatsKey, setGuildStatsKey] = useState({ playerTwo: 1, guild: 2 });
+	const [killOffset, setKillOffset] = useState<number>();
 	const [sessionActive, setSessionActive] = useState(true);
 	const [duration, setDuration] = useState(0);
 	const startedAtRef = useRef(Date.now());
@@ -95,6 +96,11 @@ function RecordPage() {
 		};
 	}, [sessionActive, logs, guildStatsKey]);
 
+	const deathLogs = useMemo(() => {
+		if (killOffset === undefined) return [];
+		return logs.filter((log) => log.hex.length > killOffset && log.hex[killOffset] !== "1");
+	}, [logs, killOffset]);
+
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">
 			<div className="flex flex-col gap-4 min-w-0">
@@ -139,11 +145,11 @@ function RecordPage() {
 			</div>
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
-				<Logger logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} saveToHistory />
+				<Logger logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} onKillOffsetChange={setKillOffset} saveToHistory />
 			</div>
 
 			<div className="hidden lg:block overflow-hidden min-h-0">
-				<EnemyStats logs={logs} playerIndex={guildStatsKey.playerTwo} />
+				<EnemyStats logs={deathLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
 			</div>
 		</div>
 	);

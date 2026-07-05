@@ -31,6 +31,13 @@
         }
     },
     "home": {
+        "welcome": {
+            "title": "Welcome back",
+            "subtitle": "Record your Node War battles, review past sessions, or explore the tool with the demo."
+        },
+        "lastSession": {
+            "title": "Last Session"
+        },
         "actions": {
             "record": {
                 "title": "Record",

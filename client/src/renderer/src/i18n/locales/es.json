@@ -31,6 +31,13 @@
         }
     },
     "home": {
+        "welcome": {
+            "title": "Bienvenido de nuevo",
+            "subtitle": "Graba tus batallas de Node War, revisa sesiones anteriores o explora la herramienta con la demo."
+        },
+        "lastSession": {
+            "title": "Última sesión"
+        },
         "actions": {
             "record": {
                 "title": "Grabar",

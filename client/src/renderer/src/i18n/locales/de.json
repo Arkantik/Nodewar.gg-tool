@@ -31,6 +31,13 @@
         }
     },
     "home": {
+        "welcome": {
+            "title": "Willkommen zurück",
+            "subtitle": "Zeichne deine Node-War-Kämpfe auf, sieh dir vergangene Sitzungen an oder erkunde das Tool mit der Demo."
+        },
+        "lastSession": {
+            "title": "Letzte Sitzung"
+        },
         "actions": {
             "record": {
                 "title": "Aufnehmen",

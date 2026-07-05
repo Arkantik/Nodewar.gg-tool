@@ -31,6 +31,13 @@
         }
     },
     "home": {
+        "welcome": {
+            "title": "Bon retour",
+            "subtitle": "Enregistrez vos combats de Node War, consultez vos sessions passées ou explorez l'outil avec la démo."
+        },
+        "lastSession": {
+            "title": "Dernière session"
+        },
         "actions": {
             "record": {
                 "title": "Enregistrer",

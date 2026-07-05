@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.0.1...v1.0.2) (2026-07-05)
+
+
+### Bug Fixes
+
+* Resolve installer and asset loading issues ([96b43e1](https://github.com/Arkantik/Nodewar.gg-tool/commit/96b43e11bfe2f099e5d4e2e601beee96c2979cbc))
+
 ## [1.0.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.0.0...v1.0.1) (2026-07-05)
 
 

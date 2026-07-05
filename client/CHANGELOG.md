@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.0...v1.2.1) (2026-07-05)
+
+
+### Bug Fixes
+
+* set electron publish type to release ([eb98ad9](https://github.com/Arkantik/Nodewar.gg-tool/commit/eb98ad9329e494e2148946769f04100dfdeacd4d))
+
 # [1.2.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.1.1...v1.2.0) (2026-07-05)
 
 

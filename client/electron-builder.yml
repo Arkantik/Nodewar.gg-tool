@@ -50,4 +50,4 @@ publish:
   provider: github
   owner: Arkantik
   repo: Nodewar.gg-tool
-  draft: false
+  releaseType: release

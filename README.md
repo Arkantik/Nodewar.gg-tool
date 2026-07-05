@@ -6,6 +6,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+[![License][license-shield]][license-url]
 
 <p align="center">
  A powerful tool for Black Desert Online that captures and logs combat messages during PvP activities such as Node Wars, Sieges, and War of the Roses.
@@ -29,7 +30,7 @@
 - [❗ Troubleshooting](#-troubleshooting)
 - [🤔 FAQ](#-faq)
 - [💬 Need Help?](#-need-help)
-- [👥 Credits](#-credits)
+- [📄 License](#-license)
 - [📝 Notes for Advanced Users](#-notes-for-advanced-users)
 
 ## ✨ Features
@@ -120,63 +121,7 @@ After installation, you can launch BDO Combat Logger from:
 
 ### Method 2: Manual Build
 
-<details>
-
-For advanced users or developers who want to build from source.
-
-#### Prerequisites
-
-Before building manually, you need:
-
-**Required:**
-- **[Npcap 1.7.8+](https://npcap.com/dist/)** - Network packet capture library
-- **[Node.js 20+](https://nodejs.org/en/download/)** - JavaScript runtime
-- **[Python 3+](https://www.python.org/downloads/)** - Programming language
-
-**Optional:**
-- **[Wireshark](https://www.wireshark.org/download.html)** - Network protocol analyzer (Useful for backup recordings)
-
-> [!Warning]
-> When installing Python, make sure to check the box that says **"Add Python to PATH"** during installation!
-
-#### Step 1: Get the Project Files
-
-Choose one of these methods:
-
-**Method A: Clone with Git**
-
-```bash
-git clone https://github.com/Arkantik/Nodewar.gg-tool.git
-cd Nodewar.gg-tool
-```
-
-**Method B: Download as ZIP**
-
-1. Download the project: [bdo-combat-logger.zip](https://github.com/Arkantik/Nodewar.gg-tool/archive/refs/heads/main.zip)
-2. Extract the ZIP file to a folder of your choice
-3. Open the extracted folder
-
-#### Step 2: Verify Prerequisites
-
-Make sure you have installed:
-
-- Node.js (Check by opening Command Prompt and typing: `node --version`)
-- Python (Check by opening Command Prompt and typing: `python --version`)
-
-#### Step 3: Build the Application
-
-1. Locate the `build.bat` file in the project folder
-2. **Double-click** `build.bat` to run it
-3. If a command prompt window appears asking you to press any key, **press Enter**
-4. Wait for the build process to complete (this may take several minutes)
-5. When finished, you'll find:
-   - A ready-to-share installer: `client\dist\bdo-combat-installer-v<version>.exe`
-   - The unpacked app (no installer needed): `client\dist\win-unpacked\bdo-combat-logger-win_x64.exe`
-
-> [!Note]
-> The first build may take a few minutes as it downloads and installs all necessary dependencies.
-
-</details>
+For advanced users or developers who want to build from source (Windows or Linux). See the full [Build Guide](docs/BUILDING.md) for prerequisites, step-by-step instructions, and troubleshooting.
 
 ---
 
@@ -377,11 +322,9 @@ When asking for help, please provide:
 
 ---
 
-## 👥 Credits
+## 📄 License
 
-- **Original Creator**: ORACLE (sch-28)
-- **Current Maintainer**: ArkantiK
-- **Visualization Website**: [Nodewar.gg](https://nodewar.gg/)
+This project is licensed under the [Apache License 2.0](LICENSE.txt).
 
 ---
 

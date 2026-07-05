@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -23,58 +23,34 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Create dependencies folder
-        run: New-Item -ItemType Directory -Force -Path dependencies | Out-Null
-
-      - name: Download Npcap installer
-        run: |
-          $expectedHash = "142C234F09A9618D7CDC2C37F607D6FC06615FAD5581F728B60D4AD659F906BD"
-          Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OutFile "dependencies\npcap-1.87.exe"
-          $actualHash = (Get-FileHash "dependencies\npcap-1.87.exe" -Algorithm SHA256).Hash
-          if ($actualHash -ne $expectedHash) {
-            Write-Error "Npcap installer hash mismatch! Expected $expectedHash but got $actualHash. Aborting - the download may be corrupted or tampered with."
-            exit 1
-          }
-        shell: powershell
-
-      - name: Install UPX
-        run: choco install upx -y
-        shell: powershell
-
-      - name: Build Python logger
-        run: |
-          cd logger
-          python -m venv .venv
-          .\.venv\Scripts\activate
-          pip install scapy==2.7.0 pyinstaller==6.21.0
-          pyinstaller logger.spec -y
-        shell: powershell
-
-      - name: Install frontend/Electron dependencies
+      - name: Install frontend dependencies
         run: |
           cd client
           npm ci
 
-      - name: Release (bump version, build installer, publish to GitHub Releases)
+      - name: Release (bump version, tag, create GitHub release)
         working-directory: client
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-linux:
+  publish-installers:
     needs: release
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: ubuntu-latest
+            platform: linux
+    runs-on: ${{ matrix.os }}
 
     steps:
-      # semantic-release's git plugin pushes a version-bump commit to main
-      # during the `release` job above, after this workflow's own trigger
+      # semantic-release's git plugin pushes a version-bump commit and tag to
+      # main during the `release` job above, after this workflow's own trigger
       # commit was checked out - explicitly re-checkout `main` so this job
-      # builds from that bumped commit (same one the release tag points at),
+      # builds from that bumped commit (the one the release tag points at),
       # not the older commit that originally triggered the workflow.
       - name: Checkout latest main
         uses: actions/checkout@v4
@@ -91,16 +67,58 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build Python logger
+      - name: Create dependencies folder
+        if: matrix.platform == 'win'
+        run: |
+          New-Item -ItemType Directory -Force -Path dependencies | Out-Null
+        shell: powershell
+
+      - name: Download Npcap installer
+        if: matrix.platform == 'win'
+        run: |
+          $expectedHash = "142C234F09A9618D7CDC2C37F607D6FC06615FAD5581F728B60D4AD659F906BD"
+          Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OutFile "dependencies\npcap-1.87.exe"
+          $actualHash = (Get-FileHash "dependencies\npcap-1.87.exe" -Algorithm SHA256).Hash
+          if ($actualHash -ne $expectedHash) {
+            Write-Error "Npcap installer hash mismatch! Expected $expectedHash but got $actualHash. Aborting - the download may be corrupted or tampered with."
+            exit 1
+          }
+        shell: powershell
+
+      - name: Install UPX (Windows)
+        if: matrix.platform == 'win'
+        run: choco install upx -y
+        shell: powershell
+
+      - name: Install UPX (Linux)
+        if: matrix.platform == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y upx-ucl
+        shell: bash
+
+      - name: Build Python logger (Windows)
+        if: matrix.platform == 'win'
+        run: |
+          cd logger
+          python -m venv .venv
+          .\.venv\Scripts\activate
+          pip install scapy==2.7.0 pyinstaller==6.21.0
+          pyinstaller logger.spec -y
+          cd ..
+        shell: powershell
+
+      - name: Build Python logger (Linux)
+        if: matrix.platform == 'linux'
         run: |
           cd logger
           python -m venv .venv
           source .venv/bin/activate
           pip install scapy==2.7.0 pyinstaller==6.21.0
           pyinstaller logger.spec -y
+          cd ..
         shell: bash
 
-      - name: Grant capture permission
+      - name: Grant capture permission (Linux)
+        if: matrix.platform == 'linux'
         # See docs/BUILDING.md - this may not survive AppImage packaging;
         # the manual `setcap` step documented for users is the fallback.
         run: sudo setcap cap_net_raw+eip logger/dist/logger
@@ -110,9 +128,10 @@ jobs:
         run: |
           cd client
           npm ci
+        shell: bash
 
-      - name: Publish Linux installer to the GitHub Release
+      - name: Publish installer to the GitHub Release
         working-directory: client
-        run: npm run publish:linux
+        run: npm run publish:${{ matrix.platform }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

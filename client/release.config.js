@@ -1,6 +1,7 @@
 // Runs from client/ (this is where package.json - the app's version source - lives).
-// Order matters: npm bumps package.json's version *before* exec builds the installer,
-// so electron-builder's artifactName/latest.yml pick up the new version automatically.
+// This step only bumps the version, tags, and creates the (assetless) GitHub
+// release - installers are built and attached separately per-platform by the
+// publish-installers job in release.yml, via electron-builder's own publisher.
 module.exports = {
   branches: ["main"],
   plugins: [
@@ -8,7 +9,6 @@ module.exports = {
     "@semantic-release/release-notes-generator",
     ["@semantic-release/changelog", { changelogFile: "CHANGELOG.md" }],
     ["@semantic-release/npm", { npmPublish: false }],
-    ["@semantic-release/exec", { prepareCmd: "npm run build:win" }],
     [
       "@semantic-release/git",
       {
@@ -16,14 +16,6 @@ module.exports = {
         message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
-    [
-      "@semantic-release/github",
-      {
-        assets: [
-          { path: "dist/*.exe", label: "Windows Installer" },
-          { path: "dist/latest.yml", label: "latest.yml" }
-        ]
-      }
-    ]
+    "@semantic-release/github"
   ]
 };

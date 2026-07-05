@@ -9,7 +9,7 @@ export type LoggerStatus = {
 
 export async function check_status(): Promise<LoggerStatus> {
 	const status: LoggerStatus = {
-		capture_ready: true,
+		capture_ready: false,
 		capture_platform: "windows",
 		config_valid: true,
 		config_up_to_date: true,
@@ -29,11 +29,13 @@ export async function check_status(): Promise<LoggerStatus> {
 					status.capture_ready = false;
 				} else if (evt.data === "Npcap is installed") {
 					status.capture_platform = "windows";
+					status.capture_ready = true;
 				} else if (evt.data === "Packet capture permission is missing") {
 					status.capture_platform = "linux";
 					status.capture_ready = false;
 				} else if (evt.data === "Packet capture permission is granted") {
 					status.capture_platform = "linux";
+					status.capture_ready = true;
 				} else if (evt.data === "Could not locate config file or config is invalid") {
 					status.config_valid = false;
 				} else if (evt.data.startsWith("The config is older than 7 days.")) {

@@ -18,7 +18,7 @@ interface StatusCardProps {
 
 function StatusCard({ label, isValid, statusText, statusIcon, statusColor, loading = false, link, helpText }: StatusCardProps) {
 	return (
-		<div className="flex items-center gap-3">
+		<div className="flex items-center justify-between gap-3">
 			<span className="text-sm font-medium text-gray-300">{label}</span>
 			{loading ? (
 				<LoadingIndicator size="sm" />

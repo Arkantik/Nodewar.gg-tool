@@ -1,14 +1,12 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown } from "react-icons/lu";
 import { useClickOutside } from "../hooks/useClickOutside";
-import Icon from "./ui/Icon";
 
 const languages = [
-	{ code: "en", name: "English", flag: "🇺🇸" },
-	{ code: "de", name: "Deutsch", flag: "🇩🇪" },
-	{ code: "fr", name: "Français", flag: "🇫🇷" },
-	{ code: "es", name: "Español", flag: "🇪🇸" },
+	{ code: "en", name: "English" },
+	{ code: "de", name: "Deutsch" },
+	{ code: "fr", name: "Français" },
+	{ code: "es", name: "Español" },
 ];
 
 const LANGUAGE_STORAGE_KEY = "app_language";
@@ -37,10 +35,9 @@ function LanguageSelector() {
 		<div className="relative" ref={dropdownRef}>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="cursor-pointer flex items-center gap-2 p-2.5 rounded-md transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 text-gray-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
+				className="cursor-pointer flex items-center justify-center p-2.5 rounded-md transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 text-gray-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
 				title={t("header.changeLanguage")}>
-				<span className="h-5 flex items-center">{currentLang.flag}</span>
-				<Icon icon={LuChevronDown} size="sm" className={`transition-transform duration-150 ease-out ${isOpen ? "rotate-180" : ""}`} />
+				<span className="w-4 h-4 flex items-center justify-center text-[10px] font-bold uppercase leading-none">{currentLang.code}</span>
 			</button>
 
 			{isOpen && (
@@ -50,7 +47,7 @@ function LanguageSelector() {
 							key={lang.code}
 							onClick={() => changeLanguage(lang.code)}
 							className={`cursor-pointer w-full flex items-center gap-3 p-2 rounded text-sm transition-all duration-150 ease-out hover:bg-white/10 active:scale-[0.98] ${lang.code === currentLang.code ? "bg-white/5 text-white" : "text-gray-300"}`}>
-							<span>{lang.flag}</span>
+							<span className="w-6 h-6 flex items-center justify-center rounded bg-white/5 text-[10px] font-bold uppercase">{lang.code}</span>
 							<span>{lang.name}</span>
 						</button>
 					))}

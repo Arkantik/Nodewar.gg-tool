@@ -2,18 +2,13 @@
     "header": {
         "appName": "Nodewar.gg tool",
         "version": "Version {{version}}",
-        "updateAvailable": "Mise à jour disponible",
-        "updating": "Mise à jour...",
-        "updateToVersion": "Mettre à jour vers v{{version}}",
-        "updateFailed": "La mise à jour a échoué. Veuillez réessayer.",
         "help": "Aide",
         "changeLanguage": "Changer de langue"
     },
-    "home": {
-        "systemStatus": {
-            "title": "État du système",
-            "subtitle": "Surveillez la configuration de votre logger"
-        },
+    "systemStatus": {
+        "title": "État du système",
+        "subtitle": "Surveillez la configuration de votre logger",
+        "recheck": "Vérifier à nouveau",
         "capture": {
             "windows": {
                 "label": "Pilote Npcap",
@@ -26,6 +21,16 @@
                 "helpText": "Exécutez : sudo setcap cap_net_raw+eip <chemin vers logger>"
             }
         },
+        "update": {
+            "label": "Mise à jour de l'application",
+            "upToDate": "À jour",
+            "updateAvailable": "Mise à jour disponible",
+            "updating": "Mise à jour...",
+            "updateToVersion": "Mettre à jour vers v{{version}}",
+            "failed": "Échec de la vérification des mises à jour"
+        }
+    },
+    "home": {
         "actions": {
             "record": {
                 "title": "Enregistrer",

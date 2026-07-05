@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.0.0...v1.0.1) (2026-07-05)
+
+
+### Bug Fixes
+
+* Improve UI layering and translation hook usage ([b86d073](https://github.com/Arkantik/Nodewar.gg-tool/commit/b86d0733100f308dbdd513c72b3aaec302cc7fc0))
+
 # 1.0.0 (2026-07-04)
 
 

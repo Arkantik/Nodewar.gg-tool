@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChartPie, LuDownload, LuHistory, LuSkull, LuSword, LuTrash2 } from "react-icons/lu";
+import { LuChartPie, LuDownload, LuFolderOpen, LuHistory, LuSkull, LuSword, LuTrash2 } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 import { get_formatted_date } from "../components/create-config/config";
 import Icon from "../components/ui/Icon";
 import PageHeader from "../components/ui/PageHeader";
+import { formatSessionDate } from "../logic/date";
 import { open_save_location } from "../logic/file";
 import { useHistoryStore, type HistoryEntry } from "../logic/history-store";
 
 function HistoryPage() {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const navigate = useNavigate();
 	const [entries, setEntries] = useState<HistoryEntry[]>([]);
 	const [loading, setLoading] = useState(true);
 	const ensureLoaded = useHistoryStore((s) => s.ensureLoaded);
@@ -25,6 +28,10 @@ function HistoryPage() {
 		const path = await open_save_location(get_formatted_date(entry.date.slice(0, 10)) + ".log");
 		if (!path) return;
 		await window.api.fs.writeFile(path, entry.logText);
+	}
+
+	function handleOpen(entry: HistoryEntry) {
+		navigate("/open", { state: { logText: entry.logText, fileName: get_formatted_date(entry.date.slice(0, 10)) + ".log" } });
 	}
 
 	async function handleDelete(entry: HistoryEntry) {
@@ -46,8 +53,8 @@ function HistoryPage() {
 					<div className="flex-1 overflow-y-auto divide-y divide-white/5">
 						{entries.map((entry) => (
 							<div key={entry.id} className="flex items-center gap-4 px-4 py-3">
-								<div className="w-36 shrink-0">
-									<div className="text-sm font-medium text-white">{new Date(entry.date).toLocaleDateString()}</div>
+								<div className="w-44 shrink-0">
+									<div className="text-sm font-medium text-white">{formatSessionDate(entry.date, i18n.language)}</div>
 									<div className="text-xs text-gray-500">{new Date(entry.date).toLocaleTimeString()}</div>
 								</div>
 
@@ -73,6 +80,12 @@ function HistoryPage() {
 								</div>
 
 								<div className="flex items-center gap-2 shrink-0">
+									<button
+										onClick={() => handleOpen(entry)}
+										className="cursor-pointer p-2 rounded-md hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 transition-all duration-150 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
+										title={t("history.open")}>
+										<Icon icon={LuFolderOpen} size="sm" />
+									</button>
 									<button
 										onClick={() => handleDownload(entry)}
 										className="cursor-pointer p-2 rounded-md hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 transition-all duration-150 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"

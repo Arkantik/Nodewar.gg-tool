@@ -3,10 +3,11 @@ import { useTranslation } from "react-i18next";
 import { LuChartPie, LuPlay, LuSkull, LuSword } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import Icon from "../components/ui/Icon";
+import { formatSessionDate } from "../logic/date";
 import { useHistoryStore, type HistoryEntry } from "../logic/history-store";
 
 function HomePage() {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
 	const ensureLoaded = useHistoryStore((s) => s.ensureLoaded);
 	const [lastEntry, setLastEntry] = useState<HistoryEntry | null>(null);
@@ -41,7 +42,7 @@ function HomePage() {
 						<div className="min-w-0">
 							<p className="section-label mb-1">{t("home.lastSession.title")}</p>
 							<p className="text-xs text-gray-400">
-								{new Date(lastEntry.date).toLocaleDateString()} · {new Date(lastEntry.date).toLocaleTimeString()}
+								{formatSessionDate(lastEntry.date, i18n.language)} · {new Date(lastEntry.date).toLocaleTimeString()}
 							</p>
 						</div>
 						<div className="flex items-center gap-4 ml-auto shrink-0">

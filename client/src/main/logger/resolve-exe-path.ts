@@ -5,5 +5,5 @@ export function resolveLoggerExePath(): string {
   if (app.isPackaged) {
     return join(process.resourcesPath, "logger", "logger.exe");
   }
-  return join(app.getAppPath(), "..", "logger", "dist", "logger", "logger.exe");
+  return join(app.getAppPath(), "..", "logger", "dist", "logger.exe");
 }

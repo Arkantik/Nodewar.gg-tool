@@ -4,13 +4,15 @@ directories:
   output: dist
   buildResources: build
 
+afterPack: build/afterPack.js
+
 files:
   - out/**/*
   - package.json
 
 extraResources:
-  - from: ../logger/dist/logger
-    to: logger
+  - from: ../logger/dist/logger.exe
+    to: logger/logger.exe
   - from: ../dependencies
     to: dependencies
     filter:

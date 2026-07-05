@@ -10,17 +10,16 @@ files:
   - out/**/*
   - package.json
 
-extraResources:
-  - from: ../logger/dist/logger.exe
-    to: logger/logger.exe
-  - from: ../dependencies
-    to: dependencies
-    filter:
-      - npcap-*.exe
-
 win:
   icon: build/icon.png
   executableName: bdo-combat-logger-win_x64
+  extraResources:
+    - from: ../logger/dist/logger.exe
+      to: logger/logger.exe
+    - from: ../dependencies
+      to: dependencies
+      filter:
+        - npcap-*.exe
   target:
     - target: nsis
       arch: [x64]
@@ -34,6 +33,17 @@ nsis:
   allowElevation: true
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: always
+  artifactName: bdo-combat-installer-v${version}.${ext}
+
+linux:
+  icon: build/icon.png
+  executableName: bdo-combat-logger-linux_x64
+  extraResources:
+    - from: ../logger/dist/logger
+      to: logger/logger
+  target:
+    - target: AppImage
+      arch: [x64]
   artifactName: bdo-combat-installer-v${version}.${ext}
 
 publish:

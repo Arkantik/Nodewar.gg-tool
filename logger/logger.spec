@@ -1,7 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
+import os
 
 block_cipher = None
+icon_path = os.path.join('icon', 'icon.ico') if sys.platform == 'win32' else None
 
 
 a = Analysis(
@@ -41,5 +44,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icon\\icon.ico',
+    icon=icon_path,
 )

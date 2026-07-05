@@ -8,7 +8,17 @@ on:
 
 jobs:
   build-installer:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+            ext: exe
+          - os: ubuntu-latest
+            platform: linux
+            ext: AppImage
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -33,19 +43,29 @@ jobs:
           echo "Current version: $VERSION"
 
       - name: Create dependencies folder
+        if: matrix.platform == 'win'
         run: |
           New-Item -ItemType Directory -Force -Path dependencies | Out-Null
+        shell: powershell
 
       - name: Download Npcap installer
+        if: matrix.platform == 'win'
         run: |
           Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OutFile "dependencies\npcap-1.87.exe"
         shell: powershell
 
-      - name: Install UPX
+      - name: Install UPX (Windows)
+        if: matrix.platform == 'win'
         run: choco install upx -y
         shell: powershell
 
-      - name: Build Python logger
+      - name: Install UPX (Linux)
+        if: matrix.platform == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y upx-ucl
+        shell: bash
+
+      - name: Build Python logger (Windows)
+        if: matrix.platform == 'win'
         run: |
           cd logger
           python -m venv .venv
@@ -55,23 +75,50 @@ jobs:
           cd ..
         shell: powershell
 
+      - name: Build Python logger (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          cd logger
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install scapy pyinstaller
+          pyinstaller logger.spec -y
+          cd ..
+        shell: bash
+
+      - name: Grant capture permission (Linux)
+        if: matrix.platform == 'linux'
+        # See docs/BUILDING.md - this may not survive AppImage packaging;
+        # the manual `setcap` step documented for users is the fallback.
+        run: sudo setcap cap_net_raw+eip logger/dist/logger
+        shell: bash
+
       - name: Report Python logger size
+        if: matrix.platform == 'win'
         run: |
           $exe = Get-Item "logger\dist\logger.exe"
           "{0:N1} MB - logger.exe" -f ($exe.Length / 1MB)
         shell: powershell
 
+      - name: Report Python logger size (Linux)
+        if: matrix.platform == 'linux'
+        run: du -h logger/dist/logger
+        shell: bash
+
       - name: Install frontend/Electron dependencies
         run: |
           cd client
           npm ci
+        shell: bash
 
       - name: Build and package (installer + unpacked)
         run: |
           cd client
-          npm run build:win
+          npm run build:${{ matrix.platform }}
+        shell: bash
 
       - name: Report installed size breakdown
+        if: matrix.platform == 'win'
         run: |
           $root = "client\dist\win-unpacked"
           $total = (Get-ChildItem $root -Recurse -File | Measure-Object -Property Length -Sum).Sum
@@ -92,5 +139,5 @@ jobs:
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bdo-combat-logger-installer
-          path: client/dist/bdo-combat-installer-v${{ steps.get_version.outputs.VERSION }}.exe
+          name: bdo-combat-logger-installer-${{ matrix.platform }}
+          path: client/dist/bdo-combat-installer-v${{ steps.get_version.outputs.VERSION }}.${{ matrix.ext }}

@@ -14,10 +14,17 @@
             "title": "État du système",
             "subtitle": "Surveillez la configuration de votre logger"
         },
-        "npcap": {
-            "label": "Pilote Npcap",
-            "installed": "Installé",
-            "downloadNpcap": "Télécharger Npcap"
+        "capture": {
+            "windows": {
+                "label": "Pilote Npcap",
+                "installed": "Installé",
+                "downloadNpcap": "Télécharger Npcap"
+            },
+            "linux": {
+                "label": "Autorisation de capture",
+                "installed": "Accordée",
+                "helpText": "Exécutez : sudo setcap cap_net_raw+eip <chemin vers logger>"
+            }
         },
         "actions": {
             "record": {
@@ -125,7 +132,8 @@
                 "checkNpcap": "Vérifiez si Npcap est correctement installé :",
                 "openLogger": "Ouvrez le logger",
                 "checkStatus": "Vérifiez le message de statut sur l'écran d'accueil",
-                "downloadNpcap": "S'il indique \"Npcap n'est pas installé\", téléchargez et installez depuis"
+                "downloadNpcap": "S'il indique \"Npcap n'est pas installé\", téléchargez et installez depuis",
+                "linuxPermission": "Sous Linux, si la carte de statut indique une autorisation manquante, accordez-la une fois avec :"
             },
             "pathError": {
                 "title": "Erreur \"Le système ne peut pas trouver le chemin spécifié\"",

@@ -39,20 +39,21 @@ function HomePage() {
 						</div>
 
 						<StatusCard
-							label={t("home.npcap.label")}
-							isValid={status?.npcap_installed || false}
-							statusText={t("home.npcap.installed")}
-							statusIcon={status?.npcap_installed ? LuCheck : LuCircleAlert}
+							label={t(status?.capture_platform === "linux" ? "home.capture.linux.label" : "home.capture.windows.label")}
+							isValid={status?.capture_ready || false}
+							statusText={t(status?.capture_platform === "linux" ? "home.capture.linux.installed" : "home.capture.windows.installed")}
+							statusIcon={status?.capture_ready ? LuCheck : LuCircleAlert}
 							statusColor="bg-green-500/20"
 							loading={loading}
 							link={
-								!status?.npcap_installed
+								!status?.capture_ready && status?.capture_platform !== "linux"
 									? {
 											url: "https://npcap.com/dist/npcap-1.87.exe",
-											text: t("home.npcap.downloadNpcap"),
+											text: t("home.capture.windows.downloadNpcap"),
 										}
 									: undefined
 							}
+							helpText={!status?.capture_ready && status?.capture_platform === "linux" ? t("home.capture.linux.helpText") : undefined}
 						/>
 					</div>
 				</div>

@@ -13,9 +13,10 @@ interface StatusCardProps {
 		url: string;
 		text: string;
 	};
+	helpText?: string;
 }
 
-function StatusCard({ label, isValid, statusText, statusIcon, statusColor, loading = false, link }: StatusCardProps) {
+function StatusCard({ label, isValid, statusText, statusIcon, statusColor, loading = false, link, helpText }: StatusCardProps) {
 	return (
 		<div className="flex items-center gap-3">
 			<span className="text-sm font-medium text-gray-300">{label}</span>
@@ -36,6 +37,7 @@ function StatusCard({ label, isValid, statusText, statusIcon, statusColor, loadi
 							{link.text}
 						</button>
 					)}
+					{!loading && !link && helpText && <span className="text-xs font-mono text-gray-400">{helpText}</span>}
 				</div>
 			)}
 		</div>

@@ -6,10 +6,23 @@ Get up and running in under 5 minutes.
 
 ## 1️⃣ Install
 
-1. Download the latest installer from the [Releases page](https://github.com/Arkantik/Nodewar.gg-tool/releases/latest)
+### Windows
+
+1. Download the latest `.exe` installer from the [Releases page](https://github.com/Arkantik/Nodewar.gg-tool/releases/latest)
 2. **Right-click** `bdo-combat-installer.exe` and select **Run as administrator**
 3. If Windows SmartScreen warns you, click **More info** → **Run anyway** (expected for unsigned open-source apps - see the [README](../README.md#-installation) for why)
 4. Follow the installer - it also installs the Npcap driver for you, so there's nothing else to set up
+
+### Linux
+
+1. Download the latest `.AppImage` from the [Releases page](https://github.com/Arkantik/Nodewar.gg-tool/releases/latest)
+2. Make it executable and run it: `chmod +x bdo-combat-installer-*.AppImage && ./bdo-combat-installer-*.AppImage`
+3. Grant the bundled logger permission to capture packets once (there's no Npcap
+   driver on Linux - it uses libpcap directly, gated by the `cap_net_raw`
+   capability): the home screen's status card will say "Capture Permission" is
+   missing until you run
+   `sudo setcap cap_net_raw+eip <path-to-logger>` (see [BUILDING.md](BUILDING.md#-building-on-linux)
+   for how to locate the extracted path)
 
 ## 2️⃣ Record Your First Session
 

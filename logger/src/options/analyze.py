@@ -1,7 +1,9 @@
 import os
 import re
+import sys
 from scapy.all import sniff, rdpcap, get_if_list
-from scapy.arch.windows import get_windows_if_list
+if sys.platform == "win32":
+    from scapy.arch.windows import get_windows_if_list
 from time import localtime, strftime
 from .. import config
 
@@ -161,14 +163,19 @@ def open_pcap(file, output, ip_filter=True):
     print(f"Logs saved under: {output}\nYou can close this window now.", flush=True)
 
 
-def start_sniff(output, all_interfaces=True, ip_filter=True):
-    try:
-        print("Reading Network...", flush=True)
+def read_network_interfaces():
+    if sys.platform == "win32":
         winList = get_windows_if_list()
         intfList = get_if_list()
         guidToNameDict = {e["guid"]: e["name"] for e in winList}
-        namesAllowedList = [guidToNameDict.get(e) for e in intfList]
-        namesAllowedList = list(filter(None, namesAllowedList))
+        return list(filter(None, [guidToNameDict.get(e) for e in intfList]))
+    return get_if_list()
+
+
+def start_sniff(output, all_interfaces=True, ip_filter=True):
+    try:
+        print("Reading Network...", flush=True)
+        namesAllowedList = read_network_interfaces()
         # print("Network Interfaces: ", namesAllowedList, flush=True)
         sniff(
             filter="tcp",

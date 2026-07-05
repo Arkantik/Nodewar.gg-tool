@@ -14,10 +14,17 @@
             "title": "Systemstatus",
             "subtitle": "Überwachen Sie Ihre Logger-Konfiguration"
         },
-        "npcap": {
-            "label": "Npcap-Treiber",
-            "installed": "Installiert",
-            "downloadNpcap": "Npcap herunterladen"
+        "capture": {
+            "windows": {
+                "label": "Npcap-Treiber",
+                "installed": "Installiert",
+                "downloadNpcap": "Npcap herunterladen"
+            },
+            "linux": {
+                "label": "Aufnahmeberechtigung",
+                "installed": "Erteilt",
+                "helpText": "Ausführen: sudo setcap cap_net_raw+eip <Pfad zum Logger>"
+            }
         },
         "actions": {
             "record": {
@@ -125,7 +132,8 @@
                 "checkNpcap": "Überprüfen Sie, ob Npcap richtig installiert ist:",
                 "openLogger": "Öffnen Sie den Logger",
                 "checkStatus": "Überprüfen Sie die Statusmeldung auf dem Startbildschirm",
-                "downloadNpcap": "Wenn \"Npcap ist nicht installiert\" angezeigt wird, laden Sie es herunter und installieren Sie es von"
+                "downloadNpcap": "Wenn \"Npcap ist nicht installiert\" angezeigt wird, laden Sie es herunter und installieren Sie es von",
+                "linuxPermission": "Unter Linux, wenn die Statuskarte eine fehlende Berechtigung anzeigt, erteilen Sie sie einmalig mit:"
             },
             "pathError": {
                 "title": "\"Das System kann den angegebenen Pfad nicht finden\" Fehler",

@@ -14,10 +14,17 @@
             "title": "System Status",
             "subtitle": "Monitor your logger configuration"
         },
-        "npcap": {
-            "label": "Npcap Driver",
-            "installed": "Installed",
-            "downloadNpcap": "Download Npcap"
+        "capture": {
+            "windows": {
+                "label": "Npcap Driver",
+                "installed": "Installed",
+                "downloadNpcap": "Download Npcap"
+            },
+            "linux": {
+                "label": "Capture Permission",
+                "installed": "Granted",
+                "helpText": "Run: sudo setcap cap_net_raw+eip <path to logger>"
+            }
         },
         "actions": {
             "record": {
@@ -125,7 +132,8 @@
                 "checkNpcap": "Check if Npcap is properly installed:",
                 "openLogger": "Open the logger",
                 "checkStatus": "Check the status message on the home screen",
-                "downloadNpcap": "If it says \"Npcap is not installed\", download and install from"
+                "downloadNpcap": "If it says \"Npcap is not installed\", download and install from",
+                "linuxPermission": "On Linux, if the status card says permission is missing, grant it once with:"
             },
             "pathError": {
                 "title": "\"The system cannot find the path specified\" Error",

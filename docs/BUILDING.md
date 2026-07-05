@@ -125,6 +125,42 @@ When you distribute `bdo-combat-installer-v<version>.exe`, users:
 
 ---
 
+## 🐧 Building on Linux
+
+There's no `setup-wizard.bat` equivalent for Linux yet - build from the command line:
+
+```bash
+# 1. Build the Python logger
+cd logger
+python3 -m venv .venv
+source .venv/bin/activate
+pip install scapy pyinstaller
+pyinstaller logger.spec -y
+cd ..
+
+# 2. Build and package the Electron app as an AppImage
+cd client
+npm ci
+npm run build:linux
+```
+
+The AppImage will be at `client/dist/bdo-combat-installer-v<version>.AppImage`.
+
+There's no Npcap equivalent to install - Linux uses libpcap directly, so packet
+capture instead needs the `logger` binary to be granted the `cap_net_raw`
+capability (or run as root). After building, grant it once:
+
+```bash
+sudo setcap cap_net_raw+eip logger/dist/logger
+```
+
+If you're running the packaged AppImage instead of a locally-built `logger/dist/logger`,
+extract it first (`./bdo-combat-installer-v<version>.AppImage --appimage-extract`)
+and point `setcap` at `squashfs-root/resources/logger/logger`. The in-app status
+card on the home screen will tell you if this permission is still missing.
+
+---
+
 ## 🔧 Troubleshooting
 
 ### Build Fails?

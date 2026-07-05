@@ -14,10 +14,17 @@
             "title": "Estado del sistema",
             "subtitle": "Monitorea la configuración de tu logger"
         },
-        "npcap": {
-            "label": "Controlador Npcap",
-            "installed": "Instalado",
-            "downloadNpcap": "Descargar Npcap"
+        "capture": {
+            "windows": {
+                "label": "Controlador Npcap",
+                "installed": "Instalado",
+                "downloadNpcap": "Descargar Npcap"
+            },
+            "linux": {
+                "label": "Permiso de captura",
+                "installed": "Concedido",
+                "helpText": "Ejecuta: sudo setcap cap_net_raw+eip <ruta al logger>"
+            }
         },
         "actions": {
             "record": {
@@ -125,7 +132,8 @@
                 "checkNpcap": "Verifica si Npcap está instalado correctamente:",
                 "openLogger": "Abre el logger",
                 "checkStatus": "Verifica el mensaje de estado en la pantalla de inicio",
-                "downloadNpcap": "Si dice \"Npcap no está instalado\", descárgalo e instálalo desde"
+                "downloadNpcap": "Si dice \"Npcap no está instalado\", descárgalo e instálalo desde",
+                "linuxPermission": "En Linux, si la tarjeta de estado indica que falta el permiso, concédelo una vez con:"
             },
             "pathError": {
                 "title": "Error \"El sistema no puede encontrar la ruta especificada\"",

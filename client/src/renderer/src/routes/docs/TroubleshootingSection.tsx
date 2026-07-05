@@ -34,6 +34,9 @@ function TroubleshootingSection({ registerRef }: TroubleshootingSectionProps) {
 									npcap.com
 								</a>
 							</li>
+							<li>
+								{t("docs.troubleshooting.startupIssues.linuxPermission")} <span className="font-mono text-cta-400">sudo setcap cap_net_raw+eip &lt;path to logger&gt;</span>
+							</li>
 						</ul>
 					</li>
 				</ol>

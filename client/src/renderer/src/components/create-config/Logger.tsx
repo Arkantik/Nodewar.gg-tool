@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSettings, LuSave, LuUpload, LuX } from "react-icons/lu";
 import { List, type RowComponentProps } from "react-window";
-import { open_save_location } from "../../logic/file";
-import { useHistoryStore } from "../../logic/history-store";
+import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets } from "../../logic/offsetHeuristics";
+import { saveLogsToFile } from "../../logic/saveLogsToFile";
+import { useSaveLogsToHistory } from "../../logic/useSaveLogsToHistory";
 import { useNameIndices } from "../../logic/useNameIndices";
-import { find_all_indicies, mostFrequent } from "../../logic/util";
+import { mostFrequent } from "../../logic/util";
 import { ModalManager } from "../modal/modal-store";
 import Button from "../ui/Button";
 import Checkbox from "../ui/Checkbox";
@@ -13,7 +14,6 @@ import Icon from "../ui/Icon";
 import LoadingIndicator from "../ui/LoadingIndicator";
 import {
   get_date,
-  get_formatted_date,
   hexToString,
   type Config,
   type LogType,
@@ -84,7 +84,7 @@ function Logger({
   const [autoScroll, setAutoScroll] = useState(true);
   const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
   const updateConfig = useConfigStore((s) => s.updateConfig);
-  const addHistoryEntry = useHistoryStore((s) => s.addEntry);
+  const saveLogsToHistory = useSaveLogsToHistory();
 
   useEffect(() => {
     (async () => {
@@ -142,43 +142,8 @@ function Logger({
   }
 
   async function calculateConfig() {
-    let newPossibleNameOffsets = possibleNameOffsets.map((list) =>
-      list.map((n) => ({ ...n, count: 0 })),
-    );
-
-    for (const log of logs) {
-      for (let i = 0; i < log.names.length; i++) {
-        const name = log.names[i];
-        if (newPossibleNameOffsets[i]) {
-          const index = newPossibleNameOffsets[i].findIndex(
-            (n) => n.offset === name.offset,
-          );
-          index !== -1
-            ? newPossibleNameOffsets[i][index].count++
-            : newPossibleNameOffsets[i].push({ offset: name.offset, count: 1 });
-        } else {
-          newPossibleNameOffsets[i] = [{ offset: name.offset, count: 1 }];
-        }
-      }
-    }
-
-    for (let i = 0; i < newPossibleNameOffsets.length; i++) {
-      newPossibleNameOffsets[i] = newPossibleNameOffsets[i].sort(
-        (a, b) => b.count - a.count,
-      );
-    }
-
-    const identifiers = new Map<string, number>();
-    for (const log of logs) {
-      identifiers.set(
-        log.identifier,
-        (identifiers.get(log.identifier) || 0) + 1,
-      );
-    }
-
-    const identifier = Array.from(identifiers.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map((a) => a[0])[0];
+    const newPossibleNameOffsets = rankNameOffsets(logs, possibleNameOffsets);
+    const identifier = findMostFrequentIdentifier(logs);
 
     setPossibleNameOffsets(newPossibleNameOffsets);
     await updateConfigWrapper(identifier);
@@ -205,35 +170,6 @@ function Logger({
 
     const updated = await updateConfig(newConfig);
     setConfig(updated);
-  }
-
-  function findKillOffset(logs: LogType[]) {
-    const allIndicies: number[] = [];
-    for (const log of logs) {
-      let indicies = find_all_indicies(log.hex, "01");
-      indicies = indicies.filter((index) =>
-        log.names.every((n) => index > n.offset + 64 || index < n.offset),
-      );
-      allIndicies.push(...indicies);
-    }
-
-    const possibleKillOffsetsMap = new Map<number, number>();
-    for (const log of logs) {
-      for (const index of allIndicies) {
-        if (log.hex.slice(index, index + 2) === "00") {
-          possibleKillOffsetsMap.set(
-            index,
-            (possibleKillOffsetsMap.get(index) || 0) + 1,
-          );
-        }
-      }
-    }
-
-    const sorted = Array.from(possibleKillOffsetsMap.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map((a) => a[0] + 1);
-
-    return sorted;
   }
 
   function getName(i: number, log: LogType) {
@@ -292,33 +228,21 @@ function Logger({
   }
 
   async function saveLogs() {
-    const path = await open_save_location(
-      get_formatted_date(get_date()) + ".log",
-    );
-    if (!path) return;
     const text = getLogsString();
-    await window.api.fs.writeFile(path, text);
+    const path = await saveLogsToFile(text);
+    if (!path) return;
 
     if (!saveToHistory) return;
 
-    let kills = 0;
-    let deaths = 0;
-    for (const log of logs) {
-      const killOffset = possibleKillOffsets[killIndex];
-      if (killOffset !== undefined && log.hex.length > killOffset) {
-        log.hex[killOffset] === "1" ? kills++ : deaths++;
-      }
-    }
-    const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
+    const { kills, deaths, kdr } = stats ?? { kills: 0, deaths: 0, kdr: 0 };
 
-    await addHistoryEntry({
-      date: new Date().toISOString(),
+    await saveLogsToHistory({
+      text,
       kills,
       deaths,
       kdr,
       topGuild: mostFrequent(logs.map((log) => log.names[guildIndex]?.name)),
       topEnemy: mostFrequent(logs.map((log) => log.names[playerTwoIndex]?.name)),
-      logText: text,
     });
   }
 

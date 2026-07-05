@@ -10,6 +10,7 @@ import GuildStats from "../components/ui/GuildStats";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import StatCard from "../components/ui/StatCard";
+import { appendUniqueLog, parseLoggerLine } from "../logic/logParsing";
 import { mostFrequent } from "../logic/util";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
 
@@ -44,24 +45,9 @@ function RecordPage() {
 
 			const loggerCallback: LoggerSessionCallback = (data, status) => {
 				if (status === "running") {
-					const d = data.split(",");
-					if (d.length === 8 && !data.includes("Network Interfaces:")) {
-						const newLog: LogType = {
-							identifier: d[0],
-							time: d[1],
-							names: d.slice(2, 7).map((name) => {
-								const split = name.split(" ");
-								return { name: split[0], offset: +split[1] };
-							}),
-							hex: d[7],
-						};
-
-						setLogs((prevLogs) => {
-							const exists = prevLogs.find((log) => log.identifier === newLog.identifier && log.time === newLog.time && log.names.length === newLog.names.length && log.names.every((name, i) => name.name === newLog.names[i].name));
-
-							if (exists) return prevLogs;
-							return [...prevLogs, newLog];
-						});
+					const newLog = parseLoggerLine(data);
+					if (newLog) {
+						setLogs((prevLogs) => appendUniqueLog(prevLogs, newLog));
 					} else if (data.includes("Error while reading network.")) {
 						alert(tRef.current("record.errors.networkError"));
 					}

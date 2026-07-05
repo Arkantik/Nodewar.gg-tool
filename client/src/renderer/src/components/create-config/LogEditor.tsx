@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSave, LuUpload, LuX } from "react-icons/lu";
 import { List, type RowComponentProps } from "react-window";
-import { open_save_location } from "../../logic/file";
-import { useHistoryStore } from "../../logic/history-store";
+import { saveLogsToFile } from "../../logic/saveLogsToFile";
+import { useSaveLogsToHistory } from "../../logic/useSaveLogsToHistory";
 import { useNameIndices } from "../../logic/useNameIndices";
 import { mostFrequent } from "../../logic/util";
 import Button from "../ui/Button";
 import Icon from "../ui/Icon";
 import LoadingIndicator from "../ui/LoadingIndicator";
-import { get_date, get_formatted_date, type Log } from "./config";
+import type { Log } from "./config";
 import { useConfigStore } from "./config-store";
 import Select from "./Select";
 
@@ -49,7 +49,7 @@ function LogEditor({
     useNameIndices(onIndicesChange);
   const config = useConfigStore((s) => s.config);
   const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
-  const addHistoryEntry = useHistoryStore((s) => s.addEntry);
+  const saveLogsToHistory = useSaveLogsToHistory();
 
   useEffect(() => {
     ensureConfigLoaded();
@@ -84,25 +84,21 @@ function LogEditor({
   }
 
   async function saveLogs() {
-    const path = await open_save_location(
-      get_formatted_date(get_date()) + ".log",
-    );
-    if (!path) return;
     const text = getLogsString();
-    await window.api.fs.writeFile(path, text);
+    const path = await saveLogsToFile(text);
+    if (!path) return;
 
     const kills = logs.filter((log) => log.kill).length;
     const deaths = logs.length - kills;
     const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
 
-    await addHistoryEntry({
-      date: new Date().toISOString(),
+    await saveLogsToHistory({
+      text,
       kills,
       deaths,
       kdr,
       topGuild: mostFrequent(logs.map((log) => log.names[guildIndex])),
       topEnemy: mostFrequent(logs.map((log) => log.names[playerTwoIndex])),
-      logText: text,
     });
   }
 

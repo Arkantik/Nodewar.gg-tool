@@ -14,32 +14,13 @@ import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { open_file } from "../logic/file";
+import { appendUniqueLog, parseLoggerLine, parseTextLog } from "../logic/logParsing";
 import { useElementHeight } from "../logic/useElementHeight";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
-
-const LOG_REGEX = /\[(.+)\] (\w+) (died to|has killed|killed|was slain by) (\w+) (?:from|of|from the) (?:the )?(\w+|-1)(?: \((\w+),(\w+)\))?/;
 
 interface OpenPageNavState {
 	logText?: string;
 	fileName?: string;
-}
-
-function parseTextLog(data: string): Log[] {
-	const lines = data.split("\n");
-	const newCombatLogs: Log[] = [];
-
-	for (const line of lines) {
-		const match = line.match(LOG_REGEX);
-		if (match) {
-			newCombatLogs.push({
-				time: match[1],
-				names: [match[2], match[4], match[5], match[6] || "", match[7] || ""].filter((n) => n),
-				kill: match[3] === "has killed" || match[3] === "killed",
-			});
-		}
-	}
-
-	return newCombatLogs;
 }
 
 function OpenPage() {
@@ -78,25 +59,8 @@ function OpenPage() {
 
 	const loggerCallback: LoggerSessionCallback = (data, status) => {
 		if (status === "running") {
-			const d = data.split(",");
-			if (d.length === 8 && !data.includes("Network Interfaces:")) {
-				const newLog: LogType = {
-					identifier: d[0],
-					time: d[1],
-					names: d.slice(2, 7).map((name) => {
-						const split = name.split(" ");
-						return { name: split[0], offset: +split[1] };
-					}),
-					hex: d[7],
-				};
-
-				setLogs((prevLogs) => {
-					const exists = prevLogs.find((log) => log.identifier === newLog.identifier && log.time === newLog.time && log.names.length === newLog.names.length && log.names.every((name, i) => name.name === newLog.names[i].name));
-
-					if (exists) return prevLogs;
-					return [...prevLogs, newLog];
-				});
-			}
+			const newLog = parseLoggerLine(data);
+			if (newLog) setLogs((prevLogs) => appendUniqueLog(prevLogs, newLog));
 		} else if (status === "error") {
 			console.error(data);
 			setLoading(false);

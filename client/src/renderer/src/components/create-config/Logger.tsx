@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSettings, LuSave, LuUpload, LuX } from "react-icons/lu";
 import { List, type RowComponentProps } from "react-window";
+import { getNetworkDeathLogs } from "../../logic/deathLogs";
 import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets } from "../../logic/offsetHeuristics";
 import { saveLogsToFile } from "../../logic/saveLogsToFile";
 import { useSaveLogsToHistory } from "../../logic/useSaveLogsToHistory";
@@ -242,13 +243,15 @@ function Logger({
 
     const { kills, deaths, kdr } = stats ?? { kills: 0, deaths: 0, kdr: 0 };
 
+    const deathLogs = getNetworkDeathLogs(logs, possibleKillOffsets[killIndex]);
+
     await saveLogsToHistory({
       text,
       kills,
       deaths,
       kdr,
       topGuild: mostFrequent(logs.map((log) => log.names[guildIndex]?.name)),
-      topEnemy: mostFrequent(logs.map((log) => log.names[playerTwoIndex]?.name)),
+      topEnemy: mostFrequent(deathLogs.map((log) => log.names[playerTwoIndex]?.name)),
     });
   }
 
@@ -392,7 +395,7 @@ function Logger({
           onClick={handleUploadToNodewar}
           disabled={disabled}
           size="md"
-          color="gradient"
+          color="outline"
         >
           <Icon icon={LuUpload} size="sm" className="mr-2" />
           {t("logger.uploadToNodewarGG")}

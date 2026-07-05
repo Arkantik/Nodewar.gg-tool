@@ -71,7 +71,7 @@
             "events": "Eventos",
             "kills": "Asesinatos",
             "deaths": "Muertes",
-            "kdRatio": "Ratio K/D"
+            "kdRatio": "K/D"
         },
         "status": {
             "recording": "Grabando",
@@ -82,7 +82,7 @@
             "title": "Resumen de la sesión",
             "summary": "{{duration}} · {{kills}} asesinatos · {{deaths}} muertes · {{kdr}} K/D",
             "topGuild": "Gremio enemigo más frecuente: {{guild}}",
-            "topEnemy": "Enemigo más frecuente: {{enemy}}"
+            "topEnemy": "Enemigo más letal: {{enemy}}"
         },
         "errors": {
             "networkError": "Error al leer la red. Por favor, notifícame en Discord.",
@@ -277,7 +277,7 @@
         "delete": "Eliminar",
         "confirmDelete": "¿Eliminar esta sesión del historial? Esta acción no se puede deshacer.",
         "topGuild": "Gremio principal: {{guild}}",
-        "topEnemy": "Más frecuente: {{enemy}}"
+        "topEnemy": "Más letal: {{enemy}}"
     },
     "common": {
         "killed": "mató",

@@ -10,6 +10,7 @@ import GuildStats from "../components/ui/GuildStats";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import StatCard from "../components/ui/StatCard";
+import { getNetworkDeathLogs } from "../logic/deathLogs";
 import { appendUniqueLog, parseLoggerLine } from "../logic/logParsing";
 import { mostFrequent } from "../logic/util";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
@@ -88,18 +89,15 @@ function RecordPage() {
 		setSessionActive(false);
 	};
 
+	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
+
 	const recap = useMemo(() => {
 		if (sessionActive) return null;
 		return {
 			topGuild: mostFrequent(logs.map((log) => log.names[guildStatsKey.guild]?.name)),
-			topEnemy: mostFrequent(logs.map((log) => log.names[guildStatsKey.playerTwo]?.name)),
+			topEnemy: mostFrequent(deathLogs.map((log) => log.names[guildStatsKey.playerTwo]?.name)),
 		};
-	}, [sessionActive, logs, guildStatsKey]);
-
-	const deathLogs = useMemo(() => {
-		if (killOffset === undefined) return [];
-		return logs.filter((log) => log.hex.length > killOffset && log.hex[killOffset] !== "1");
-	}, [logs, killOffset]);
+	}, [sessionActive, logs, deathLogs, guildStatsKey]);
 
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">

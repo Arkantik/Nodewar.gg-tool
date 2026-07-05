@@ -71,7 +71,7 @@
             "events": "Événements",
             "kills": "Éliminations",
             "deaths": "Morts",
-            "kdRatio": "Ratio K/D"
+            "kdRatio": "K/D"
         },
         "status": {
             "recording": "Enregistrement",
@@ -82,7 +82,7 @@
             "title": "Récapitulatif de session",
             "summary": "{{duration}} · {{kills}} éliminations · {{deaths}} morts · {{kdr}} K/D",
             "topGuild": "Guilde ennemie la plus rencontrée : {{guild}}",
-            "topEnemy": "Ennemi le plus rencontré : {{enemy}}"
+            "topEnemy": "Ennemi le plus meurtrier : {{enemy}}"
         },
         "errors": {
             "networkError": "Erreur lors de la lecture du réseau. Veuillez me notifier sur Discord.",
@@ -277,7 +277,7 @@
         "delete": "Supprimer",
         "confirmDelete": "Supprimer cette session de l'historique ? Cette action est irréversible.",
         "topGuild": "Guilde principale : {{guild}}",
-        "topEnemy": "Le plus rencontré : {{enemy}}"
+        "topEnemy": "Le plus meurtrier : {{enemy}}"
     },
     "common": {
         "killed": "a tué",

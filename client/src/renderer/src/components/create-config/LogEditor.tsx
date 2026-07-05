@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSave, LuUpload, LuX } from "react-icons/lu";
 import { List, type RowComponentProps } from "react-window";
+import { getCombatDeathLogs } from "../../logic/deathLogs";
 import { saveLogsToFile } from "../../logic/saveLogsToFile";
 import { useSaveLogsToHistory } from "../../logic/useSaveLogsToHistory";
 import { useNameIndices } from "../../logic/useNameIndices";
@@ -91,6 +92,7 @@ function LogEditor({
     const kills = logs.filter((log) => log.kill).length;
     const deaths = logs.length - kills;
     const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
+    const deathLogs = getCombatDeathLogs(logs);
 
     await saveLogsToHistory({
       text,
@@ -98,7 +100,7 @@ function LogEditor({
       deaths,
       kdr,
       topGuild: mostFrequent(logs.map((log) => log.names[guildIndex])),
-      topEnemy: mostFrequent(logs.map((log) => log.names[playerTwoIndex])),
+      topEnemy: mostFrequent(deathLogs.map((log) => log.names[playerTwoIndex])),
     });
   }
 
@@ -192,7 +194,7 @@ function LogEditor({
           onClick={handleUploadToNodewar}
           disabled={disabled}
           size="md"
-          color="gradient"
+          color="outline"
         >
           <Icon icon={LuUpload} size="sm" className="mr-2" />
           {t("logger.uploadToNodewarGG")}

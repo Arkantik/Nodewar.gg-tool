@@ -71,7 +71,7 @@
             "events": "Ereignisse",
             "kills": "Kills",
             "deaths": "Tode",
-            "kdRatio": "K/D-Verhältnis"
+            "kdRatio": "K/D"
         },
         "status": {
             "recording": "Aufnahme läuft",
@@ -82,7 +82,7 @@
             "title": "Sitzungszusammenfassung",
             "summary": "{{duration}} · {{kills}} Kills · {{deaths}} Tode · {{kdr}} K/D",
             "topGuild": "Häufigste gegnerische Gilde: {{guild}}",
-            "topEnemy": "Am häufigsten getroffener Gegner: {{enemy}}"
+            "topEnemy": "Tödlichster Gegner: {{enemy}}"
         },
         "errors": {
             "networkError": "Fehler beim Lesen des Netzwerks. Bitte informiere mich auf Discord.",
@@ -277,7 +277,7 @@
         "delete": "Löschen",
         "confirmDelete": "Diese Sitzung aus dem Verlauf löschen? Dies kann nicht rückgängig gemacht werden.",
         "topGuild": "Top-Gilde: {{guild}}",
-        "topEnemy": "Am häufigsten: {{enemy}}"
+        "topEnemy": "Tödlichster: {{enemy}}"
     },
     "common": {
         "killed": "getötet",

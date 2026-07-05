@@ -11,6 +11,7 @@ import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { DemoLogGenerator } from "../logic/demoGenerator";
+import { getNetworkDeathLogs } from "../logic/deathLogs";
 import { useElementHeight } from "../logic/useElementHeight";
 
 function DemoPage() {
@@ -62,10 +63,7 @@ function DemoPage() {
 		setStats({ kills: 0, deaths: 0, kdr: 0 });
 	};
 
-	const deathLogs = useMemo(() => {
-		if (killOffset === undefined) return [];
-		return logs.filter((log) => log.hex.length > killOffset && log.hex[killOffset] !== "1");
-	}, [logs, killOffset]);
+	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
 
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">

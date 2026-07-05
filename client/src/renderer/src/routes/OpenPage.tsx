@@ -13,6 +13,7 @@ import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
+import { getCombatDeathLogs, getNetworkDeathLogs } from "../logic/deathLogs";
 import { open_file } from "../logic/file";
 import { appendUniqueLog, parseLoggerLine, parseTextLog } from "../logic/logParsing";
 import { useElementHeight } from "../logic/useElementHeight";
@@ -59,11 +60,8 @@ function OpenPage() {
 	}, [isNetwork, logs, combatLogs]);
 
 	const deathLogs: NamedLog[] = useMemo(() => {
-		if (isNetwork) {
-			if (killOffset === undefined) return [];
-			return logs.filter((log) => log.hex.length > killOffset && log.hex[killOffset] !== "1");
-		}
-		return combatLogs.filter((log) => !log.kill).map((log) => ({ names: log.names.map((name) => ({ name })) }));
+		if (isNetwork) return getNetworkDeathLogs(logs, killOffset);
+		return getCombatDeathLogs(combatLogs).map((log) => ({ names: log.names.map((name) => ({ name })) }));
 	}, [isNetwork, logs, combatLogs, killOffset]);
 
 	const loggerCallback: LoggerSessionCallback = (data, status) => {

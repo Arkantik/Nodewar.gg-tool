@@ -71,7 +71,7 @@
             "events": "Events",
             "kills": "Kills",
             "deaths": "Deaths",
-            "kdRatio": "K/D Ratio"
+            "kdRatio": "K/D"
         },
         "status": {
             "recording": "Recording",
@@ -82,7 +82,7 @@
             "title": "Session Recap",
             "summary": "{{duration}} · {{kills}} kills · {{deaths}} deaths · {{kdr}} K/D",
             "topGuild": "Top guild fought: {{guild}}",
-            "topEnemy": "Most encountered enemy: {{enemy}}"
+            "topEnemy": "Deadliest enemy: {{enemy}}"
         },
         "errors": {
             "networkError": "Error while reading network. Please notify me on Discord.",
@@ -277,7 +277,7 @@
         "delete": "Delete",
         "confirmDelete": "Delete this session from history? This cannot be undone.",
         "topGuild": "Top guild: {{guild}}",
-        "topEnemy": "Most encountered: {{enemy}}"
+        "topEnemy": "Deadliest: {{enemy}}"
     },
     "common": {
         "killed": "killed",

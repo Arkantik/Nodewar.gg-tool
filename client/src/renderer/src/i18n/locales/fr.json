@@ -272,6 +272,7 @@
         "title": "Historique des sessions",
         "subtitle": "Vos 7 dernières sessions enregistrées",
         "empty": "Aucune session enregistrée pour le moment",
+        "open": "Ouvrir",
         "download": "Télécharger le .log",
         "delete": "Supprimer",
         "confirmDelete": "Supprimer cette session de l'historique ? Cette action est irréversible.",

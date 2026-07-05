@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuUsers } from "react-icons/lu";
-import type { LogType } from "../create-config/config";
+import type { NamedLog } from "../create-config/config";
 import Icon from "./Icon";
 
 interface GuildStatsProps {
-	logs: LogType[];
+	logs: NamedLog[];
 	guildIndex: number;
 	playerIndex: number;
 }

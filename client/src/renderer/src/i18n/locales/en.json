@@ -272,6 +272,7 @@
         "title": "Session History",
         "subtitle": "Your last 7 recorded sessions",
         "empty": "No sessions saved yet",
+        "open": "Open",
         "download": "Download .log",
         "delete": "Delete",
         "confirmDelete": "Delete this session from history? This cannot be undone.",

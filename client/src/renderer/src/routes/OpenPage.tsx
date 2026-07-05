@@ -1,31 +1,77 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuActivity, LuChartPie, LuFileText, LuFolder, LuSkull, LuSword } from "react-icons/lu";
-import type { Log, LogType } from "../components/create-config/config";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { Log, LogType, NamedLog } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
 import LogEditor from "../components/create-config/LogEditor";
 import Logger from "../components/create-config/Logger";
 import Button from "../components/ui/Button";
+import EnemyStats from "../components/ui/EnemyStats";
+import GuildStats from "../components/ui/GuildStats";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { open_file } from "../logic/file";
+import { useElementHeight } from "../logic/useElementHeight";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
 
 const LOG_REGEX = /\[(.+)\] (\w+) (died to|has killed|killed|was slain by) (\w+) (?:from|of|from the) (?:the )?(\w+|-1)(?: \((\w+),(\w+)\))?/;
 
+interface OpenPageNavState {
+	logText?: string;
+	fileName?: string;
+}
+
+function parseTextLog(data: string): Log[] {
+	const lines = data.split("\n");
+	const newCombatLogs: Log[] = [];
+
+	for (const line of lines) {
+		const match = line.match(LOG_REGEX);
+		if (match) {
+			newCombatLogs.push({
+				time: match[1],
+				names: [match[2], match[4], match[5], match[6] || "", match[7] || ""].filter((n) => n),
+				kill: match[3] === "has killed" || match[3] === "killed",
+			});
+		}
+	}
+
+	return newCombatLogs;
+}
+
 function OpenPage() {
 	const { t } = useTranslation();
+	const location = useLocation();
+	const navigate = useNavigate();
 	const [logs, setLogs] = useState<LogType[]>([]);
 	const [combatLogs, setCombatLogs] = useState<Log[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [isNetwork, setIsNetwork] = useState(false);
 	const [fileName, setFileName] = useState<string>("");
 	const [stats, setStats] = useState({ kills: 0, deaths: 0, kdr: 0 });
+	const [guildStatsKey, setGuildStatsKey] = useState({ playerTwo: 1, guild: 2 });
 	const [timelineKey, setTimelineKey] = useState(0);
 	const { start } = useLoggerSession();
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
+	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
+
+	useEffect(() => {
+		const state = location.state as OpenPageNavState | null;
+		if (!state?.logText) return;
+
+		setLogs([]);
+		setIsNetwork(false);
+		setFileName(state.fileName ?? "");
+		setCombatLogs(parseTextLog(state.logText));
+		setStats({ kills: 0, deaths: 0, kdr: 0 });
+		setGuildStatsKey({ playerTwo: 1, guild: 2 });
+		setTimelineKey((prev) => prev + 1);
+
+		navigate(location.pathname, { replace: true, state: null });
+	}, [location.state, location.pathname, navigate]);
 
 	useEffect(() => {
 		if (!isNetwork && combatLogs.length > 0) {
@@ -40,6 +86,10 @@ function OpenPage() {
 			setStats({ kills, deaths, kdr });
 		}
 	}, [combatLogs, isNetwork]);
+
+	const namedLogs: NamedLog[] = useMemo(() => {
+		return isNetwork ? logs : combatLogs.map((log) => ({ names: log.names.map((name) => ({ name })) }));
+	}, [isNetwork, logs, combatLogs]);
 
 	const loggerCallback: LoggerSessionCallback = (data, status) => {
 		if (status === "running") {
@@ -75,6 +125,7 @@ function OpenPage() {
 		setCombatLogs([]);
 		setFileName("");
 		setStats({ kills: 0, deaths: 0, kdr: 0 });
+		setGuildStatsKey({ playerTwo: 1, guild: 2 });
 		setTimelineKey((prev) => prev + 1);
 
 		const filePaths = await open_file();
@@ -91,22 +142,7 @@ function OpenPage() {
 			const data = await window.api.fs.readTextFile(filePath);
 			if (!data) return;
 
-			const lines = data.split("\n");
-			const newCombatLogs: Log[] = [];
-
-			for (const line of lines) {
-				const match = line.match(LOG_REGEX);
-				if (match) {
-					const newCombatLog: Log = {
-						time: match[1],
-						names: [match[2], match[4], match[5], match[6] || "", match[7] || ""].filter((n) => n),
-						kill: match[3] === "has killed" || match[3] === "killed",
-					};
-					newCombatLogs.push(newCombatLog);
-				}
-			}
-
-			setCombatLogs(newCombatLogs);
+			setCombatLogs(parseTextLog(data));
 		} else {
 			setIsNetwork(true);
 			setLoading(true);
@@ -124,38 +160,53 @@ function OpenPage() {
 		setCombatLogs((prevLogs) => prevLogs.filter((_, i) => i !== index));
 	};
 
+	const handleIndicesChange = (indices: { playerTwo: number; guild: number }) => {
+		setGuildStatsKey(indices);
+	};
+
 	return (
-		<div className="flex flex-col h-full w-full p-8 gap-4">
-			<PageHeader
-				icon={fileName ? LuFileText : LuFolder}
-				title={t("open.fileSelection.selectedFile")}
-				subtitle={fileName || t("open.fileSelection.noFileSelected")}
-				action={
-					<Button onClick={openPcap} size="sm" color="primary">
-						<Icon icon={LuFolder} size="sm" className="mr-2" />
-						{t("open.fileSelection.importFile")}
-					</Button>
-				}
-			/>
+		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">
+			<div ref={headerBlockRef} className="flex flex-col gap-4 min-w-0">
+				<PageHeader
+					icon={fileName ? LuFileText : LuFolder}
+					title={t("open.fileSelection.selectedFile")}
+					subtitle={fileName || t("open.fileSelection.noFileSelected")}
+					action={
+						<Button onClick={openPcap} size="sm" color="primary">
+							<Icon icon={LuFolder} size="sm" className="mr-2" />
+							{t("open.fileSelection.importFile")}
+						</Button>
+					}
+				/>
 
-			{(logs.length > 0 || combatLogs.length > 0) && (
-				<>
-					<div className="grid grid-cols-4 gap-4">
-						<StatCard label={t("record.stats.events")} value={isNetwork ? logs.length : combatLogs.length} icon={LuActivity} />
+				<div className="grid grid-cols-4 gap-4">
+					<StatCard label={t("record.stats.events")} value={isNetwork ? logs.length : combatLogs.length} icon={LuActivity} />
 
-						<StatCard label={t("record.stats.kills")} value={stats.kills} icon={LuSword} valueColor="text-blue-400" />
+					<StatCard label={t("record.stats.kills")} value={stats.kills} icon={LuSword} valueColor="text-blue-400" />
 
-						<StatCard label={t("record.stats.deaths")} value={stats.deaths} icon={LuSkull} valueColor="text-red-400" />
+					<StatCard label={t("record.stats.deaths")} value={stats.deaths} icon={LuSkull} valueColor="text-red-400" />
 
-						<StatCard label={t("record.stats.kdRatio")} value={stats.kdr} icon={LuChartPie} valueColor={stats.kdr >= 1 ? "text-green-400" : "text-red-400"} />
-					</div>
+					<StatCard label={t("record.stats.kdRatio")} value={stats.kdr} icon={LuChartPie} valueColor={stats.kdr >= 1 ? "text-green-400" : "text-red-400"} />
+				</div>
 
-					<KDTimeline key={timelineKey} kdr={stats.kdr} kills={stats.kills} deaths={stats.deaths} allLogs={isNetwork ? undefined : combatLogs} />
-				</>
-			)}
+				<KDTimeline key={timelineKey} kdr={stats.kdr} kills={stats.kills} deaths={stats.deaths} allLogs={isNetwork ? undefined : combatLogs} />
+			</div>
 
-			<div className="flex-1 glass-card rounded-md p-4 border border-white/10 overflow-hidden">
-				{isNetwork ? <Logger logs={logs} loading={loading} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} /> : <LogEditor logs={combatLogs} loading={loading} onDeleteLog={handleDeleteCombatLog} />}
+			<div className="hidden lg:flex lg:flex-col gap-4 overflow-hidden min-h-0 row-span-2">
+				<div className="shrink-0 overflow-hidden" style={{ height: headerBlockHeight || undefined }}>
+					<GuildStats logs={namedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
+				</div>
+				<div className="flex-1 min-h-0 overflow-hidden">
+					<EnemyStats logs={namedLogs} playerIndex={guildStatsKey.playerTwo} />
+				</div>
+			</div>
+
+			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
+				{isNetwork ? (
+					<Logger logs={logs} loading={loading} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} />
+				) : (
+					<LogEditor logs={combatLogs} loading={loading} onDeleteLog={handleDeleteCombatLog} onIndicesChange={handleIndicesChange} />
+				)}
 			</div>
 		</div>
 	);

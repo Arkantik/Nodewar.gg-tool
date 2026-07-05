@@ -272,6 +272,7 @@
         "title": "Historial de sesiones",
         "subtitle": "Tus últimas 7 sesiones grabadas",
         "empty": "Aún no hay sesiones guardadas",
+        "open": "Abrir",
         "download": "Descargar .log",
         "delete": "Eliminar",
         "confirmDelete": "¿Eliminar esta sesión del historial? Esta acción no se puede deshacer.",

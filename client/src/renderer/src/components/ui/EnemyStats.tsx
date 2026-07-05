@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCrosshair } from "react-icons/lu";
-import type { LogType } from "../create-config/config";
+import type { NamedLog } from "../create-config/config";
 import Icon from "./Icon";
 
 interface EnemyStatsProps {
-	logs: LogType[];
+	logs: NamedLog[];
 	playerIndex: number;
 }
 

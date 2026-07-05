@@ -17,6 +17,7 @@ interface LogEditorProps {
   logs: Log[];
   loading?: boolean;
   onDeleteLog?: (index: number) => void;
+  onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void;
 }
 
 interface RowProps {
@@ -37,10 +38,15 @@ interface RowProps {
   };
 }
 
-function LogEditor({ logs, loading = false, onDeleteLog }: LogEditorProps) {
+function LogEditor({
+  logs,
+  loading = false,
+  onDeleteLog,
+  onIndicesChange,
+}: LogEditorProps) {
   const { t } = useTranslation();
   const { playerOneIndex, playerTwoIndex, guildIndex, updateNames } =
-    useNameIndices();
+    useNameIndices(onIndicesChange);
   const config = useConfigStore((s) => s.config);
   const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
   const addHistoryEntry = useHistoryStore((s) => s.addEntry);

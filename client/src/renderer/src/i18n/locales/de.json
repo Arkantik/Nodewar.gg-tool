@@ -272,6 +272,7 @@
         "title": "Sitzungsverlauf",
         "subtitle": "Deine letzten 7 aufgezeichneten Sitzungen",
         "empty": "Noch keine Sitzungen gespeichert",
+        "open": "Öffnen",
         "download": "Log herunterladen",
         "delete": "Löschen",
         "confirmDelete": "Diese Sitzung aus dem Verlauf löschen? Dies kann nicht rückgängig gemacht werden.",

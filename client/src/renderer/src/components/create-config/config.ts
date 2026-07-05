@@ -24,6 +24,10 @@ export type Log = {
 	kill: boolean;
 };
 
+export type NamedLog = {
+	names: { name: string }[];
+};
+
 const CONFIG_STORAGE_KEY = "config";
 
 export function get_date() {

@@ -41,6 +41,10 @@ jobs:
           Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OutFile "dependencies\npcap-1.87.exe"
         shell: powershell
 
+      - name: Install UPX
+        run: choco install upx -y
+        shell: powershell
+
       - name: Build Python logger
         run: |
           cd logger

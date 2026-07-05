@@ -58,7 +58,7 @@ function Sidebar() {
 			</button>
 
 			<NavLink to="/" className={`flex items-center ${justifyClass} gap-2.5 px-4 h-16 shrink-0 border-white/10 transition-colors duration-150 ease-out hover:bg-white/5`}>
-				<img src="/logo.svg" alt="" className="w-6 h-6 shrink-0" />
+				<img src="./logo.svg" alt="" className="w-6 h-6 shrink-0" />
 				<span className={`${labelBlockClass} min-w-0`}>
 					<span className="block text-sm font-bold text-cta truncate">{t("header.appName")}</span>
 					<span className="block text-[10px] text-gray-500 truncate">{t("header.version", { version })}</span>

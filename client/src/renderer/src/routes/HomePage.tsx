@@ -25,9 +25,6 @@ function HomePage() {
 
 	return (
 		<div className="flex flex-col h-full relative">
-			<div className="absolute top-20 right-20 w-64 h-64 bg-cta-500/10 rounded-full blur-3xl animate-float"></div>
-			<div className="absolute bottom-20 left-20 w-64 h-64 bg-cta-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: "1s" }}></div>
-
 			<div className="flex-1 flex items-center justify-center px-8 relative z-10">
 				<div className="w-full max-w-2xl">
 					<div className="glass-card rounded-md px-6 py-4 border border-white/10 flex items-center justify-between gap-4">

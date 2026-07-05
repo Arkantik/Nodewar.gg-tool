@@ -36,7 +36,7 @@ function Header() {
 	}
 
 	return (
-		<header className="glass-card flex items-center justify-end gap-3 px-6 py-3 border-b-0">
+		<header className="chrome-panel flex items-center justify-end gap-3 px-6 py-3 border-b-0">
 			{updateAvailable && (
 				<button
 					onClick={handleUpdate}

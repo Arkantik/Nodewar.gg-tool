@@ -69,8 +69,15 @@ body {
   }
 }
 
-/* Flat dashboard panels - a thin border and subtle depth, not heavy glassmorphism/blur/glow. */
 .glass-card {
+  background: rgba(22, 22, 25, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.chrome-panel {
   background: var(--color-background-secondary);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
@@ -83,7 +90,7 @@ body {
 }
 
 .glass-card-hover:hover {
-  background: #1c1c21;
+  background: rgba(28, 28, 33, 0.65);
   border-color: rgba(255, 255, 255, 0.16);
 }
 
@@ -127,18 +134,51 @@ body {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
+@keyframes float-1 {
+  0% {
+    transform: translate(0, 0);
   }
-  50% {
-    transform: translateY(-3rem);
+  20% {
+    transform: translate(-2rem, -3.5rem);
+  }
+  40% {
+    transform: translate(3rem, -1.5rem);
+  }
+  60% {
+    transform: translate(2.5rem, 3rem);
+  }
+  80% {
+    transform: translate(-3rem, 2rem);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes float-2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(3.5rem, 1.5rem);
+  }
+  50% {
+    transform: translate(1rem, 4rem);
+  }
+  75% {
+    transform: translate(-3.5rem, -1rem);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.animate-float-1 {
+  animation: float-1 16s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 20s ease-in-out infinite;
 }
 
 @keyframes pop-in {
@@ -152,13 +192,11 @@ body {
   }
 }
 
-/* Entrance animation for dropdowns/menus - makes them feel like they respond instantly, not just appear. */
 .pop-in {
   animation: pop-in 0.12s ease-out;
   transform-origin: top right;
 }
 
-/* Small-caps section header label, matching the nodewar.gg card-header style. */
 .section-label {
   font-size: 0.6875rem;
   font-weight: 700;

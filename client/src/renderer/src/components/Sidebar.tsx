@@ -52,7 +52,7 @@ function Sidebar() {
 		<aside className={`relative ${collapsed ? "w-16" : "w-16 lg:w-56"} shrink-0 h-full flex flex-col chrome-panel border-r border-white/10 border-b-0`}>
 			<button
 				onClick={toggleCollapsed}
-				className="cursor-pointer hidden lg:flex absolute -right-3 top-8 -translate-y-1/2 z-20 w-6 h-6 items-center justify-center rounded-full bg-background-secondary border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all duration-150 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
+				className="cursor-pointer hidden lg:flex absolute -right-3 top-8 -translate-y-1/2 z-30 w-6 h-6 items-center justify-center rounded-full bg-background-secondary border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all duration-150 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
 				title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}>
 				<Icon icon={collapsed ? LuPanelLeftOpen : LuPanelLeftClose} size="sm" />
 			</button>

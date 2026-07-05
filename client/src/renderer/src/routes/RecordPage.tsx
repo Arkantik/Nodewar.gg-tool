@@ -24,6 +24,8 @@ function formatDuration(ms: number) {
 
 function RecordPage() {
 	const { t } = useTranslation();
+	const tRef = useRef(t);
+	tRef.current = t;
 	const [logs, setLogs] = useState<LogType[]>([]);
 	const retryCountRef = useRef(0);
 	const [stats, setStats] = useState({ kills: 0, deaths: 0, kdr: 0 });
@@ -61,28 +63,28 @@ function RecordPage() {
 							return [...prevLogs, newLog];
 						});
 					} else if (data.includes("Error while reading network.")) {
-						alert(t("record.errors.networkError"));
+						alert(tRef.current("record.errors.networkError"));
 					}
 					return;
 				}
 
 				if (status === "error") {
 					console.error(data);
-					alert(t("record.errors.loggerError", { message: data }));
+					alert(tRef.current("record.errors.loggerError", { message: data }));
 				}
 
 				if (retryCountRef.current < MAX_RETRIES) {
 					retryCountRef.current++;
 					start("analyze", extraArgs, loggerCallback);
 				} else {
-					alert(t("record.errors.loggerFailedRetry"));
+					alert(tRef.current("record.errors.loggerFailedRetry"));
 					retryCountRef.current = 0;
 				}
 			};
 
 			start("analyze", extraArgs, loggerCallback);
 		})();
-	}, [start, t, ensureConfigLoaded]);
+	}, [start, ensureConfigLoaded]);
 
 	const handleDeleteLog = (index: number) => {
 		setLogs((prevLogs) => prevLogs.filter((_, i) => i !== index));

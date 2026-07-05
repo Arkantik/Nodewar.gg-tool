@@ -44,7 +44,7 @@ function LanguageSelector() {
 			</button>
 
 			{isOpen && (
-				<div className="pop-in absolute right-0 top-full mt-2 w-40 glass-card rounded-md border border-white/10 shadow-xl overflow-hidden z-50 bg-background-secondary! p-1">
+				<div className="pop-in absolute right-0 top-full mt-2 w-40 chrome-panel rounded-md border border-white/10 shadow-xl overflow-hidden z-50 p-1">
 					{languages.map((lang) => (
 						<button
 							key={lang.code}

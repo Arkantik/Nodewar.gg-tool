@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.1...v1.2.2) (2026-07-05)
+
+
+### Bug Fixes
+
+* **installer:** trigger release to verify per-user update flow ([77bb631](https://github.com/Arkantik/Nodewar.gg-tool/commit/77bb631f2121e54edb77bd0708eb80825d1a4e7d))
+
 ## [1.2.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.0...v1.2.1) (2026-07-05)
 
 

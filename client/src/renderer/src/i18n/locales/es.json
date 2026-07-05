@@ -101,9 +101,9 @@
         "title": "Modo demo",
         "description": "Eventos de combate simulados para pruebas y demostración",
         "controls": {
-            "clearLogs": "Borrar logs",
-            "startDemo": "Iniciar demo",
-            "stopDemo": "Detener demo"
+            "clearLogs": "Borrar",
+            "startDemo": "Iniciar",
+            "stopDemo": "Detener"
         }
     },
     "settings": {

@@ -73,21 +73,22 @@ function DemoPage() {
 					action={
 						<div className="flex items-center gap-2">
 							{logs.length > 0 && (
-								<button
+								<Button
 									onClick={handleClearLogs}
-									className="cursor-pointer px-4 py-2 rounded-md glass-card border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all duration-150 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50 text-sm font-medium text-red-400">
+									size="sm"
+									className="glass-card border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 text-sm font-medium text-red-400">
 									{t("demo.controls.clearLogs")}
-								</button>
+								</Button>
 							)}
 
 							{!isRunning ? (
 								<Button onClick={handleStart} size="sm" className="bg-green-600 hover:bg-green-500 text-white">
-									<Icon icon={LuPlay} size="sm" />
+									<Icon icon={LuPlay} size="sm" className="mr-1" />
 									{t("demo.controls.startDemo")}
 								</Button>
 							) : (
 								<Button onClick={handleStop} size="sm" className="bg-red-600 hover:bg-red-500 text-white">
-									<Icon icon={LuOctagonPause} size="sm" />
+									<Icon icon={LuOctagonPause} size="sm" className="mr-1" />
 									{t("demo.controls.stopDemo")}
 								</Button>
 							)}

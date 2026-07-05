@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSettings, LuSave, LuUpload, LuX } from "react-icons/lu";
 import { List, type RowComponentProps } from "react-window";
@@ -101,16 +101,11 @@ function Logger({
   }, [ensureConfigLoaded]);
 
   useEffect(() => {
-    if (config) updateConfig({ ...config, auto_scroll: autoScroll });
-  }, [autoScroll, config, updateConfig]);
-
-  useEffect(() => {
     if (logs.length > 0) logsChanged();
   }, [logs]);
 
-  useEffect(() => {
-    if (!onStatsUpdate || logs.length === 0 || possibleKillOffsets.length === 0)
-      return;
+  const stats = useMemo(() => {
+    if (logs.length === 0 || possibleKillOffsets.length === 0) return null;
 
     let kills = 0;
     let deaths = 0;
@@ -124,8 +119,17 @@ function Logger({
     });
 
     const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
-    onStatsUpdate({ kills, deaths, kdr });
-  }, [logs, possibleKillOffsets, killIndex, onStatsUpdate]);
+    return { kills, deaths, kdr };
+  }, [logs, possibleKillOffsets, killIndex]);
+
+  useEffect(() => {
+    if (stats) onStatsUpdate?.(stats);
+  }, [stats, onStatsUpdate]);
+
+  function setAutoScrollAndPersist(checked: boolean) {
+    setAutoScroll(checked);
+    if (config) updateConfig({ ...config, auto_scroll: checked });
+  }
 
   function logsChanged() {
     if (autoScroll) setTimeout(scroll);
@@ -330,7 +334,7 @@ function Logger({
         <div className="flex items-center gap-2 shrink-0">
           <Checkbox
             checked={autoScroll}
-            onChange={(e) => setAutoScroll(e.target.checked)}
+            onChange={(e) => setAutoScrollAndPersist(e.target.checked)}
           />
           <span className="text-sm text-gray-400 whitespace-nowrap">
             {t("logger.autoScroll")}

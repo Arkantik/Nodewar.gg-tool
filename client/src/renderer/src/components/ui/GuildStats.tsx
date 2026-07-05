@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { LuUsers } from "react-icons/lu";
 import type { NamedLog } from "../create-config/config";
@@ -17,9 +17,8 @@ interface GuildData {
 
 function GuildStats({ logs, guildIndex, playerIndex }: GuildStatsProps) {
 	const { t } = useTranslation();
-	const [guilds, setGuilds] = useState<Map<string, GuildData>>(new Map());
 
-	const calculateGuilds = () => {
+	const guilds = useMemo(() => {
 		const guildMap = new Map<string, GuildData>();
 
 		logs.forEach((log) => {
@@ -45,11 +44,7 @@ function GuildStats({ logs, guildIndex, playerIndex }: GuildStatsProps) {
 			}
 		});
 
-		setGuilds(guildMap);
-	};
-
-	useEffect(() => {
-		calculateGuilds();
+		return guildMap;
 	}, [logs, guildIndex, playerIndex]);
 
 	const sortedGuilds = Array.from(guilds.values()).sort((a, b) => {

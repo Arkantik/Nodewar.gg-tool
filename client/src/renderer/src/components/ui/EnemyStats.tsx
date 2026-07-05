@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCrosshair } from "react-icons/lu";
 import type { NamedLog } from "../create-config/config";
@@ -11,9 +11,8 @@ interface EnemyStatsProps {
 
 function EnemyStats({ logs, playerIndex }: EnemyStatsProps) {
 	const { t } = useTranslation();
-	const [enemies, setEnemies] = useState<Map<string, number>>(new Map());
 
-	useEffect(() => {
+	const enemies = useMemo(() => {
 		const enemyMap = new Map<string, number>();
 
 		logs.forEach((log) => {
@@ -26,7 +25,7 @@ function EnemyStats({ logs, playerIndex }: EnemyStatsProps) {
 			}
 		});
 
-		setEnemies(enemyMap);
+		return enemyMap;
 	}, [logs, playerIndex]);
 
 	const sortedEnemies = Array.from(enemies.entries()).sort((a, b) => b[1] - a[1]);

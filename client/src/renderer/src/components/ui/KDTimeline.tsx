@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { calculateMaxKDR, drawTimeline } from "../../logic/drawTimeline";
 import type { Log } from "../create-config/config";
 
@@ -17,46 +17,48 @@ interface DataPoint {
 }
 
 function KDTimeline({ kdr, kills, deaths, allLogs }: KDTimelineProps) {
-	const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
+	const [liveDataPoints, setLiveDataPoints] = useState<DataPoint[]>([]);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		if (allLogs && allLogs.length > 0) {
-			const points: DataPoint[] = [];
-			let killCount = 0;
-			let deathCount = 0;
+	const hasHistoricalLogs = !!allLogs && allLogs.length > 0;
 
-			allLogs.forEach((log) => {
-				log.kill ? killCount++ : deathCount++;
+	const historicalDataPoints = useMemo<DataPoint[]>(() => {
+		if (!allLogs || allLogs.length === 0) return [];
 
-				const calculatedKdr = deathCount > 0 ? parseFloat((killCount / deathCount).toFixed(2)) : killCount;
+		const points: DataPoint[] = [];
+		let killCount = 0;
+		let deathCount = 0;
 
-				const [hours, minutes, seconds] = log.time.split(":").map(Number);
-				const now = new Date();
-				now.setHours(hours, minutes, seconds, 0);
+		allLogs.forEach((log) => {
+			log.kill ? killCount++ : deathCount++;
 
-				points.push({
-					timestamp: now.getTime(),
-					kdr: calculatedKdr,
-					kills: killCount,
-					deaths: deathCount,
-				});
+			const calculatedKdr = deathCount > 0 ? parseFloat((killCount / deathCount).toFixed(2)) : killCount;
+
+			const [hours, minutes, seconds] = log.time.split(":").map(Number);
+			const now = new Date();
+			now.setHours(hours, minutes, seconds, 0);
+
+			points.push({
+				timestamp: now.getTime(),
+				kdr: calculatedKdr,
+				kills: killCount,
+				deaths: deathCount,
 			});
+		});
 
-			setDataPoints(points);
-		}
+		return points;
 	}, [allLogs]);
 
 	useEffect(() => {
-		if (allLogs && allLogs.length > 0) return;
+		if (hasHistoricalLogs) return;
 
 		if (kills === 0 && deaths === 0) {
-			setDataPoints([]);
+			setLiveDataPoints([]);
 			return;
 		}
 
-		setDataPoints((prev) => {
+		setLiveDataPoints((prev) => {
 			const lastPoint = prev[prev.length - 1];
 			if (lastPoint && lastPoint.kills === kills && lastPoint.deaths === deaths) return prev;
 
@@ -69,7 +71,9 @@ function KDTimeline({ kdr, kills, deaths, allLogs }: KDTimelineProps) {
 
 			return [...prev, newPoint];
 		});
-	}, [kdr, kills, deaths, allLogs]);
+	}, [kdr, kills, deaths, hasHistoricalLogs]);
+
+	const dataPoints = hasHistoricalLogs ? historicalDataPoints : liveDataPoints;
 
 	useEffect(() => {
 		if (!canvasRef.current || !containerRef.current) return;

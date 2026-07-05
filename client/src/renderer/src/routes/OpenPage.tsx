@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuActivity, LuChartPie, LuFileText, LuFolder, LuSkull, LuSword } from "react-icons/lu";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import type { Log, LogType, NamedLog } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
 import LogEditor from "../components/create-config/LogEditor";
@@ -45,47 +45,32 @@ function parseTextLog(data: string): Log[] {
 function OpenPage() {
 	const { t } = useTranslation();
 	const location = useLocation();
-	const navigate = useNavigate();
+	const [initialNavState] = useState(() => location.state as OpenPageNavState | null);
 	const [logs, setLogs] = useState<LogType[]>([]);
-	const [combatLogs, setCombatLogs] = useState<Log[]>([]);
+	const [combatLogs, setCombatLogs] = useState<Log[]>(() => (initialNavState?.logText ? parseTextLog(initialNavState.logText) : []));
 	const [loading, setLoading] = useState(false);
 	const [isNetwork, setIsNetwork] = useState(false);
-	const [fileName, setFileName] = useState<string>("");
-	const [stats, setStats] = useState({ kills: 0, deaths: 0, kdr: 0 });
+	const [fileName, setFileName] = useState<string>(() => initialNavState?.fileName ?? "");
+	const [networkStats, setNetworkStats] = useState({ kills: 0, deaths: 0, kdr: 0 });
 	const [guildStatsKey, setGuildStatsKey] = useState({ playerTwo: 1, guild: 2 });
 	const [timelineKey, setTimelineKey] = useState(0);
 	const { start } = useLoggerSession();
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
 
-	useEffect(() => {
-		const state = location.state as OpenPageNavState | null;
-		if (!state?.logText) return;
+	const combatLogStats = useMemo(() => {
+		let kills = 0;
+		let deaths = 0;
 
-		setLogs([]);
-		setIsNetwork(false);
-		setFileName(state.fileName ?? "");
-		setCombatLogs(parseTextLog(state.logText));
-		setStats({ kills: 0, deaths: 0, kdr: 0 });
-		setGuildStatsKey({ playerTwo: 1, guild: 2 });
-		setTimelineKey((prev) => prev + 1);
+		combatLogs.forEach((log) => {
+			log.kill ? kills++ : deaths++;
+		});
 
-		navigate(location.pathname, { replace: true, state: null });
-	}, [location.state, location.pathname, navigate]);
+		const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
+		return { kills, deaths, kdr };
+	}, [combatLogs]);
 
-	useEffect(() => {
-		if (!isNetwork && combatLogs.length > 0) {
-			let kills = 0;
-			let deaths = 0;
-
-			combatLogs.forEach((log) => {
-				log.kill ? kills++ : deaths++;
-			});
-
-			const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
-			setStats({ kills, deaths, kdr });
-		}
-	}, [combatLogs, isNetwork]);
+	const stats = isNetwork ? networkStats : combatLogStats;
 
 	const namedLogs: NamedLog[] = useMemo(() => {
 		return isNetwork ? logs : combatLogs.map((log) => ({ names: log.names.map((name) => ({ name })) }));
@@ -124,7 +109,7 @@ function OpenPage() {
 		setLogs([]);
 		setCombatLogs([]);
 		setFileName("");
-		setStats({ kills: 0, deaths: 0, kdr: 0 });
+		setNetworkStats({ kills: 0, deaths: 0, kdr: 0 });
 		setGuildStatsKey({ playerTwo: 1, guild: 2 });
 		setTimelineKey((prev) => prev + 1);
 
@@ -203,7 +188,7 @@ function OpenPage() {
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
 				{isNetwork ? (
-					<Logger logs={logs} loading={loading} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} />
+					<Logger logs={logs} loading={loading} onStatsUpdate={setNetworkStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} />
 				) : (
 					<LogEditor logs={combatLogs} loading={loading} onDeleteLog={handleDeleteCombatLog} onIndicesChange={handleIndicesChange} />
 				)}

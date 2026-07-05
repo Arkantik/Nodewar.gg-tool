@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaDiscord } from "react-icons/fa";
-import { LuFlaskConical, LuFolder, LuGithub, LuGlobe, LuHistory, LuMessageCircleQuestion, LuPanelLeftClose, LuPanelLeftOpen, LuPlay, LuSettings } from "react-icons/lu";
+import { LuBookOpen, LuFlaskConical, LuFolder, LuGithub, LuGlobe, LuHistory, LuPanelLeftClose, LuPanelLeftOpen, LuPlay, LuSettings } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
 import Icon from "./ui/Icon";
 
@@ -33,7 +33,7 @@ function Sidebar() {
 		{ to: "/history", label: t("home.actions.history.title"), icon: LuHistory },
 		{ to: "/demo", label: t("home.actions.demo.title"), icon: LuFlaskConical },
 		{ to: "/settings", label: t("home.actions.settings.title"), icon: LuSettings },
-		{ to: "/docs", label: t("docs.title"), icon: LuMessageCircleQuestion },
+		{ to: "/docs", label: t("docs.title"), icon: LuBookOpen },
 	];
 
 	const socialLinks = [

@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.3.1...v1.4.0) (2026-07-06)
+
+
+### Features
+
+* **record:** add resume and restart recording ([855a9a1](https://github.com/Arkantik/Nodewar.gg-tool/commit/855a9a1a236363e85a71e97cb65dd377c07d11f4))
+
 ## [1.3.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.3.0...v1.3.1) (2026-07-06)
 
 

@@ -77,7 +77,9 @@
             "recording": "Recording",
             "stopped": "Stopped"
         },
-        "stopRecording": "Stop Recording",
+        "stopRecording": "Stop",
+        "resumeRecording": "Resume",
+        "restartRecording": "Restart",
         "recap": {
             "title": "Session Recap",
             "summary": "{{duration}} · {{kills}} kills · {{deaths}} deaths · {{kdr}} K/D",

@@ -1,0 +1,233 @@
+import { useEffect, useMemo, useState } from "react";
+import { getNetworkDeathLogs } from "./deathLogs";
+import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets } from "./offsetHeuristics";
+import { saveLogsToFile } from "./saveLogsToFile";
+import { useSaveLogsToHistory } from "./useSaveLogsToHistory";
+import { useNameIndices } from "./useNameIndices";
+import { mostFrequent } from "./util";
+import { get_date, hexToString, type Config, type LogType } from "../components/create-config/config";
+import { useConfigStore } from "../components/create-config/config-store";
+
+export interface LoggerStats {
+  kills: number;
+  deaths: number;
+  kdr: number;
+}
+
+export function useLoggerLogs(
+  logs: LogType[],
+  onStatsUpdate?: (stats: LoggerStats) => void,
+  onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void,
+  onKillOffsetChange?: (offset: number | undefined) => void,
+) {
+  const [possibleNameOffsets, setPossibleNameOffsets] = useState<
+    { offset: number; count: number }[][]
+  >([]);
+  const [nameIndicies, setNameIndicies] = useState<number[]>([0, 0, 0, 0, 0]);
+  const {
+    playerOneIndex,
+    playerTwoIndex,
+    guildIndex,
+    setPlayerOneIndex,
+    setPlayerTwoIndex,
+    setGuildIndex,
+    updateNames,
+  } = useNameIndices(onIndicesChange);
+  const [possibleKillOffsets, setPossibleKillOffsets] = useState<number[]>([]);
+  const [killIndex, setKillIndex] = useState(0);
+  const [config, setConfig] = useState<Config | null>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
+  const updateConfig = useConfigStore((s) => s.updateConfig);
+  const saveLogsToHistory = useSaveLogsToHistory();
+
+  useEffect(() => {
+    (async () => {
+      const cfg = await ensureConfigLoaded();
+      setConfig(cfg);
+      setPossibleKillOffsets([cfg.kill]);
+      setPossibleNameOffsets([
+        [{ offset: cfg.player_one, count: 1 }],
+        [{ offset: cfg.player_two, count: 1 }],
+        [{ offset: cfg.guild, count: 1 }],
+      ]);
+      setAutoScroll(cfg.auto_scroll);
+    })();
+  }, [ensureConfigLoaded]);
+
+  useEffect(() => {
+    if (logs.length > 0) logsChanged();
+  }, [logs]);
+
+  const stats = useMemo(() => {
+    if (logs.length === 0 || possibleKillOffsets.length === 0) return null;
+
+    let kills = 0;
+    let deaths = 0;
+
+    logs.forEach((log) => {
+      const killOffset = possibleKillOffsets[killIndex];
+      if (killOffset !== undefined && log.hex.length > killOffset) {
+        const isKill = log.hex[killOffset] === "1";
+        isKill ? kills++ : deaths++;
+      }
+    });
+
+    const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
+    return { kills, deaths, kdr };
+  }, [logs, possibleKillOffsets, killIndex]);
+
+  useEffect(() => {
+    if (stats) onStatsUpdate?.(stats);
+  }, [stats, onStatsUpdate]);
+
+  useEffect(() => {
+    onKillOffsetChange?.(possibleKillOffsets[killIndex]);
+  }, [possibleKillOffsets, killIndex, onKillOffsetChange]);
+
+  function setAutoScrollAndPersist(checked: boolean) {
+    setAutoScroll(checked);
+    if (config) updateConfig({ ...config, auto_scroll: checked });
+  }
+
+  function logsChanged() {
+    if (autoScroll) setTimeout(scroll);
+
+    if (logs.length < 50 || logs.length % 100 === 0) {
+      const killOffsets = findKillOffset(logs);
+      setPossibleKillOffsets(killOffsets);
+      calculateConfig();
+    }
+  }
+
+  async function calculateConfig() {
+    const newPossibleNameOffsets = rankNameOffsets(logs, possibleNameOffsets);
+    const identifier = findMostFrequentIdentifier(logs);
+
+    setPossibleNameOffsets(newPossibleNameOffsets);
+    await updateConfigWrapper(identifier);
+  }
+
+  async function updateConfigWrapper(identifier?: string) {
+    if (!config) return;
+
+    const newConfig = {
+      ...config,
+      patch: get_date(),
+      identifier: identifier || config.identifier,
+      player_one:
+        possibleNameOffsets[playerOneIndex]?.[nameIndicies[playerOneIndex]]
+          ?.offset || 0,
+      player_two:
+        possibleNameOffsets[playerTwoIndex]?.[nameIndicies[playerTwoIndex]]
+          ?.offset || 0,
+      guild:
+        possibleNameOffsets[guildIndex]?.[nameIndicies[guildIndex]]?.offset ||
+        0,
+      kill: possibleKillOffsets[killIndex],
+    };
+
+    const updated = await updateConfig(newConfig);
+    setConfig(updated);
+  }
+
+  function getName(i: number, log: LogType) {
+    const list = possibleNameOffsets[i];
+    if (!list) return "";
+    const selected = nameIndicies[i];
+    return hexToString(
+      log.hex.slice(list[selected]?.offset, list[selected]?.offset + 64),
+    )
+      .replaceAll("\0", "")
+      .replaceAll(" ", "");
+  }
+
+  function getNameOptions(log: LogType) {
+    return possibleNameOffsets.map((list, index) => {
+      const selected = nameIndicies[index];
+      return hexToString(
+        log.hex.slice(list[selected]?.offset, list[selected]?.offset + 64),
+      )
+        .replaceAll("\0", "")
+        .replaceAll(" ", "");
+    });
+  }
+
+  function scroll() {
+    const container = document.querySelector(".react-window-list");
+    if (container) container.scrollTop = container.scrollHeight;
+  }
+
+  function getLogsString() {
+    let output = "";
+    for (const log of logs) {
+      let characters = "";
+      const playerOneName = getName(playerOneIndex, log);
+      const playerTwoName = getName(playerTwoIndex, log);
+      const guildName = getName(guildIndex, log);
+
+      if (config?.include_characters) {
+        const remainingIndicies = [0, 1, 2, 3, 4].filter(
+          (i) =>
+            i !== playerOneIndex && i !== playerTwoIndex && i !== guildIndex,
+        );
+        const remainingNames = remainingIndicies.map((i) => getName(i, log));
+        characters = ` (${remainingNames.join(",")})`;
+      }
+
+      const isKill = log.hex[possibleKillOffsets[killIndex]] === "1";
+
+      if (isKill) {
+        output += `[${log.time}] ${playerOneName} has killed ${playerTwoName} from ${guildName}${characters}\n`;
+      } else {
+        output += `[${log.time}] ${playerOneName} died to ${playerTwoName} from ${guildName}${characters}\n`;
+      }
+    }
+    return output;
+  }
+
+  async function saveLogs() {
+    const text = getLogsString();
+    await saveLogsToFile(text);
+  }
+
+  async function saveCurrentSessionToHistory() {
+    const { kills, deaths, kdr } = stats ?? { kills: 0, deaths: 0, kdr: 0 };
+
+    const deathLogs = getNetworkDeathLogs(logs, possibleKillOffsets[killIndex]);
+
+    await saveLogsToHistory({
+      text: getLogsString(),
+      kills,
+      deaths,
+      kdr,
+      topGuild: mostFrequent(logs.map((log) => log.names[guildIndex]?.name)),
+      topEnemy: mostFrequent(deathLogs.map((log) => log.names[playerTwoIndex]?.name)),
+    });
+  }
+
+  return {
+    config,
+    autoScroll,
+    setAutoScrollAndPersist,
+    possibleKillOffsets,
+    setPossibleKillOffsets,
+    possibleNameOffsets,
+    setPossibleNameOffsets,
+    nameIndicies,
+    setNameIndicies,
+    killIndex,
+    setKillIndex,
+    playerOneIndex,
+    setPlayerOneIndex,
+    playerTwoIndex,
+    setPlayerTwoIndex,
+    guildIndex,
+    setGuildIndex,
+    updateNames,
+    updateConfigWrapper,
+    getNameOptions,
+    saveLogs,
+    saveCurrentSessionToHistory,
+  };
+}

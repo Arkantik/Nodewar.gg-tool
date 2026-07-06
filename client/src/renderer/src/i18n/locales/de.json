@@ -77,7 +77,9 @@
             "recording": "Aufnahme läuft",
             "stopped": "Gestoppt"
         },
-        "stopRecording": "Aufnahme stoppen",
+        "stopRecording": "Stoppen",
+        "resumeRecording": "Fortsetzen",
+        "restartRecording": "Neu starten",
         "recap": {
             "title": "Sitzungszusammenfassung",
             "summary": "{{duration}} · {{kills}} Kills · {{deaths}} Tode · {{kdr}} K/D",

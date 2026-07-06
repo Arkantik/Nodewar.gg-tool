@@ -1,27 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { useTranslation } from "react-i18next";
-import { LuSettings, LuSave, LuUpload, LuX } from "react-icons/lu";
-import { List, type RowComponentProps } from "react-window";
-import { getNetworkDeathLogs } from "../../logic/deathLogs";
-import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets } from "../../logic/offsetHeuristics";
-import { saveLogsToFile } from "../../logic/saveLogsToFile";
-import { useSaveLogsToHistory } from "../../logic/useSaveLogsToHistory";
-import { useNameIndices } from "../../logic/useNameIndices";
-import { mostFrequent } from "../../logic/util";
+import { LuSettings, LuSave, LuUpload } from "react-icons/lu";
+import { List } from "react-window";
+import { useLoggerLogs } from "../../logic/useLoggerLogs";
 import { ModalManager } from "../modal/modal-store";
 import Button from "../ui/Button";
 import Checkbox from "../ui/Checkbox";
 import Icon from "../ui/Icon";
 import LoadingIndicator from "../ui/LoadingIndicator";
-import {
-  get_date,
-  hexToString,
-  type Config,
-  type LogType,
-} from "./config";
-import { useConfigStore } from "./config-store";
+import type { LogType } from "./config";
 import ConfigModal, { type ConfigModalOptions } from "./ConfigModal";
-import Select from "./Select";
+import { LoggerRowComponent } from "./LoggerRow";
 
 export interface LoggerProps {
   logs: LogType[];
@@ -34,226 +23,52 @@ export interface LoggerProps {
   onDeleteLog?: (index: number) => void;
   onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void;
   onKillOffsetChange?: (offset: number | undefined) => void;
-  saveToHistory?: boolean;
 }
 
-export interface LoggerRowProps {
-  logs: LogType[];
-  possibleKillOffsets: number[];
-  killIndex: number;
-  playerOneIndex: number;
-  playerTwoIndex: number;
-  guildIndex: number;
-  updateNames: (
-    target: "player_one" | "player_two" | "guild",
-    value: number,
-  ) => void;
-  getNameOptions: (log: LogType) => string[];
-  onDeleteLog: (index: number) => void;
-  translations: {
-    killed: string;
-    diedTo: string;
-    from: string;
-    deleteEntry: string;
-  };
+export interface LoggerHandle {
+  saveSessionToHistory: () => Promise<void>;
 }
 
-function Logger({
-  logs,
-  loading = false,
-  onStatsUpdate,
-  onDeleteLog,
-  onIndicesChange,
-  onKillOffsetChange,
-  saveToHistory = false,
-}: LoggerProps) {
+const Logger = forwardRef<LoggerHandle, LoggerProps>(function Logger(
+  {
+    logs,
+    loading = false,
+    onStatsUpdate,
+    onDeleteLog,
+    onIndicesChange,
+    onKillOffsetChange,
+  },
+  ref,
+) {
   const { t } = useTranslation();
-  const [possibleNameOffsets, setPossibleNameOffsets] = useState<
-    { offset: number; count: number }[][]
-  >([]);
-  const [nameIndicies, setNameIndicies] = useState<number[]>([0, 0, 0, 0, 0]);
   const {
+    config,
+    autoScroll,
+    setAutoScrollAndPersist,
+    possibleKillOffsets,
+    setPossibleKillOffsets,
+    possibleNameOffsets,
+    setPossibleNameOffsets,
+    nameIndicies,
+    setNameIndicies,
+    killIndex,
+    setKillIndex,
     playerOneIndex,
-    playerTwoIndex,
-    guildIndex,
     setPlayerOneIndex,
+    playerTwoIndex,
     setPlayerTwoIndex,
+    guildIndex,
     setGuildIndex,
     updateNames,
-  } = useNameIndices(onIndicesChange);
-  const [possibleKillOffsets, setPossibleKillOffsets] = useState<number[]>([]);
-  const [killIndex, setKillIndex] = useState(0);
-  const [config, setConfig] = useState<Config | null>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
-  const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
-  const updateConfig = useConfigStore((s) => s.updateConfig);
-  const saveLogsToHistory = useSaveLogsToHistory();
+    updateConfigWrapper,
+    getNameOptions,
+    saveLogs,
+    saveCurrentSessionToHistory,
+  } = useLoggerLogs(logs, onStatsUpdate, onIndicesChange, onKillOffsetChange);
 
-  useEffect(() => {
-    (async () => {
-      const cfg = await ensureConfigLoaded();
-      setConfig(cfg);
-      setPossibleKillOffsets([cfg.kill]);
-      setPossibleNameOffsets([
-        [{ offset: cfg.player_one, count: 1 }],
-        [{ offset: cfg.player_two, count: 1 }],
-        [{ offset: cfg.guild, count: 1 }],
-      ]);
-      setAutoScroll(cfg.auto_scroll);
-    })();
-  }, [ensureConfigLoaded]);
-
-  useEffect(() => {
-    if (logs.length > 0) logsChanged();
-  }, [logs]);
-
-  const stats = useMemo(() => {
-    if (logs.length === 0 || possibleKillOffsets.length === 0) return null;
-
-    let kills = 0;
-    let deaths = 0;
-
-    logs.forEach((log) => {
-      const killOffset = possibleKillOffsets[killIndex];
-      if (killOffset !== undefined && log.hex.length > killOffset) {
-        const isKill = log.hex[killOffset] === "1";
-        isKill ? kills++ : deaths++;
-      }
-    });
-
-    const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
-    return { kills, deaths, kdr };
-  }, [logs, possibleKillOffsets, killIndex]);
-
-  useEffect(() => {
-    if (stats) onStatsUpdate?.(stats);
-  }, [stats, onStatsUpdate]);
-
-  useEffect(() => {
-    onKillOffsetChange?.(possibleKillOffsets[killIndex]);
-  }, [possibleKillOffsets, killIndex, onKillOffsetChange]);
-
-  function setAutoScrollAndPersist(checked: boolean) {
-    setAutoScroll(checked);
-    if (config) updateConfig({ ...config, auto_scroll: checked });
-  }
-
-  function logsChanged() {
-    if (autoScroll) setTimeout(scroll);
-
-    if (logs.length < 50 || logs.length % 100 === 0) {
-      const killOffsets = findKillOffset(logs);
-      setPossibleKillOffsets(killOffsets);
-      calculateConfig();
-    }
-  }
-
-  async function calculateConfig() {
-    const newPossibleNameOffsets = rankNameOffsets(logs, possibleNameOffsets);
-    const identifier = findMostFrequentIdentifier(logs);
-
-    setPossibleNameOffsets(newPossibleNameOffsets);
-    await updateConfigWrapper(identifier);
-  }
-
-  async function updateConfigWrapper(identifier?: string) {
-    if (!config) return;
-
-    const newConfig = {
-      ...config,
-      patch: get_date(),
-      identifier: identifier || config.identifier,
-      player_one:
-        possibleNameOffsets[playerOneIndex]?.[nameIndicies[playerOneIndex]]
-          ?.offset || 0,
-      player_two:
-        possibleNameOffsets[playerTwoIndex]?.[nameIndicies[playerTwoIndex]]
-          ?.offset || 0,
-      guild:
-        possibleNameOffsets[guildIndex]?.[nameIndicies[guildIndex]]?.offset ||
-        0,
-      kill: possibleKillOffsets[killIndex],
-    };
-
-    const updated = await updateConfig(newConfig);
-    setConfig(updated);
-  }
-
-  function getName(i: number, log: LogType) {
-    const list = possibleNameOffsets[i];
-    if (!list) return "";
-    const selected = nameIndicies[i];
-    return hexToString(
-      log.hex.slice(list[selected]?.offset, list[selected]?.offset + 64),
-    )
-      .replaceAll("\0", "")
-      .replaceAll(" ", "");
-  }
-
-  function getNameOptions(log: LogType) {
-    return possibleNameOffsets.map((list, index) => {
-      const selected = nameIndicies[index];
-      return hexToString(
-        log.hex.slice(list[selected]?.offset, list[selected]?.offset + 64),
-      )
-        .replaceAll("\0", "")
-        .replaceAll(" ", "");
-    });
-  }
-
-  function scroll() {
-    const container = document.querySelector(".react-window-list");
-    if (container) container.scrollTop = container.scrollHeight;
-  }
-
-  function getLogsString() {
-    let output = "";
-    for (const log of logs) {
-      let characters = "";
-      const playerOneName = getName(playerOneIndex, log);
-      const playerTwoName = getName(playerTwoIndex, log);
-      const guildName = getName(guildIndex, log);
-
-      if (config?.include_characters) {
-        const remainingIndicies = [0, 1, 2, 3, 4].filter(
-          (i) =>
-            i !== playerOneIndex && i !== playerTwoIndex && i !== guildIndex,
-        );
-        const remainingNames = remainingIndicies.map((i) => getName(i, log));
-        characters = ` (${remainingNames.join(",")})`;
-      }
-
-      const isKill = log.hex[possibleKillOffsets[killIndex]] === "1";
-
-      if (isKill) {
-        output += `[${log.time}] ${playerOneName} has killed ${playerTwoName} from ${guildName}${characters}\n`;
-      } else {
-        output += `[${log.time}] ${playerOneName} died to ${playerTwoName} from ${guildName}${characters}\n`;
-      }
-    }
-    return output;
-  }
-
-  async function saveLogs() {
-    const text = getLogsString();
-    const path = await saveLogsToFile(text);
-    if (!path) return;
-
-    if (!saveToHistory) return;
-
-    const { kills, deaths, kdr } = stats ?? { kills: 0, deaths: 0, kdr: 0 };
-
-    const deathLogs = getNetworkDeathLogs(logs, possibleKillOffsets[killIndex]);
-
-    await saveLogsToHistory({
-      text,
-      kills,
-      deaths,
-      kdr,
-      topGuild: mostFrequent(logs.map((log) => log.names[guildIndex]?.name)),
-      topEnemy: mostFrequent(deathLogs.map((log) => log.names[playerTwoIndex]?.name)),
-    });
-  }
+  useImperativeHandle(ref, () => ({
+    saveSessionToHistory: saveCurrentSessionToHistory,
+  }));
 
   function handleUploadToNodewar() {
     window.api.shell.openExternal("https://nodewar.gg/account");
@@ -403,73 +218,6 @@ function Logger({
       </div>
     </div>
   );
-}
-
-function LoggerRowComponent({
-  index,
-  style,
-  logs,
-  possibleKillOffsets,
-  killIndex,
-  playerOneIndex,
-  playerTwoIndex,
-  guildIndex,
-  updateNames,
-  getNameOptions,
-  onDeleteLog,
-  translations,
-}: RowComponentProps<LoggerRowProps>) {
-  const log = logs[index];
-  const isKill = log.hex[possibleKillOffsets[killIndex]] === "1";
-  const nameOptions = getNameOptions(log);
-
-  return (
-    <div
-      style={style}
-      className="flex gap-2 items-center px-2 border-b border-white/5 hover:bg-white/5 group"
-    >
-      <span className="text-xs text-gray-500 w-16">{log.time}</span>
-      <Select
-        options={nameOptions}
-        selectedValue={playerOneIndex}
-        onChange={(value) => updateNames("player_one", value)}
-        className="w-full max-w-32 text-xs"
-      />
-      <div className="flex justify-center items-center w-20">
-        {isKill ? (
-          <span className="text-xs font-medium text-green-400">
-            {translations.killed}
-          </span>
-        ) : (
-          <span className="text-xs font-medium text-red-400">
-            {translations.diedTo}
-          </span>
-        )}
-      </div>
-      <Select
-        options={nameOptions}
-        selectedValue={playerTwoIndex}
-        onChange={(value) => updateNames("player_two", value)}
-        className="w-full max-w-32 text-xs"
-      />
-      <span className="text-xs text-gray-500 shrink-0">
-        {translations.from}
-      </span>
-      <Select
-        options={nameOptions}
-        selectedValue={guildIndex}
-        onChange={(value) => updateNames("guild", value)}
-        className="w-full max-w-32 text-xs"
-      />
-      <button
-        onClick={() => onDeleteLog(index)}
-        className="cursor-pointer ml-auto p-1 rounded hover:bg-red-500/20 text-gray-400 hover:text-red-400 border border-white/10 transition-all duration-150 ease-out active:scale-90 opacity-0 group-hover:opacity-100 hover:border-red-400/20"
-        title={translations.deleteEntry}
-      >
-        <Icon icon={LuX} size="sm" />
-      </button>
-    </div>
-  );
-}
+});
 
 export default Logger;

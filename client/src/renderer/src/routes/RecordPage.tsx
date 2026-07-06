@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuActivity, LuChartPie, LuSkull, LuSquare, LuSword } from "react-icons/lu";
+import { LuActivity, LuChartPie, LuPlay, LuRotateCcw, LuSkull, LuSquare, LuSword } from "react-icons/lu";
 import { useConfigStore } from "../components/create-config/config-store";
 import type { LogType, NamedLog } from "../components/create-config/config";
-import Logger from "../components/create-config/Logger";
+import Logger, { type LoggerHandle } from "../components/create-config/Logger";
 import Button from "../components/ui/Button";
 import EnemyStats from "../components/ui/EnemyStats";
 import GuildStats from "../components/ui/GuildStats";
@@ -37,44 +37,47 @@ function RecordPage() {
 	const [sessionActive, setSessionActive] = useState(true);
 	const [duration, setDuration] = useState(0);
 	const startedAtRef = useRef(Date.now());
+	const loggerRef = useRef<LoggerHandle>(null);
 	const { start, stop } = useLoggerSession();
 	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
 
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 
-	useEffect(() => {
-		(async () => {
-			const cfg = await ensureConfigLoaded();
-			const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : [])];
+	const startSession = useCallback(async () => {
+		const cfg = await ensureConfigLoaded();
+		const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : [])];
 
-			const loggerCallback: LoggerSessionCallback = (data, status) => {
-				if (status === "running") {
-					const newLog = parseLoggerLine(data);
-					if (newLog) {
-						setLogs((prevLogs) => appendUniqueLog(prevLogs, newLog));
-					} else if (data.includes("Error while reading network.")) {
-						alert(tRef.current("record.errors.networkError"));
-					}
-					return;
+		const loggerCallback: LoggerSessionCallback = (data, status) => {
+			if (status === "running") {
+				const newLog = parseLoggerLine(data);
+				if (newLog) {
+					setLogs((prevLogs) => appendUniqueLog(prevLogs, newLog));
+				} else if (data.includes("Error while reading network.")) {
+					alert(tRef.current("record.errors.networkError"));
 				}
+				return;
+			}
 
-				if (status === "error") {
-					console.error(data);
-					alert(tRef.current("record.errors.loggerError", { message: data }));
-				}
+			if (status === "error") {
+				console.error(data);
+				alert(tRef.current("record.errors.loggerError", { message: data }));
+			}
 
-				if (retryCountRef.current < MAX_RETRIES) {
-					retryCountRef.current++;
-					start("analyze", extraArgs, loggerCallback);
-				} else {
-					alert(tRef.current("record.errors.loggerFailedRetry"));
-					retryCountRef.current = 0;
-				}
-			};
+			if (retryCountRef.current < MAX_RETRIES) {
+				retryCountRef.current++;
+				start("analyze", extraArgs, loggerCallback);
+			} else {
+				alert(tRef.current("record.errors.loggerFailedRetry"));
+				retryCountRef.current = 0;
+			}
+		};
 
-			start("analyze", extraArgs, loggerCallback);
-		})();
+		start("analyze", extraArgs, loggerCallback);
 	}, [start, ensureConfigLoaded]);
+
+	useEffect(() => {
+		startSession();
+	}, [startSession]);
 
 	const handleDeleteLog = (index: number) => {
 		setLogs((prevLogs) => prevLogs.filter((_, i) => i !== index));
@@ -87,8 +90,27 @@ function RecordPage() {
 	const handleStop = async () => {
 		if (!sessionActive) return;
 		await stop();
+		if (logs.length > 0) await loggerRef.current?.saveSessionToHistory();
 		setDuration(Date.now() - startedAtRef.current);
 		setSessionActive(false);
+	};
+
+	const handleResume = async () => {
+		if (sessionActive) return;
+		setSessionActive(true);
+		await startSession();
+	};
+
+	const handleRestart = async () => {
+		retryCountRef.current = 0;
+		setLogs([]);
+		setStats({ kills: 0, deaths: 0, kdr: 0 });
+		setGuildStatsKey({ playerTwo: 1, guild: 2 });
+		setKillOffset(undefined);
+		setDuration(0);
+		startedAtRef.current = Date.now();
+		setSessionActive(true);
+		await startSession();
 	};
 
 	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
@@ -115,11 +137,22 @@ function RecordPage() {
 						<span className="text-sm font-medium text-gray-300">{sessionActive ? t("record.status.recording") : t("record.status.stopped")}</span>
 					</div>
 
-					{sessionActive && (
+					{sessionActive ? (
 						<Button size="sm" color="outline" onClick={handleStop}>
 							<Icon icon={LuSquare} size="sm" className="mr-2" />
 							{t("record.stopRecording")}
 						</Button>
+					) : (
+						<div className="flex items-center gap-2">
+							<Button size="sm" color="outline" onClick={handleResume}>
+								<Icon icon={LuPlay} size="sm" className="mr-2" />
+								{t("record.resumeRecording")}
+							</Button>
+							<Button size="sm" color="outline" onClick={handleRestart}>
+								<Icon icon={LuRotateCcw} size="sm" className="mr-2" />
+								{t("record.restartRecording")}
+							</Button>
+						</div>
 					)}
 				</div>
 
@@ -155,7 +188,7 @@ function RecordPage() {
 			</div>
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
-				<Logger logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} onKillOffsetChange={setKillOffset} saveToHistory />
+				<Logger ref={loggerRef} logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} onKillOffsetChange={setKillOffset} />
 			</div>
 		</div>
 	);

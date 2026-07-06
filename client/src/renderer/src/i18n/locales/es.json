@@ -77,7 +77,9 @@
             "recording": "Grabando",
             "stopped": "Detenido"
         },
-        "stopRecording": "Detener grabación",
+        "stopRecording": "Detener",
+        "resumeRecording": "Reanudar",
+        "restartRecording": "Reiniciar",
         "recap": {
             "title": "Resumen de la sesión",
             "summary": "{{duration}} · {{kills}} asesinatos · {{deaths}} muertes · {{kdr}} K/D",

@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.3...v1.3.0) (2026-07-05)
+
+
+### Features
+
+* **stats:** track and display K/D metrics ([8d685ab](https://github.com/Arkantik/Nodewar.gg-tool/commit/8d685ab20461446a7b15169d6f49b05166cd0a05))
+
 ## [1.2.3](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.2...v1.2.3) (2026-07-05)
 
 

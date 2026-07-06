@@ -13,6 +13,7 @@ import StatCard from "../components/ui/StatCard";
 import { getNetworkDeathLogs, getNetworkIsKill } from "../logic/deathLogs";
 import { appendUniqueLog, parseLoggerLine } from "../logic/logParsing";
 import { mostFrequent } from "../logic/util";
+import { useElementHeight } from "../logic/useElementHeight";
 import { useLoggerSession, type LoggerSessionCallback } from "../logic/useLoggerSession";
 
 const MAX_RETRIES = 3;
@@ -37,6 +38,7 @@ function RecordPage() {
 	const [duration, setDuration] = useState(0);
 	const startedAtRef = useRef(Date.now());
 	const { start, stop } = useLoggerSession();
+	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
 
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 
@@ -106,7 +108,7 @@ function RecordPage() {
 
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">
-			<div className="flex flex-col gap-4 min-w-0">
+			<div ref={headerBlockRef} className="flex flex-col gap-4 min-w-0">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<span className={`w-2 h-2 rounded-full ${sessionActive ? "bg-green-400 animate-pulse" : "bg-gray-500"}`} />
@@ -143,16 +145,17 @@ function RecordPage() {
 				<KDTimeline kdr={stats.kdr} kills={stats.kills} deaths={stats.deaths} />
 			</div>
 
-			<div className="hidden lg:block overflow-hidden min-h-0">
-				<GuildStats logs={enrichedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
+			<div className="hidden lg:flex lg:flex-col gap-4 overflow-hidden min-h-0 row-span-2">
+				<div className="shrink-0 overflow-hidden" style={{ height: headerBlockHeight || undefined }}>
+					<GuildStats logs={enrichedLogs} guildIndex={guildStatsKey.guild} playerIndex={guildStatsKey.playerTwo} />
+				</div>
+				<div className="flex-1 min-h-0 overflow-hidden">
+					<EnemyStats logs={enrichedLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
+				</div>
 			</div>
 
 			<div className="glass-card rounded-md p-4 border border-white/10 overflow-hidden min-h-0 min-w-0">
 				<Logger logs={logs} onStatsUpdate={setStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} onKillOffsetChange={setKillOffset} saveToHistory />
-			</div>
-
-			<div className="hidden lg:block overflow-hidden min-h-0">
-				<EnemyStats logs={enrichedLogs} playerIndex={guildStatsKey.playerTwo} guildIndex={guildStatsKey.guild} />
 			</div>
 		</div>
 	);

@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.3.0...v1.3.1) (2026-07-06)
+
+
+### Bug Fixes
+
+* **ui:** align stats sidebar with header height ([c418c4f](https://github.com/Arkantik/Nodewar.gg-tool/commit/c418c4f6deca1380f09629995fa0cb93e23e441f))
+
 # [1.3.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.2.3...v1.3.0) (2026-07-05)
 
 

@@ -99,7 +99,7 @@ function SystemStatusIndicator() {
 		<div className="relative" ref={containerRef}>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className={`cursor-pointer flex items-center justify-center p-2.5 rounded-md transition-all duration-150 ease-out active:scale-90 ${bg} hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50`}
+				className={`cursor-pointer flex items-center justify-center p-2 rounded-md transition-all duration-150 ease-out active:scale-90 ${bg} hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50`}
 				title={t("systemStatus.title")}>
 				{loading ? <LoadingIndicator size="sm" /> : <Icon icon={icon} className={text} size="sm" />}
 			</button>

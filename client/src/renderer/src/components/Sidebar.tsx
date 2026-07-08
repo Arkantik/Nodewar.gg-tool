@@ -32,8 +32,8 @@ function Sidebar() {
 		{ to: "/open", label: t("home.actions.openFile.title"), icon: LuFolder },
 		{ to: "/history", label: t("home.actions.history.title"), icon: LuHistory },
 		{ to: "/demo", label: t("home.actions.demo.title"), icon: LuFlaskConical },
-		{ to: "/settings", label: t("home.actions.settings.title"), icon: LuSettings },
 		{ to: "/docs", label: t("docs.title"), icon: LuBookOpen },
+		{ to: "/settings", label: t("home.actions.settings.title"), icon: LuSettings },
 	];
 
 	const socialLinks = [

@@ -35,7 +35,7 @@ function LanguageSelector() {
 		<div className="relative" ref={dropdownRef}>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="cursor-pointer flex items-center justify-center p-2.5 rounded-md transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 text-gray-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
+				className="cursor-pointer flex items-center justify-center p-2 rounded-md transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 text-gray-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
 				title={t("header.changeLanguage")}>
 				<span className="w-4 h-4 flex items-center justify-center text-[10px] font-bold uppercase leading-none">{currentLang.code}</span>
 			</button>

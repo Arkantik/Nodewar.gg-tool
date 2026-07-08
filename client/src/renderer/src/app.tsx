@@ -1,6 +1,10 @@
+import { useEffect } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
+import CommandBridge from "./components/CommandBridge";
 import Layout from "./components/Layout";
 import Modal from "./components/modal/Modal";
+import ToastContainer from "./components/toast/ToastContainer";
+import { recoverOrphanedSessions } from "./logic/session-recovery";
 import DemoPage from "./routes/DemoPage";
 import DocsPage from "./routes/DocsPage";
 import HistoryPage from "./routes/HistoryPage";
@@ -10,6 +14,10 @@ import RecordPage from "./routes/RecordPage";
 import SettingsPage from "./routes/SettingsPage";
 
 function App() {
+	useEffect(() => {
+		void recoverOrphanedSessions();
+	}, []);
+
 	return (
 		<HashRouter>
 			<Routes>
@@ -24,6 +32,8 @@ function App() {
 				</Route>
 			</Routes>
 			<Modal />
+			<ToastContainer />
+			<CommandBridge />
 		</HashRouter>
 	);
 }

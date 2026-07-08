@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { LuUsers } from "react-icons/lu";
 import type { NamedLog } from "../create-config/config";
+import { aggregateGuilds } from "../../logic/enemyAggregation";
 import Icon from "./Icon";
 
 interface GuildStatsProps {
@@ -10,48 +11,10 @@ interface GuildStatsProps {
 	playerIndex: number;
 }
 
-interface GuildData {
-	name: string;
-	members: Set<string>;
-	kills: number;
-	deaths: number;
-}
-
 function GuildStats({ logs, guildIndex, playerIndex }: GuildStatsProps) {
 	const { t } = useTranslation();
 
-	const guilds = useMemo(() => {
-		const guildMap = new Map<string, GuildData>();
-
-		logs.forEach((log) => {
-			const names = log.names.map((n) => n.name);
-
-			// The format is: [PlayerOne, PlayerTwo, Guild, Character1, Character2]
-			// PlayerTwo (index 1) belongs to Guild (index 2)
-			if (names.length > Math.max(guildIndex, playerIndex)) {
-				const playerName = names[playerIndex];
-				const guildName = names[guildIndex];
-
-				if (!guildName || guildName === "-1" || guildName.trim() === "") return;
-				if (!playerName || playerName === "-1" || playerName.trim() === "") return;
-
-				if (!guildMap.has(guildName)) {
-					guildMap.set(guildName, { name: guildName, members: new Set<string>(), kills: 0, deaths: 0 });
-				}
-
-				const guild = guildMap.get(guildName)!;
-				guild.members.add(playerName);
-				if (log.isKill === true) guild.kills++;
-				else if (log.isKill === false) guild.deaths++;
-			}
-		});
-
-		return guildMap;
-	}, [logs, guildIndex, playerIndex]);
-
-	const sortedGuilds = Array.from(guilds.values()).sort((a, b) => {
-		return b.members.size - a.members.size;
-	});
+	const sortedGuilds = useMemo(() => aggregateGuilds(logs, guildIndex, playerIndex), [logs, guildIndex, playerIndex]);
 
 	return (
 		<div className="glass-card rounded-md p-4 border border-white/10 h-full flex flex-col">

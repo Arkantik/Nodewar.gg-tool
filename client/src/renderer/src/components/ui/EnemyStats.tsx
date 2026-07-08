@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSkull } from "react-icons/lu";
 import type { NamedLog } from "../create-config/config";
+import { aggregatePlayers } from "../../logic/enemyAggregation";
 import Icon from "./Icon";
 
 interface EnemyStatsProps {
@@ -10,45 +11,12 @@ interface EnemyStatsProps {
 	guildIndex: number;
 }
 
-interface PlayerData {
-	name: string;
-	guild: string;
-	kills: number;
-	deaths: number;
-}
-
 const MAX_PLAYERS = 10;
 
 function EnemyStats({ logs, playerIndex, guildIndex }: EnemyStatsProps) {
 	const { t } = useTranslation();
 
-	const players = useMemo(() => {
-		const playerMap = new Map<string, PlayerData>();
-
-		logs.forEach((log) => {
-			const names = log.names.map((n) => n.name);
-			if (names.length > playerIndex) {
-				const name = names[playerIndex];
-				if (!name || name === "-1" || name.trim() === "") return;
-
-				const guildName = names.length > guildIndex ? names[guildIndex] : undefined;
-				const existing = playerMap.get(name);
-				const player = existing ?? { name, guild: guildName && guildName !== "-1" ? guildName : "", kills: 0, deaths: 0 };
-
-				if (log.isKill === true) player.kills++;
-				else if (log.isKill === false) player.deaths++;
-
-				playerMap.set(name, player);
-			}
-		});
-
-		return playerMap;
-	}, [logs, playerIndex, guildIndex]);
-
-	// Deadliest-to-you first (most deaths), ties broken by who you've killed the most.
-	const sortedPlayers = Array.from(players.values())
-		.sort((a, b) => b.deaths - a.deaths || b.kills - a.kills)
-		.slice(0, MAX_PLAYERS);
+	const sortedPlayers = useMemo(() => aggregatePlayers(logs, playerIndex, guildIndex, MAX_PLAYERS), [logs, playerIndex, guildIndex]);
 
 	return (
 		<div className="glass-card rounded-md p-4 border border-white/10 h-full flex flex-col">

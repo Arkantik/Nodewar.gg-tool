@@ -80,6 +80,7 @@
         "stopRecording": "Arrêter",
         "resumeRecording": "Reprendre",
         "restartRecording": "Redémarrer",
+        "saveToHistory": "Enregistrer dans l'historique",
         "recap": {
             "title": "Récapitulatif de session",
             "summary": "{{duration}} · {{kills}} éliminations · {{deaths}} morts · {{kdr}} K/D",
@@ -89,7 +90,8 @@
         "errors": {
             "networkError": "Erreur lors de la lecture du réseau. Veuillez me notifier sur Discord.",
             "loggerError": "Une erreur s'est produite lors du démarrage du logger. Message d'erreur : {{message}}\nLe logger va être redémarré.",
-            "loggerFailedRetry": "Impossible de démarrer le logger après 3 tentatives. Veuillez réessayer."
+            "loggerFailedRetry": "Impossible de démarrer le logger après 3 tentatives. Veuillez réessayer.",
+            "saveDeferred": "Enregistrement arrêté, mais impossible de le sauvegarder automatiquement. Ouvrez la page d'enregistrement pour sauvegarder cette session."
         }
     },
     "open": {
@@ -114,6 +116,15 @@
         "allInterfaces": {
             "title": "Toutes les interfaces réseau",
             "description": "Capturez le trafic de toutes les interfaces réseau disponibles. Désactivez pour utiliser uniquement l'interface par défaut."
+        },
+        "hotkey": {
+            "title": "Raccourci d'enregistrement",
+            "description": "Raccourci global pour démarrer, reprendre ou arrêter et sauvegarder un enregistrement, même lorsque le jeu est au premier plan. Doit être une combinaison de 2 touches commençant par Ctrl, Alt, Maj ou Cmd.",
+            "notRegistered": "Non défini",
+            "change": "Modifier",
+            "listening": "Appuyez sur une combinaison de touches… (Échap pour annuler)",
+            "updateSuccess": "Raccourci mis à jour : {{accelerator}}",
+            "updateError": "Impossible d'enregistrer cette combinaison - elle est peut-être déjà utilisée par une autre application."
         },
         "saved": "Paramètres enregistrés avec succès",
         "configInfo": {
@@ -282,7 +293,18 @@
         "delete": "Supprimer",
         "confirmDelete": "Supprimer cette session de l'historique ? Cette action est irréversible.",
         "topGuild": "Guilde principale : {{guild}}",
-        "topEnemy": "Le plus meurtrier : {{enemy}}"
+        "topEnemy": "Le plus meurtrier : {{enemy}}",
+        "recoveredSessions_one": "{{count}} session récupérée après un arrêt inattendu - voir l'historique.",
+        "recoveredSessions_other": "{{count}} sessions récupérées après un arrêt inattendu - voir l'historique.",
+        "recoveredBadge": "Récupérée",
+        "notes": {
+            "placeholder": "Ajouter une note..."
+        },
+        "tags": {
+            "add": "Ajouter un tag",
+            "placeholder": "Nom du tag",
+            "allFilter": "Toutes"
+        }
     },
     "common": {
         "killed": "a tué",

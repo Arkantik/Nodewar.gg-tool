@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuActivity, LuChartPie, LuFileText, LuFolder, LuSkull, LuSword } from "react-icons/lu";
 import { useLocation } from "react-router-dom";
+import { useListRef } from "react-window";
 import type { Log, LogType, NamedLog } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
 import LogEditor from "../components/create-config/LogEditor";
@@ -37,9 +38,16 @@ function OpenPage() {
 	const [guildStatsKey, setGuildStatsKey] = useState({ playerTwo: 1, guild: 2 });
 	const [killOffset, setKillOffset] = useState<number>();
 	const [timelineKey, setTimelineKey] = useState(0);
+	const [scrubIndex, setScrubIndex] = useState<number | null>(null);
 	const { start } = useLoggerSession();
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
+	const logListRef = useListRef(null);
+
+	function handleScrub(index: number | null) {
+		setScrubIndex(index);
+		if (index !== null) logListRef.current?.scrollToRow({ index, align: "center", behavior: "smooth" });
+	}
 
 	const combatLogStats = useMemo(() => {
 		let kills = 0;
@@ -80,6 +88,7 @@ function OpenPage() {
 		setGuildStatsKey({ playerTwo: 1, guild: 2 });
 		setKillOffset(undefined);
 		setTimelineKey((prev) => prev + 1);
+		setScrubIndex(null);
 
 		const filePaths = await open_file();
 		if (!filePaths || filePaths.length === 0) return;
@@ -142,7 +151,7 @@ function OpenPage() {
 					<StatCard label={t("record.stats.kdRatio")} value={stats.kdr} icon={LuChartPie} valueColor={stats.kdr >= 1 ? "text-green-400" : "text-red-400"} />
 				</div>
 
-				<KDTimeline key={timelineKey} kdr={stats.kdr} kills={stats.kills} deaths={stats.deaths} allLogs={isNetwork ? undefined : combatLogs} />
+				<KDTimeline key={timelineKey} kdr={stats.kdr} kills={stats.kills} deaths={stats.deaths} allLogs={isNetwork ? undefined : combatLogs} onScrub={isNetwork ? undefined : handleScrub} />
 			</div>
 
 			<div className="hidden lg:flex lg:flex-col gap-4 overflow-hidden min-h-0 row-span-2">
@@ -158,7 +167,7 @@ function OpenPage() {
 				{isNetwork ? (
 					<Logger logs={logs} loading={loading} onStatsUpdate={setNetworkStats} onDeleteLog={handleDeleteLog} onIndicesChange={handleIndicesChange} onKillOffsetChange={setKillOffset} />
 				) : (
-					<LogEditor logs={combatLogs} loading={loading} onDeleteLog={handleDeleteCombatLog} onIndicesChange={handleIndicesChange} />
+					<LogEditor logs={combatLogs} loading={loading} onDeleteLog={handleDeleteCombatLog} onIndicesChange={handleIndicesChange} listRef={logListRef} highlightIndex={scrubIndex} />
 				)}
 			</div>
 		</div>

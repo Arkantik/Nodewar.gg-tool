@@ -80,6 +80,7 @@
         "stopRecording": "Stoppen",
         "resumeRecording": "Fortsetzen",
         "restartRecording": "Neu starten",
+        "saveToHistory": "Im Verlauf speichern",
         "recap": {
             "title": "Sitzungszusammenfassung",
             "summary": "{{duration}} · {{kills}} Kills · {{deaths}} Tode · {{kdr}} K/D",
@@ -89,7 +90,8 @@
         "errors": {
             "networkError": "Fehler beim Lesen des Netzwerks. Bitte informiere mich auf Discord.",
             "loggerError": "Beim Starten des Loggers ist ein Fehler aufgetreten. Fehlermeldung: {{message}}\nLogger wird neu gestartet.",
-            "loggerFailedRetry": "Logger konnte nach 3 Versuchen nicht gestartet werden. Bitte erneut versuchen."
+            "loggerFailedRetry": "Logger konnte nach 3 Versuchen nicht gestartet werden. Bitte erneut versuchen.",
+            "saveDeferred": "Aufnahme gestoppt, konnte aber nicht automatisch gespeichert werden. Öffne die Aufnahmeseite, um diese Sitzung zu speichern."
         }
     },
     "open": {
@@ -114,6 +116,15 @@
         "allInterfaces": {
             "title": "Alle Netzwerkschnittstellen",
             "description": "Erfassen Sie Datenverkehr von allen verfügbaren Netzwerkschnittstellen. Deaktivieren Sie diese Option, um nur die Standardschnittstelle zu verwenden."
+        },
+        "hotkey": {
+            "title": "Aufnahme-Hotkey",
+            "description": "Globale Tastenkombination zum Starten, Fortsetzen oder Stoppen & Speichern einer Aufnahme, auch während das Spiel im Fokus ist. Muss eine 2-Tasten-Kombination sein, die mit Strg, Alt, Umschalt oder Cmd beginnt.",
+            "notRegistered": "Nicht festgelegt",
+            "change": "Ändern",
+            "listening": "Tastenkombination drücken… (Esc zum Abbrechen)",
+            "updateSuccess": "Hotkey auf {{accelerator}} aktualisiert",
+            "updateError": "Diese Kombination konnte nicht registriert werden - sie wird möglicherweise bereits von einer anderen App verwendet."
         },
         "saved": "Einstellungen erfolgreich gespeichert",
         "configInfo": {
@@ -279,7 +290,18 @@
         "delete": "Löschen",
         "confirmDelete": "Diese Sitzung aus dem Verlauf löschen? Dies kann nicht rückgängig gemacht werden.",
         "topGuild": "Top-Gilde: {{guild}}",
-        "topEnemy": "Tödlichster: {{enemy}}"
+        "topEnemy": "Tödlichster: {{enemy}}",
+        "recoveredSessions_one": "{{count}} Sitzung nach einem unerwarteten Beenden wiederhergestellt - siehe Verlauf.",
+        "recoveredSessions_other": "{{count}} Sitzungen nach einem unerwarteten Beenden wiederhergestellt - siehe Verlauf.",
+        "recoveredBadge": "Wiederhergestellt",
+        "notes": {
+            "placeholder": "Notiz hinzufügen..."
+        },
+        "tags": {
+            "add": "Tag hinzufügen",
+            "placeholder": "Tag-Name",
+            "allFilter": "Alle"
+        }
     },
     "common": {
         "killed": "getötet",

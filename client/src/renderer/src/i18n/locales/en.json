@@ -80,6 +80,7 @@
         "stopRecording": "Stop",
         "resumeRecording": "Resume",
         "restartRecording": "Restart",
+        "saveToHistory": "Save to History",
         "recap": {
             "title": "Session Recap",
             "summary": "{{duration}} · {{kills}} kills · {{deaths}} deaths · {{kdr}} K/D",
@@ -89,7 +90,8 @@
         "errors": {
             "networkError": "Error while reading network. Please notify me on Discord.",
             "loggerError": "An error occurred while trying to start the logger. Error message: {{message}}\nLogger will be restarted.",
-            "loggerFailedRetry": "Tried to start logger 3 times, but failed. Please try again."
+            "loggerFailedRetry": "Tried to start logger 3 times, but failed. Please try again.",
+            "saveDeferred": "Recording stopped, but couldn't save automatically. Open the Record page to save this session."
         }
     },
     "open": {
@@ -114,6 +116,15 @@
         "allInterfaces": {
             "title": "All Network Interfaces",
             "description": "Capture traffic from all available network interfaces. Disable to use only the default interface."
+        },
+        "hotkey": {
+            "title": "Recording Hotkey",
+            "description": "Global shortcut to start, resume or stop & save a recording, even while the game has focus. Must be a 2-key combination starting with Ctrl, Alt, Shift, or Cmd.",
+            "notRegistered": "Not set",
+            "change": "Change",
+            "listening": "Press a key combination… (Esc to cancel)",
+            "updateSuccess": "Hotkey updated to {{accelerator}}",
+            "updateError": "Couldn't register that combination - it may already be in use by another app."
         },
         "saved": "Settings saved successfully",
         "configInfo": {
@@ -282,7 +293,18 @@
         "delete": "Delete",
         "confirmDelete": "Delete this session from history? This cannot be undone.",
         "topGuild": "Top guild: {{guild}}",
-        "topEnemy": "Deadliest: {{enemy}}"
+        "topEnemy": "Deadliest: {{enemy}}",
+        "recoveredSessions_one": "Recovered {{count}} session after an unexpected shutdown - see History.",
+        "recoveredSessions_other": "Recovered {{count}} sessions after an unexpected shutdown - see History.",
+        "recoveredBadge": "Recovered",
+        "notes": {
+            "placeholder": "Add a note..."
+        },
+        "tags": {
+            "add": "Add tag",
+            "placeholder": "Tag name",
+            "allFilter": "All"
+        }
     },
     "common": {
         "killed": "killed",

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { LuActivity, LuChartPie, LuPlay, LuRotateCcw, LuSkull, LuSquare, LuSword } from "react-icons/lu";
+import { LuActivity, LuChartPie, LuPlay, LuRotateCcw, LuSave, LuSkull, LuSquare, LuSword } from "react-icons/lu";
 import type { NamedLog } from "../components/create-config/config";
 import Logger, { type LoggerHandle } from "../components/create-config/Logger";
 import Button from "../components/ui/Button";
@@ -28,29 +28,35 @@ function RecordPage() {
 
 	const hasStarted = useRecordingStore((s) => s.hasStarted);
 	const sessionActive = useRecordingStore((s) => s.sessionActive);
+	const saved = useRecordingStore((s) => s.saved);
 	const logs = useRecordingStore((s) => s.logs);
 	const stats = useRecordingStore((s) => s.stats);
 	const killOffset = useRecordingStore((s) => s.killOffset);
 	const guildStatsKey = useRecordingStore((s) => s.guildStatsKey);
 	const duration = useRecordingStore((s) => s.duration);
 	const start = useRecordingStore((s) => s.start);
-	const stopCapture = useRecordingStore((s) => s.stopCapture);
+	const stopAndSave = useRecordingStore((s) => s.stopAndSave);
 	const resume = useRecordingStore((s) => s.resume);
 	const restart = useRecordingStore((s) => s.restart);
 	const deleteLog = useRecordingStore((s) => s.deleteLog);
 	const setStats = useRecordingStore((s) => s.setStats);
 	const setGuildStatsKey = useRecordingStore((s) => s.setGuildStatsKey);
 	const setKillOffset = useRecordingStore((s) => s.setKillOffset);
+	const registerSaveHandler = useRecordingStore((s) => s.registerSaveHandler);
 
 	useEffect(() => {
 		if (!hasStarted) start();
 	}, [hasStarted, start]);
 
-	const handleStop = async () => {
-		if (!sessionActive) return;
-		await stopCapture();
-		if (logs.length > 0) await loggerRef.current?.saveSessionToHistory();
-	};
+	// Lets the tray menu / global hotkey trigger a full "stop & save" without
+	// this page being mounted, as long as it was mounted at some point during
+	// the session (see recording-store.ts's saveHandler).
+	useEffect(() => {
+		registerSaveHandler(async () => {
+			await loggerRef.current?.saveSessionToHistory();
+		});
+		return () => registerSaveHandler(null);
+	}, [registerSaveHandler]);
 
 	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
 
@@ -77,12 +83,18 @@ function RecordPage() {
 					</div>
 
 					{sessionActive ? (
-						<Button size="sm" color="secondary" onClick={handleStop}>
+						<Button size="sm" color="secondary" onClick={stopAndSave}>
 							<Icon icon={LuSquare} size="sm" className="mr-2" />
 							{t("record.stopRecording")}
 						</Button>
 					) : (
 						<div className="flex items-center gap-2">
+							{!saved && logs.length > 0 && (
+								<Button size="sm" color="secondary" onClick={stopAndSave}>
+									<Icon icon={LuSave} size="sm" className="mr-2" />
+									{t("record.saveToHistory")}
+								</Button>
+							)}
 							<Button size="sm" color="secondary" onClick={resume}>
 								<Icon icon={LuPlay} size="sm" className="mr-2" />
 								{t("record.resumeRecording")}

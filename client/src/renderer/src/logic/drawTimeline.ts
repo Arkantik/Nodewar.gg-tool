@@ -1,4 +1,4 @@
-interface DataPoint {
+export interface DataPoint {
 	timestamp: number;
 	kdr: number;
 	kills: number;
@@ -9,6 +9,27 @@ interface DrawTimelineOptions {
 	canvas: HTMLCanvasElement;
 	container: HTMLElement;
 	dataPoints: DataPoint[];
+}
+
+export const CHART_X_PADDING = 35;
+
+export function createXScale(dataPoints: DataPoint[], width: number, xPadding: number) {
+	const minTimestamp = Math.min(...dataPoints.map((p) => p.timestamp));
+	const maxTimestamp = Math.max(...dataPoints.map((p) => p.timestamp));
+	const timeRange = maxTimestamp - minTimestamp || 1;
+
+	const getX = (timestamp: number) => {
+		if (dataPoints.length === 1) return xPadding;
+		return xPadding + ((timestamp - minTimestamp) / timeRange) * (width - xPadding);
+	};
+
+	const getTimestampFromX = (x: number) => {
+		if (dataPoints.length === 1) return minTimestamp;
+		const ratio = (x - xPadding) / (width - xPadding);
+		return minTimestamp + ratio * timeRange;
+	};
+
+	return { getX, getTimestampFromX, minTimestamp, maxTimestamp };
 }
 
 export function drawTimeline({ canvas, container, dataPoints }: DrawTimelineOptions): void {
@@ -23,7 +44,7 @@ export function drawTimeline({ canvas, container, dataPoints }: DrawTimelineOpti
 
 		const width = canvas.width;
 		const height = canvas.height;
-		const xPadding = 35;
+		const xPadding = CHART_X_PADDING;
 		const topPadding = 10;
 		const bottomPadding = 20;
 		const graphHeight = height - topPadding - bottomPadding;
@@ -61,10 +82,7 @@ export function drawTimeline({ canvas, container, dataPoints }: DrawTimelineOpti
 
 	ctx.clearRect(0, 0, width, height);
 
-	const getX = (timestamp: number) => {
-		if (dataPoints.length === 1) return xPadding;
-		return xPadding + ((timestamp - minTimestamp) / timeRange) * (width - xPadding);
-	};
+	const { getX } = createXScale(dataPoints, width, xPadding);
 
 	drawGridLines(ctx, xPadding, topPadding, width, graphHeight);
 

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import type { OverlayPreloadApi, OverlayStats } from "../shared/ipc-contract";
+import type { OverlayPayload, OverlayPreloadApi, OverlaySettings, OverlaySize } from "../shared/ipc-contract";
 
 function subscribe<T>(channel: string, cb: (payload: T) => void): () => void {
   const listener = (_event: Electron.IpcRendererEvent, payload: T) => cb(payload);
@@ -8,7 +8,9 @@ function subscribe<T>(channel: string, cb: (payload: T) => void): () => void {
 }
 
 const overlayApi: OverlayPreloadApi = {
-  onStats: (cb) => subscribe<OverlayStats>("overlay:stats", cb)
+  onPayload: (cb) => subscribe<OverlayPayload>("overlay:payload", cb),
+  onSettings: (cb) => subscribe<OverlaySettings>("overlay:settings", cb),
+  reportSize: (size: OverlaySize) => ipcRenderer.send("overlay:reportSize", size)
 };
 
 contextBridge.exposeInMainWorld("overlayApi", overlayApi);

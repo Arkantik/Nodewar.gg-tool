@@ -5,7 +5,8 @@ import type {
   LoggerEvent,
   LoggerMode,
   OpenFileOptions,
-  OverlayStats,
+  OverlayPayload,
+  OverlaySettings,
   RecordingStatus,
   SaveFileOptions,
   SessionLogMeta,
@@ -64,7 +65,9 @@ const api: IpcApi = {
     resume: () => ipcRenderer.invoke("hotkey:resume")
   },
   overlay: {
-    pushStats: (stats: OverlayStats) => ipcRenderer.invoke("overlay:pushStats", stats)
+    pushPayload: (payload: OverlayPayload) => ipcRenderer.invoke("overlay:pushPayload", payload),
+    getSettings: () => ipcRenderer.invoke("overlay:getSettings"),
+    setSettings: (settings: Partial<OverlaySettings>) => ipcRenderer.invoke("overlay:setSettings", settings)
   },
   sessionLog: {
     begin: (sessionId: string) => ipcRenderer.invoke("sessionLog:begin", sessionId),
@@ -72,6 +75,13 @@ const api: IpcApi = {
     setMeta: (sessionId: string, meta: SessionLogMeta) => ipcRenderer.invoke("sessionLog:setMeta", sessionId, meta),
     discard: (sessionId: string) => ipcRenderer.invoke("sessionLog:discard", sessionId),
     listOrphaned: () => ipcRenderer.invoke("sessionLog:listOrphaned")
+  },
+  window: {
+    minimize: () => ipcRenderer.invoke("window:minimize"),
+    toggleMaximize: () => ipcRenderer.invoke("window:toggleMaximize"),
+    close: () => ipcRenderer.invoke("window:close"),
+    isMaximized: () => ipcRenderer.invoke("window:isMaximized"),
+    onStateChanged: (cb) => subscribe<boolean>("window:stateChanged", cb)
   }
 };
 

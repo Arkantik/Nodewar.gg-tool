@@ -4,6 +4,8 @@ import type { LogType } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
 import i18n from "../i18n";
 import type { LoggerMode } from "../../../shared/ipc-contract";
+import { getNetworkIsKill } from "./deathLogs";
+import { aggregateGuilds, aggregatePlayers } from "./enemyAggregation";
 import { appendUniqueLog, parseLoggerLine } from "./logParsing";
 
 const MAX_RETRIES = 3;
@@ -41,17 +43,40 @@ interface RecordingState {
 let activeSessionId: string | null = null;
 let unsubscribe: (() => void) | null = null;
 let retryCount = 0;
+let starting = false;
 
 let saveHandler: (() => Promise<void>) | null = null;
 
 let pendingLines: string[] = [];
 let flushTimer: ReturnType<typeof setInterval> | null = null;
+let overlayTimer: ReturnType<typeof setInterval> | null = null;
 
 function flushPendingLines(sessionId: string) {
 	if (pendingLines.length === 0) return;
 	const lines = pendingLines;
 	pendingLines = [];
 	void window.api.sessionLog.append(sessionId, lines);
+}
+
+// Runs off the module-level store state (not component state), so the overlay keeps
+// getting live updates - including the ticking session timer - no matter which page,
+// if any, is currently mounted.
+function pushOverlayPayload() {
+	const state = useRecordingStore.getState();
+	const enrichedLogs = state.logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, state.killOffset) }));
+
+	const topGuilds = aggregateGuilds(enrichedLogs, state.guildStatsKey.guild, state.guildStatsKey.playerTwo)
+		.slice(0, 3)
+		.map((guild) => ({ name: guild.name, kills: guild.kills, deaths: guild.deaths }));
+	const topPlayers = aggregatePlayers(enrichedLogs, state.guildStatsKey.playerTwo, state.guildStatsKey.guild, 3).map((player) => ({
+		name: player.name,
+		guild: player.guild,
+		kills: player.kills,
+		deaths: player.deaths,
+	}));
+	const elapsedSeconds = state.sessionActive ? Math.floor((Date.now() - state.startedAt) / 1000) : Math.floor(state.duration / 1000);
+
+	void window.api.overlay.pushPayload({ stats: state.stats, elapsedSeconds, topGuilds, topPlayers });
 }
 
 async function stopUnderlyingSession() {
@@ -61,6 +86,10 @@ async function stopUnderlyingSession() {
 	if (flushTimer) {
 		clearInterval(flushTimer);
 		flushTimer = null;
+	}
+	if (overlayTimer) {
+		clearInterval(overlayTimer);
+		overlayTimer = null;
 	}
 	const durableSessionId = useRecordingStore.getState().sessionId;
 	if (durableSessionId) flushPendingLines(durableSessionId);
@@ -83,53 +112,67 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 	startedAt: Date.now(),
 
 	start: async () => {
-		await stopUnderlyingSession();
+		// Guards against overlapping sessions - e.g. React StrictMode double-invoking the
+		// mount effect in dev - which would otherwise leak a duplicate overlay/flush timer
+		// that keeps ticking alongside the real one (seen as the overlay timer flickering
+		// between two slightly different values).
+		if (starting) return;
+		starting = true;
+		try {
+			await stopUnderlyingSession();
 
-		const isNewSession = get().sessionId === null;
-		const durableSessionId = get().sessionId ?? crypto.randomUUID();
-		set({ hasStarted: true, sessionActive: true, sessionId: durableSessionId });
-		if (isNewSession) void window.api.sessionLog.begin(durableSessionId);
-		flushTimer = setInterval(() => flushPendingLines(durableSessionId), 1000);
+			const isNewSession = get().sessionId === null;
+			const durableSessionId = get().sessionId ?? crypto.randomUUID();
+			set({ hasStarted: true, sessionActive: true, sessionId: durableSessionId });
+			if (isNewSession) void window.api.sessionLog.begin(durableSessionId);
+			flushTimer = setInterval(() => flushPendingLines(durableSessionId), 1000);
+			overlayTimer = setInterval(pushOverlayPayload, 1000);
+			pushOverlayPayload();
 
-		const cfg = await useConfigStore.getState().ensureLoaded();
-		const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : [])];
+			const cfg = await useConfigStore.getState().ensureLoaded();
+			const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : [])];
 
-		const { sessionId } = await window.api.logger.start(MODE, extraArgs);
-		activeSessionId = sessionId;
+			const { sessionId } = await window.api.logger.start(MODE, extraArgs);
+			activeSessionId = sessionId;
 
-		unsubscribe = window.api.logger.onEvent((evt) => {
-			if (evt.sessionId !== sessionId) return;
+			unsubscribe = window.api.logger.onEvent((evt) => {
+				if (evt.sessionId !== sessionId) return;
 
-			if (evt.kind === "stdout") {
-				const newLog = parseLoggerLine(evt.data);
-				if (newLog) {
-					set((state) => ({ logs: appendUniqueLog(state.logs, newLog) }));
-					pendingLines.push(evt.data);
-				} else if (evt.data.includes("Error while reading network.")) {
-					ToastManager.warning(i18n.t("record.errors.networkError"));
+				if (evt.kind === "stdout") {
+					const newLog = parseLoggerLine(evt.data);
+					if (newLog) {
+						set((state) => ({ logs: appendUniqueLog(state.logs, newLog) }));
+						pendingLines.push(evt.data);
+						pushOverlayPayload();
+					} else if (evt.data.includes("Error while reading network.")) {
+						ToastManager.warning(i18n.t("record.errors.networkError"));
+					}
+					return;
 				}
-				return;
-			}
 
-			if (evt.kind === "stderr") {
-				console.error(evt.data);
-				ToastManager.error(i18n.t("record.errors.loggerError", { message: evt.data }));
-			}
+				if (evt.kind === "stderr") {
+					console.error(evt.data);
+					ToastManager.error(i18n.t("record.errors.loggerError", { message: evt.data }));
+				}
 
-			if (retryCount < MAX_RETRIES) {
-				retryCount++;
-				void get().start();
-			} else {
-				ToastManager.error(i18n.t("record.errors.loggerFailedRetry"));
-				retryCount = 0;
-			}
-		});
+				if (retryCount < MAX_RETRIES) {
+					retryCount++;
+					void get().start();
+				} else {
+					ToastManager.error(i18n.t("record.errors.loggerFailedRetry"));
+					retryCount = 0;
+				}
+			});
+		} finally {
+			starting = false;
+		}
 	},
 
 	stopCapture: async () => {
 		if (!get().sessionActive) return;
 		await stopUnderlyingSession();
 		set((state) => ({ sessionActive: false, saved: false, duration: Date.now() - state.startedAt }));
+		pushOverlayPayload();
 	},
 
 	stopAndSave: async () => {
@@ -176,15 +219,17 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 	deleteLog: (index) => set((state) => ({ logs: state.logs.filter((_, i) => i !== index) })),
 	setStats: (stats) => {
 		set({ stats });
-		void window.api.overlay.pushStats(stats);
+		pushOverlayPayload();
 	},
 	setGuildStatsKey: (guildStatsKey) => {
 		set({ guildStatsKey });
+		pushOverlayPayload();
 		const sessionId = get().sessionId;
 		if (sessionId) void window.api.sessionLog.setMeta(sessionId, { killOffset: get().killOffset, guildStatsKey });
 	},
 	setKillOffset: (killOffset) => {
 		set({ killOffset });
+		pushOverlayPayload();
 		const sessionId = get().sessionId;
 		if (sessionId) void window.api.sessionLog.setMeta(sessionId, { killOffset, guildStatsKey: get().guildStatsKey });
 	},

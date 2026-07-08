@@ -137,6 +137,31 @@
             "disabled": "Disabled"
         }
     },
+    "overlay": {
+        "title": "Overlay",
+        "subtitle": "Manage the in-game overlay's position and content",
+        "position": {
+            "title": "Screen Position",
+            "topLeft": "Top Left",
+            "topCenter": "Top Center",
+            "topRight": "Top Right",
+            "centerLeft": "Center Left",
+            "centerRight": "Center Right",
+            "bottomLeft": "Bottom Left",
+            "bottomRight": "Bottom Right"
+        },
+        "content": {
+            "title": "Overlay Content",
+            "showGuilds": "Show Top Enemy Guilds",
+            "showGuildsDescription": "Display the top 3 enemy guilds by member count on the overlay.",
+            "showGuildKD": "Show Guild K:D",
+            "showGuildKDDescription": "Show each guild's kill:death count next to its name.",
+            "showPlayers": "Show Top Enemy Players",
+            "showPlayersDescription": "Display the top 3 most dangerous enemy players on the overlay.",
+            "showPlayerKD": "Show Player K:D",
+            "showPlayerKDDescription": "Show each player's kill:death count next to their name."
+        }
+    },
     "docs": {
         "title": "Documentation",
         "subtitle": "Everything you need to know about the Combat Logger",

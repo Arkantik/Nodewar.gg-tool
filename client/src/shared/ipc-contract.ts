@@ -41,8 +41,53 @@ export interface OverlayStats {
   kdr: number;
 }
 
+export type OverlayAnchor = "top-left" | "top-center" | "top-right" | "center-left" | "center-right" | "bottom-left" | "bottom-right";
+
+export interface OverlaySettings {
+  anchor: OverlayAnchor;
+  showGuilds: boolean;
+  showGuildKD: boolean;
+  showPlayers: boolean;
+  showPlayerKD: boolean;
+}
+
+export const DEFAULT_OVERLAY_SETTINGS: OverlaySettings = {
+  anchor: "top-right",
+  showGuilds: false,
+  showGuildKD: false,
+  showPlayers: false,
+  showPlayerKD: false
+};
+
+export interface OverlayGuildEntry {
+  name: string;
+  kills: number;
+  deaths: number;
+}
+
+export interface OverlayPlayerEntry {
+  name: string;
+  guild: string;
+  kills: number;
+  deaths: number;
+}
+
+export interface OverlayPayload {
+  stats: OverlayStats;
+  elapsedSeconds: number;
+  topGuilds: OverlayGuildEntry[];
+  topPlayers: OverlayPlayerEntry[];
+}
+
+export interface OverlaySize {
+  width: number;
+  height: number;
+}
+
 export interface OverlayPreloadApi {
-  onStats: (cb: (stats: OverlayStats) => void) => () => void;
+  onPayload: (cb: (payload: OverlayPayload) => void) => () => void;
+  onSettings: (cb: (settings: OverlaySettings) => void) => () => void;
+  reportSize: (size: OverlaySize) => void;
 }
 
 export interface SessionLogMeta {
@@ -102,7 +147,9 @@ export interface IpcApi {
     resume: () => Promise<void>;
   };
   overlay: {
-    pushStats: (stats: OverlayStats) => Promise<void>;
+    pushPayload: (payload: OverlayPayload) => Promise<void>;
+    getSettings: () => Promise<OverlaySettings>;
+    setSettings: (settings: Partial<OverlaySettings>) => Promise<OverlaySettings>;
   };
   sessionLog: {
     begin: (sessionId: string) => Promise<void>;
@@ -110,5 +157,12 @@ export interface IpcApi {
     setMeta: (sessionId: string, meta: SessionLogMeta) => Promise<void>;
     discard: (sessionId: string) => Promise<void>;
     listOrphaned: () => Promise<OrphanedSession[]>;
+  };
+  window: {
+    minimize: () => Promise<void>;
+    toggleMaximize: () => Promise<void>;
+    close: () => Promise<void>;
+    isMaximized: () => Promise<boolean>;
+    onStateChanged: (cb: (maximized: boolean) => void) => () => void;
   };
 }

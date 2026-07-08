@@ -137,6 +137,31 @@
             "disabled": "Deshabilitado"
         }
     },
+    "overlay": {
+        "title": "Superposición",
+        "subtitle": "Gestiona la posición y el contenido de la superposición en el juego",
+        "position": {
+            "title": "Posición en pantalla",
+            "topLeft": "Arriba Izquierda",
+            "topCenter": "Arriba Centro",
+            "topRight": "Arriba Derecha",
+            "centerLeft": "Centro Izquierda",
+            "centerRight": "Centro Derecha",
+            "bottomLeft": "Abajo Izquierda",
+            "bottomRight": "Abajo Derecha"
+        },
+        "content": {
+            "title": "Contenido de la superposición",
+            "showGuilds": "Mostrar gremios enemigos principales",
+            "showGuildsDescription": "Muestra los 3 gremios enemigos principales por número de miembros en la superposición.",
+            "showGuildKD": "Mostrar K:D de gremio",
+            "showGuildKDDescription": "Muestra el ratio de bajas:muertes de cada gremio junto a su nombre.",
+            "showPlayers": "Mostrar jugadores enemigos principales",
+            "showPlayersDescription": "Muestra los 3 jugadores enemigos más peligrosos en la superposición.",
+            "showPlayerKD": "Mostrar K:D de jugador",
+            "showPlayerKDDescription": "Muestra el ratio de bajas:muertes de cada jugador junto a su nombre."
+        }
+    },
     "docs": {
         "title": "Documentación",
         "subtitle": "Todo lo que necesitas saber sobre el Combat Logger",

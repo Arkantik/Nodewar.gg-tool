@@ -10,6 +10,7 @@ import DocsPage from "./routes/DocsPage";
 import HistoryPage from "./routes/HistoryPage";
 import HomePage from "./routes/HomePage";
 import OpenPage from "./routes/OpenPage";
+import OverlayPage from "./routes/OverlayPage";
 import RecordPage from "./routes/RecordPage";
 import SettingsPage from "./routes/SettingsPage";
 
@@ -27,6 +28,7 @@ function App() {
 					<Route path="/open" element={<OpenPage />} />
 					<Route path="/demo" element={<DemoPage />} />
 					<Route path="/settings" element={<SettingsPage />} />
+					<Route path="/overlay" element={<OverlayPage />} />
 					<Route path="/history" element={<HistoryPage />} />
 					<Route path="/docs" element={<DocsPage />} />
 				</Route>

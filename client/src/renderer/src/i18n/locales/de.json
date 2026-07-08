@@ -137,6 +137,31 @@
             "disabled": "Deaktiviert"
         }
     },
+    "overlay": {
+        "title": "Overlay",
+        "subtitle": "Position und Inhalt des Ingame-Overlays verwalten",
+        "position": {
+            "title": "Bildschirmposition",
+            "topLeft": "Oben Links",
+            "topCenter": "Oben Mitte",
+            "topRight": "Oben Rechts",
+            "centerLeft": "Mitte Links",
+            "centerRight": "Mitte Rechts",
+            "bottomLeft": "Unten Links",
+            "bottomRight": "Unten Rechts"
+        },
+        "content": {
+            "title": "Overlay-Inhalt",
+            "showGuilds": "Top-Gegnergilden anzeigen",
+            "showGuildsDescription": "Zeigt die Top 3 gegnerischen Gilden nach Mitgliederzahl im Overlay an.",
+            "showGuildKD": "Gilden-K:D anzeigen",
+            "showGuildKDDescription": "Zeigt das Kill:Death-Verhältnis jeder Gilde neben ihrem Namen an.",
+            "showPlayers": "Top-Gegnerspieler anzeigen",
+            "showPlayersDescription": "Zeigt die 3 gefährlichsten gegnerischen Spieler im Overlay an.",
+            "showPlayerKD": "Spieler-K:D anzeigen",
+            "showPlayerKDDescription": "Zeigt das Kill:Death-Verhältnis jedes Spielers neben seinem Namen an."
+        }
+    },
     "docs": {
         "title": "Dokumentation",
         "subtitle": "Alles, was Sie über den Combat Logger wissen müssen",

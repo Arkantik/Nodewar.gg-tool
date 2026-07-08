@@ -137,6 +137,31 @@
             "disabled": "Désactivé"
         }
     },
+    "overlay": {
+        "title": "Overlay",
+        "subtitle": "Gérer la position et le contenu de l'overlay en jeu",
+        "position": {
+            "title": "Position à l'écran",
+            "topLeft": "Haut Gauche",
+            "topCenter": "Haut Centre",
+            "topRight": "Haut Droite",
+            "centerLeft": "Centre Gauche",
+            "centerRight": "Centre Droite",
+            "bottomLeft": "Bas Gauche",
+            "bottomRight": "Bas Droite"
+        },
+        "content": {
+            "title": "Contenu de l'overlay",
+            "showGuilds": "Afficher les guildes ennemies principales",
+            "showGuildsDescription": "Affiche les 3 guildes ennemies principales par nombre de membres sur l'overlay.",
+            "showGuildKD": "Afficher le K:D des guildes",
+            "showGuildKDDescription": "Affiche le ratio kills:morts de chaque guilde à côté de son nom.",
+            "showPlayers": "Afficher les joueurs ennemis principaux",
+            "showPlayersDescription": "Affiche les 3 joueurs ennemis les plus dangereux sur l'overlay.",
+            "showPlayerKD": "Afficher le K:D des joueurs",
+            "showPlayerKDDescription": "Affiche le ratio kills:morts de chaque joueur à côté de son nom."
+        }
+    },
     "docs": {
         "title": "Documentation",
         "subtitle": "Tout ce que vous devez savoir sur le Combat Logger",

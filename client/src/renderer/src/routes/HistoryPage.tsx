@@ -101,12 +101,12 @@ function HistoryPage() {
 						{visibleEntries.map((entry) => (
 							<div key={entry.id} className="flex flex-col gap-2 px-4 py-3">
 								<div className="flex items-center gap-4">
-									<div className="w-44 shrink-0">
+									<div className="w-48 shrink-0">
+										<span className="text-sm font-medium text-white whitespace-nowrap">{formatSessionDate(entry.date, i18n.language)}</span>
 										<div className="flex items-center gap-2">
-											<span className="text-sm font-medium text-white">{formatSessionDate(entry.date, i18n.language)}</span>
+											<span className="text-xs text-gray-500">{new Date(entry.date).toLocaleTimeString()}</span>
 											{entry.recovered && <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/30">{t("history.recoveredBadge")}</span>}
 										</div>
-										<div className="text-xs text-gray-500">{new Date(entry.date).toLocaleTimeString()}</div>
 									</div>
 
 									<div className="flex items-center gap-4 shrink-0">

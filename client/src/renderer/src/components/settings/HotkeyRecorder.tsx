@@ -60,15 +60,15 @@ function HotkeyRecorder() {
 	}
 
 	return (
-		<div className="glass-card rounded-md p-6 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
+		<div className="glass-card rounded-md p-4 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
 			<div className="flex items-center justify-between gap-4">
-				<div className="flex items-start gap-4 flex-1">
-					<div className="p-3 bg-white/5 border border-white/10 rounded-md">
-						<Icon icon={LuKeyboard} className="text-gray-400" />
+				<div className="flex items-start gap-3 flex-1">
+					<div className="p-2 bg-white/5 border border-white/10 rounded-md">
+						<Icon icon={LuKeyboard} size="sm" className="text-gray-400" />
 					</div>
 					<div className="flex-1">
-						<h3 className="text-lg font-semibold text-white mb-2">{t("settings.hotkey.title")}</h3>
-						<p className="text-sm text-gray-400 leading-relaxed">{t("settings.hotkey.description")}</p>
+						<h3 className="text-sm font-semibold text-white mb-1">{t("settings.hotkey.title")}</h3>
+						<p className="text-xs text-gray-400 leading-relaxed">{t("settings.hotkey.description")}</p>
 					</div>
 				</div>
 

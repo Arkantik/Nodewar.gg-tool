@@ -13,6 +13,7 @@ import { registerSessionLogIpc } from "./ipc/session-log";
 import { registerShellIpc } from "./ipc/shell";
 import { registerTrayIpc } from "./ipc/tray";
 import { registerUpdaterIpc } from "./ipc/updater";
+import { registerWindowIpc } from "./ipc/window";
 import { setupGlobalHotkey, type HotkeyApi } from "./hotkey";
 import { LoggerProcessManager } from "./logger/process-manager";
 import { setupOverlay, type OverlayController } from "./overlay";
@@ -41,7 +42,9 @@ function createWindow() {
     minHeight: 700,
     resizable: true,
     show: false,
+    backgroundColor: "#0a0a0c",
     icon: app.isPackaged ? undefined : join(app.getAppPath(), "..", "logger", "icon", "icon-2.ico"),
+    frame: false,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       contextIsolation: true,
@@ -59,6 +62,9 @@ function createWindow() {
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+
+  mainWindow.on("maximize", () => mainWindow?.webContents.send("window:stateChanged", true));
+  mainWindow.on("unmaximize", () => mainWindow?.webContents.send("window:stateChanged", false));
 
   const rendererUrl = process.env.ELECTRON_RENDERER_URL;
   const isAppUrl = (url: string) => (rendererUrl ? url.startsWith(rendererUrl) : url.startsWith("file://"));
@@ -96,6 +102,7 @@ app.whenReady().then(() => {
   registerHotkeyIpc(() => hotkeyApi);
   registerOverlayIpc(() => overlayApi);
   registerSessionLogIpc();
+  registerWindowIpc(getWindow);
 
   createWindow();
 

@@ -88,7 +88,7 @@ combat-logger/
 ### 3.1 App shell (`app.tsx`)
 - Layout: `<Sidebar />` + a right-hand column of `<Header />` above the routed page content, with a global `<Modal />` mounted at root.
 - Routes: `/` (Home), `/record`, `/open`, `/demo`, `/settings`, `/history`, `/docs`.
-- **Sidebar.tsx** is the primary navigation surface (replacing the old home-screen action tiles): collapsible via a floating icon-only toggle button (state persisted through `config:get`/`config:set` under the `sidebarCollapsed` key), nav items for every route, an app-version/branding footer, and social links opened via `window.api.shell.openExternal`.
+- **Sidebar.tsx** is the primary navigation surface (replacing the old home-screen action tiles): a fixed icon-only rail (always collapsed) with nav items for every route and social links opened via `window.api.shell.openExternal`.
 
 ### 3.2 Routes (`src/renderer/src/routes/`)
 - **HomePage** — system-status card: runs the logger in `status` mode (`logic/logger-status.ts`) to report Npcap driver presence and config freshness.

@@ -11,6 +11,12 @@ export default defineConfig({
   },
   preload: {
     build: {
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, "src/preload/index.ts"),
+          overlay: resolve(__dirname, "src/preload/overlay.ts")
+        }
+      },
       externalizeDeps: true
     }
   },
@@ -20,6 +26,14 @@ export default defineConfig({
     resolve: {
       alias: {
         "@": resolve(__dirname, "src/renderer/src")
+      }
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, "src/renderer/index.html"),
+          overlay: resolve(__dirname, "src/renderer/overlay.html")
+        }
       }
     },
     plugins: [react(), tailwindcss()]

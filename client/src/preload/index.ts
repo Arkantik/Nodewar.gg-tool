@@ -1,10 +1,14 @@
 import { contextBridge, ipcRenderer } from "electron";
 import type {
+  AppAction,
   IpcApi,
   LoggerEvent,
   LoggerMode,
   OpenFileOptions,
+  OverlayStats,
+  RecordingStatus,
   SaveFileOptions,
+  SessionLogMeta,
   UpdaterEvent
 } from "../shared/ipc-contract";
 
@@ -46,6 +50,28 @@ const api: IpcApi = {
   app: {
     getVersion: () => ipcRenderer.invoke("app:getVersion"),
     exit: () => ipcRenderer.invoke("app:exit")
+  },
+  tray: {
+    setRecordingStatus: (status: RecordingStatus) => ipcRenderer.invoke("tray:setRecordingStatus", status)
+  },
+  commands: {
+    onTrigger: (cb) => subscribe<AppAction>("commands:trigger", cb)
+  },
+  hotkey: {
+    get: () => ipcRenderer.invoke("hotkey:get"),
+    set: (accelerator: string) => ipcRenderer.invoke("hotkey:set", accelerator),
+    pause: () => ipcRenderer.invoke("hotkey:pause"),
+    resume: () => ipcRenderer.invoke("hotkey:resume")
+  },
+  overlay: {
+    pushStats: (stats: OverlayStats) => ipcRenderer.invoke("overlay:pushStats", stats)
+  },
+  sessionLog: {
+    begin: (sessionId: string) => ipcRenderer.invoke("sessionLog:begin", sessionId),
+    append: (sessionId: string, lines: string[]) => ipcRenderer.invoke("sessionLog:append", sessionId, lines),
+    setMeta: (sessionId: string, meta: SessionLogMeta) => ipcRenderer.invoke("sessionLog:setMeta", sessionId, meta),
+    discard: (sessionId: string) => ipcRenderer.invoke("sessionLog:discard", sessionId),
+    listOrphaned: () => ipcRenderer.invoke("sessionLog:listOrphaned")
   }
 };
 

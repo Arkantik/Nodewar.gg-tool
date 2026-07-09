@@ -14,6 +14,10 @@ export interface PlayerData {
 	deaths: number;
 }
 
+export function kdRatio(kills: number, deaths: number): number {
+	return deaths > 0 ? kills / deaths : kills;
+}
+
 export function aggregateGuilds(logs: NamedLog[], guildIndex: number, playerIndex: number): GuildData[] {
 	const guildMap = new Map<string, GuildData>();
 
@@ -35,8 +39,8 @@ export function aggregateGuilds(logs: NamedLog[], guildIndex: number, playerInde
 
 			const guild = guildMap.get(guildName)!;
 			guild.members.add(playerName);
-			if (log.isKill === true) guild.kills++;
-			else if (log.isKill === false) guild.deaths++;
+			if (log.isKill === true) guild.deaths++;
+			else if (log.isKill === false) guild.kills++;
 		}
 	});
 
@@ -56,15 +60,14 @@ export function aggregatePlayers(logs: NamedLog[], playerIndex: number, guildInd
 			const existing = playerMap.get(name);
 			const player = existing ?? { name, guild: guildName && guildName !== "-1" ? guildName : "", kills: 0, deaths: 0 };
 
-			if (log.isKill === true) player.kills++;
-			else if (log.isKill === false) player.deaths++;
+			if (log.isKill === true) player.deaths++;
+			else if (log.isKill === false) player.kills++;
 
 			playerMap.set(name, player);
 		}
 	});
 
-	// Deadliest-to-you first (most deaths), ties broken by who you've killed the most.
 	return Array.from(playerMap.values())
-		.sort((a, b) => b.deaths - a.deaths || b.kills - a.kills)
+		.sort((a, b) => kdRatio(b.kills, b.deaths) - kdRatio(a.kills, a.deaths) || b.kills - a.kills)
 		.slice(0, max);
 }

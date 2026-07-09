@@ -85,6 +85,7 @@ export interface OverlaySize {
 }
 
 export interface OverlayPreloadApi {
+  getSettings: () => Promise<OverlaySettings>;
   onPayload: (cb: (payload: OverlayPayload) => void) => () => void;
   onSettings: (cb: (settings: OverlaySettings) => void) => () => void;
   reportSize: (size: OverlaySize) => void;

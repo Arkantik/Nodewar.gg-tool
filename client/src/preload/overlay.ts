@@ -8,6 +8,7 @@ function subscribe<T>(channel: string, cb: (payload: T) => void): () => void {
 }
 
 const overlayApi: OverlayPreloadApi = {
+  getSettings: () => ipcRenderer.invoke("overlay:getSettings"),
   onPayload: (cb) => subscribe<OverlayPayload>("overlay:payload", cb),
   onSettings: (cb) => subscribe<OverlaySettings>("overlay:settings", cb),
   reportSize: (size: OverlaySize) => ipcRenderer.send("overlay:reportSize", size)

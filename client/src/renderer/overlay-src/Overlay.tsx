@@ -21,10 +21,13 @@ function Overlay() {
 
 	useEffect(() => window.overlayApi.onPayload(setPayload), []);
 	useEffect(() => window.overlayApi.onSettings(setSettings), []);
+	useEffect(() => {
+		window.overlayApi
+			.getSettings()
+			.then(setSettings)
+			.catch(() => {});
+	}, []);
 
-	// Reports the pill's real rendered size to the main process so it can size/position the
-	// window to exactly fit the content - a static height estimate would clip whichever edge
-	// isn't pinned to the anchor once the guild/player sections are toggled on.
 	useEffect(() => {
 		const el = pillRef.current;
 		if (!el) return;
@@ -35,9 +38,6 @@ function Overlay() {
 
 	const { stats } = payload;
 
-	// The window is sized generously so its content never clips; pinning the pill to the
-	// edge matching the chosen anchor (instead of always centering it) keeps the gap to the
-	// screen edge equal to the main process's margin on every side, for every anchor.
 	const [vertical, horizontal] = settings.anchor.split("-") as ["top" | "center" | "bottom", "left" | "center" | "right"];
 	const itemsClass = vertical === "top" ? "items-start" : vertical === "bottom" ? "items-end" : "items-center";
 	const justifyClass = horizontal === "left" ? "justify-start" : horizontal === "right" ? "justify-end" : "justify-center";
@@ -52,16 +52,16 @@ function Overlay() {
 
 				<div className="flex items-center gap-4">
 					<div className="flex items-center gap-1.5">
-						<LuSword className="w-4 h-4 text-blue-400" />
-						<span className="text-sm font-semibold tabular-nums">{stats.kills}</span>
+						<LuSword className="w-4 h-4 text-blue-400 shrink-0" />
+						<span className="text-sm font-semibold tabular-nums min-w-[4ch] text-left">{stats.kills}</span>
 					</div>
 					<div className="flex items-center gap-1.5">
-						<LuSkull className="w-4 h-4 text-red-400" />
-						<span className="text-sm font-semibold tabular-nums">{stats.deaths}</span>
+						<LuSkull className="w-4 h-4 text-red-400 shrink-0" />
+						<span className="text-sm font-semibold tabular-nums min-w-[4ch] text-left">{stats.deaths}</span>
 					</div>
 					<div className="flex items-center gap-1.5">
-						<LuChartPie className={`w-4 h-4 ${stats.kdr >= 1 ? "text-green-400" : "text-red-400"}`} />
-						<span className="text-sm font-semibold tabular-nums">{stats.kdr}</span>
+						<LuChartPie className={`w-4 h-4 shrink-0 ${stats.kdr >= 1 ? "text-green-400" : "text-red-400"}`} />
+						<span className="text-sm font-semibold tabular-nums min-w-[5ch] text-left">{formatKdr(stats.kills, stats.deaths)}</span>
 					</div>
 				</div>
 
@@ -70,7 +70,7 @@ function Overlay() {
 						{payload.topGuilds.map((guild) => (
 							<div key={guild.name} className="flex items-center justify-between gap-3 text-xs">
 								<span className="font-medium truncate max-w-36">{guild.name}</span>
-								{settings.showGuildKD && <span className="tabular-nums text-gray-300 shrink-0">{formatKdr(guild.kills, guild.deaths)}</span>}
+								{settings.showGuildKD && <span className="tabular-nums text-gray-300 shrink-0 min-w-[5ch] text-right">{formatKdr(guild.kills, guild.deaths)}</span>}
 							</div>
 						))}
 					</div>
@@ -84,7 +84,7 @@ function Overlay() {
 									{player.name}
 									{player.guild && <span className="text-gray-400"> ({player.guild})</span>}
 								</span>
-								{settings.showPlayerKD && <span className="tabular-nums text-gray-300 shrink-0">{formatKdr(player.kills, player.deaths)}</span>}
+								{settings.showPlayerKD && <span className="tabular-nums text-gray-300 shrink-0 min-w-[5ch] text-right">{formatKdr(player.kills, player.deaths)}</span>}
 							</div>
 						))}
 					</div>

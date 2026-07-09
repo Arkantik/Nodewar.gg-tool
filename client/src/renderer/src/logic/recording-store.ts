@@ -5,7 +5,7 @@ import { useConfigStore } from "../components/create-config/config-store";
 import i18n from "../i18n";
 import type { LoggerMode } from "../../../shared/ipc-contract";
 import { getNetworkIsKill } from "./deathLogs";
-import { aggregateGuilds, aggregatePlayers } from "./enemyAggregation";
+import { aggregateGuilds, aggregatePlayers, kdRatio } from "./enemyAggregation";
 import { appendUniqueLog, parseLoggerLine } from "./logParsing";
 
 const MAX_RETRIES = 3;
@@ -58,14 +58,13 @@ function flushPendingLines(sessionId: string) {
 	void window.api.sessionLog.append(sessionId, lines);
 }
 
-// Runs off the module-level store state (not component state), so the overlay keeps
-// getting live updates - including the ticking session timer - no matter which page,
-// if any, is currently mounted.
 function pushOverlayPayload() {
 	const state = useRecordingStore.getState();
 	const enrichedLogs = state.logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, state.killOffset) }));
 
 	const topGuilds = aggregateGuilds(enrichedLogs, state.guildStatsKey.guild, state.guildStatsKey.playerTwo)
+		.slice()
+		.sort((a, b) => kdRatio(b.kills, b.deaths) - kdRatio(a.kills, a.deaths))
 		.slice(0, 3)
 		.map((guild) => ({ name: guild.name, kills: guild.kills, deaths: guild.deaths }));
 	const topPlayers = aggregatePlayers(enrichedLogs, state.guildStatsKey.playerTwo, state.guildStatsKey.guild, 3).map((player) => ({
@@ -112,10 +111,6 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 	startedAt: Date.now(),
 
 	start: async () => {
-		// Guards against overlapping sessions - e.g. React StrictMode double-invoking the
-		// mount effect in dev - which would otherwise leak a duplicate overlay/flush timer
-		// that keeps ticking alongside the real one (seen as the overlay timer flickering
-		// between two slightly different values).
 		if (starting) return;
 		starting = true;
 		try {

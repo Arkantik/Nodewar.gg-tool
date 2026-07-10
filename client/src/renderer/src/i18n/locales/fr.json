@@ -113,6 +113,11 @@
     "settings": {
         "title": "Paramètres réseau",
         "subtitle": "Configurez comment le logger capture le trafic réseau",
+        "myFamilyName": {
+            "title": "Votre nom de famille",
+            "description": "Une fois défini, le logger détecte automatiquement quel emplacement de nom est le vôtre à chaque session, au lieu de se fier à une position enregistrée qui peut dériver après une mise à jour du jeu.",
+            "placeholder": "ex. VotreNomDeFamille"
+        },
         "allInterfaces": {
             "title": "Toutes les interfaces réseau",
             "description": "Capturez le trafic de toutes les interfaces réseau disponibles. Désactivez pour utiliser uniquement l'interface par défaut."

@@ -8,6 +8,7 @@ export function useNameIndices(onChange?: (indices: { playerTwo: number; guild: 
 	const [guildIndex, setGuildIndex] = useState(2);
 
 	function updateNames(target: NameIndexTarget, value: number) {
+		let newPlayerOneIndex = playerOneIndex;
 		let newPlayerTwoIndex = playerTwoIndex;
 		let newGuildIndex = guildIndex;
 
@@ -20,9 +21,11 @@ export function useNameIndices(onChange?: (indices: { playerTwo: number; guild: 
 				newGuildIndex = playerOneIndex;
 			}
 			setPlayerOneIndex(value);
+			newPlayerOneIndex = value;
 		} else if (target === "player_two") {
 			if (value === playerOneIndex) {
 				setPlayerOneIndex(playerTwoIndex);
+				newPlayerOneIndex = playerTwoIndex;
 			} else if (value === guildIndex) {
 				setGuildIndex(playerTwoIndex);
 				newGuildIndex = playerTwoIndex;
@@ -32,6 +35,7 @@ export function useNameIndices(onChange?: (indices: { playerTwo: number; guild: 
 		} else {
 			if (value === playerOneIndex) {
 				setPlayerOneIndex(guildIndex);
+				newPlayerOneIndex = guildIndex;
 			} else if (value === playerTwoIndex) {
 				setPlayerTwoIndex(guildIndex);
 				newPlayerTwoIndex = guildIndex;
@@ -41,6 +45,8 @@ export function useNameIndices(onChange?: (indices: { playerTwo: number; guild: 
 		}
 
 		onChange?.({ playerTwo: newPlayerTwoIndex, guild: newGuildIndex });
+
+		return { playerOne: newPlayerOneIndex, playerTwo: newPlayerTwoIndex, guild: newGuildIndex };
 	}
 
 	return {

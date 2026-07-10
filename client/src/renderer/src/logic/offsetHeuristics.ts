@@ -50,6 +50,23 @@ export function rankNameOffsets(logs: LogType[], possibleNameOffsets: NameOffset
 	return next;
 }
 
+export function findPlayerOneIndexByName(logs: LogType[], familyName: string): number | undefined {
+	const target = familyName.trim().toLowerCase();
+	if (!target) return undefined;
+
+	const counts = new Map<number, number>();
+	for (const log of logs) {
+		log.names.forEach((n, i) => {
+			if (n.name.trim().toLowerCase() === target) {
+				counts.set(i, (counts.get(i) || 0) + 1);
+			}
+		});
+	}
+
+	const best = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0];
+	return best?.[0];
+}
+
 export function findMostFrequentIdentifier(logs: LogType[]): string | undefined {
 	const identifiers = new Map<string, number>();
 	for (const log of logs) {

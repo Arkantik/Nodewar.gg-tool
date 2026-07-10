@@ -5,7 +5,19 @@ import { useHistoryStore } from "./history-store";
 import { parseLoggerLine } from "./logParsing";
 import { mostFrequent } from "./util";
 
+let recoveryInFlight = false;
+
 export async function recoverOrphanedSessions() {
+	if (recoveryInFlight) return;
+	recoveryInFlight = true;
+	try {
+		await recoverOrphanedSessionsInternal();
+	} finally {
+		recoveryInFlight = false;
+	}
+}
+
+async function recoverOrphanedSessionsInternal() {
 	const orphaned = await window.api.sessionLog.listOrphaned();
 	if (orphaned.length === 0) return;
 

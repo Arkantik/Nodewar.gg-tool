@@ -79,11 +79,8 @@ export function useLoggerLogs(
 
   useEffect(() => {
     if (stats) onStatsUpdate?.(stats);
-  }, [stats, onStatsUpdate]);
-
-  useEffect(() => {
     onKillOffsetChange?.(possibleKillOffsets[killIndex]);
-  }, [possibleKillOffsets, killIndex, onKillOffsetChange]);
+  }, [stats, onStatsUpdate, possibleKillOffsets, killIndex, onKillOffsetChange]);
 
   function setAutoScrollAndPersist(checked: boolean) {
     setAutoScroll(checked);

@@ -13,14 +13,12 @@ function SettingsPage() {
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 	const updateConfig = useConfigStore((s) => s.updateConfig);
 	const [allInterfaces, setAllInterfaces] = useState(true);
-	const [_, setIpFilter] = useState(false);
 	const [saved, setSaved] = useState(false);
 
 	useEffect(() => {
 		(async () => {
 			const cfg = await ensureConfigLoaded();
 			setAllInterfaces(cfg.all_interfaces === true || cfg.all_interfaces === undefined);
-			setIpFilter(false);
 		})();
 	}, [ensureConfigLoaded]);
 

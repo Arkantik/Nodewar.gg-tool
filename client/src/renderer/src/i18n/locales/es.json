@@ -154,12 +154,12 @@
             "title": "Contenido de la superposición",
             "showGuilds": "Mostrar gremios enemigos principales",
             "showGuildsDescription": "Muestra los 3 gremios enemigos principales por número de miembros en la superposición.",
-            "showGuildKD": "Mostrar K:D de gremio",
-            "showGuildKDDescription": "Muestra el ratio de bajas:muertes de cada gremio junto a su nombre.",
+            "showGuildKD": "Mostrar K/D de gremio",
+            "showGuildKDDescription": "Muestra el ratio de k/d de cada gremio junto a su nombre.",
             "showPlayers": "Mostrar jugadores enemigos principales",
             "showPlayersDescription": "Muestra los 3 jugadores enemigos más peligrosos en la superposición.",
-            "showPlayerKD": "Mostrar K:D de jugador",
-            "showPlayerKDDescription": "Muestra el ratio de bajas:muertes de cada jugador junto a su nombre."
+            "showPlayerKD": "Mostrar K/D de jugador",
+            "showPlayerKDDescription": "Muestra el ratio de k/d de cada jugador junto a su nombre."
         }
     },
     "docs": {

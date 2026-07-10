@@ -1,22 +1,38 @@
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { join } from "node:path";
+import type { AppAction } from "../shared/ipc-contract";
 import { registerAppIpc } from "./ipc/app";
 import { registerClipboardIpc } from "./ipc/clipboard";
 import { registerConfigIpc } from "./ipc/config";
 import { registerDialogIpc } from "./ipc/dialogs";
 import { registerFsIpc } from "./ipc/fs";
+import { registerHotkeyIpc } from "./ipc/hotkey";
 import { registerLoggerIpc } from "./ipc/logger";
+import { registerOverlayIpc } from "./ipc/overlay";
+import { registerSessionLogIpc } from "./ipc/session-log";
 import { registerShellIpc } from "./ipc/shell";
+import { registerTrayIpc } from "./ipc/tray";
 import { registerUpdaterIpc } from "./ipc/updater";
+import { registerWindowIpc } from "./ipc/window";
+import { setupGlobalHotkey, type HotkeyApi } from "./hotkey";
 import { LoggerProcessManager } from "./logger/process-manager";
+import { setupOverlay, type OverlayController } from "./overlay";
+import { setupTray, type TrayApi } from "./tray";
 import { setupUpdater } from "./updater";
 
 let mainWindow: BrowserWindow | null = null;
+let trayApi: TrayApi | null = null;
+let hotkeyApi: HotkeyApi | null = null;
+let overlayApi: OverlayController | null = null;
 const getWindow = () => mainWindow;
 
 const loggerManager = new LoggerProcessManager((evt) => {
   mainWindow?.webContents.send("logger:event", evt);
 });
+
+function sendCommand(action: AppAction) {
+  mainWindow?.webContents.send("commands:trigger", action);
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -26,7 +42,9 @@ function createWindow() {
     minHeight: 700,
     resizable: true,
     show: false,
+    backgroundColor: "#0a0a0c",
     icon: app.isPackaged ? undefined : join(app.getAppPath(), "..", "logger", "icon", "icon-2.ico"),
+    frame: false,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       contextIsolation: true,
@@ -44,6 +62,9 @@ function createWindow() {
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+
+  mainWindow.on("maximize", () => mainWindow?.webContents.send("window:stateChanged", true));
+  mainWindow.on("unmaximize", () => mainWindow?.webContents.send("window:stateChanged", false));
 
   const rendererUrl = process.env.ELECTRON_RENDERER_URL;
   const isAppUrl = (url: string) => (rendererUrl ? url.startsWith(rendererUrl) : url.startsWith("file://"));
@@ -76,8 +97,31 @@ app.whenReady().then(() => {
   registerShellIpc();
   registerUpdaterIpc(setupUpdater(getWindow));
   registerAppIpc();
+  overlayApi = setupOverlay();
+  registerTrayIpc(() => trayApi, () => overlayApi);
+  registerHotkeyIpc(() => hotkeyApi);
+  registerOverlayIpc(() => overlayApi);
+  registerSessionLogIpc();
+  registerWindowIpc(getWindow);
 
   createWindow();
+
+  try {
+    trayApi = setupTray(getWindow, sendCommand);
+  } catch (err) {
+    console.error("Failed to create tray icon:", err);
+  }
+
+  hotkeyApi = setupGlobalHotkey(sendCommand);
+  if (!hotkeyApi.getAccelerator()) {
+    console.error("Failed to register global recording hotkey (likely already bound by another app).");
+  }
+});
+
+app.on("will-quit", () => {
+  hotkeyApi?.destroy();
+  trayApi?.destroy();
+  overlayApi?.destroy();
 });
 
 app.on("window-all-closed", () => {

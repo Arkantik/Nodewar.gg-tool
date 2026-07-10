@@ -16,6 +16,8 @@ win:
   extraResources:
     - from: ../logger/dist/logger.exe
       to: logger/logger.exe
+    - from: ../logger/icon/icon-2.ico
+      to: tray-icon.ico
     - from: ../dependencies
       to: dependencies
       filter:

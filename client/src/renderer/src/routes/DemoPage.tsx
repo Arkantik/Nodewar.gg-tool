@@ -76,7 +76,6 @@ function DemoPage() {
 					title={t("demo.title")}
 					subtitle={t("demo.description")}
 					cardHighlight
-					iconAccent
 					action={
 						<div className="flex items-center gap-2">
 							{logs.length > 0 && (

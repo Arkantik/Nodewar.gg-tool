@@ -7,6 +7,7 @@ import Button from "./ui/Button";
 import Icon from "./ui/Icon";
 import LoadingIndicator from "./ui/LoadingIndicator";
 import StatusCard from "./ui/StatusCard";
+import Tooltip from "./ui/Tooltip";
 
 type Severity = "neutral" | "green" | "orange" | "red";
 
@@ -17,6 +18,7 @@ function SystemStatusIndicator() {
 
 	const [loadingStatus, setLoadingStatus] = useState(false);
 	const [status, setStatus] = useState<LoggerStatus | null>(null);
+	const [version, setVersion] = useState("");
 
 	const [updateAvailable, setUpdateAvailable] = useState(false);
 	const [newVersion, setNewVersion] = useState("");
@@ -39,6 +41,10 @@ function SystemStatusIndicator() {
 	useEffect(() => {
 		runStatusCheck();
 	}, [runStatusCheck]);
+
+	useEffect(() => {
+		window.api.app.getVersion().then(setVersion);
+	}, []);
 
 	function handleRecheck() {
 		if (loadingStatus) return;
@@ -97,12 +103,13 @@ function SystemStatusIndicator() {
 
 	return (
 		<div className="relative" ref={containerRef}>
-			<button
-				onClick={() => setIsOpen(!isOpen)}
-				className={`cursor-pointer flex items-center justify-center p-2.5 rounded-md transition-all duration-150 ease-out active:scale-90 ${bg} hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50`}
-				title={t("systemStatus.title")}>
-				{loading ? <LoadingIndicator size="sm" /> : <Icon icon={icon} className={text} size="sm" />}
-			</button>
+			<Tooltip content={t("systemStatus.title")} side="bottom" gap={4}>
+				<button
+					onClick={() => setIsOpen(!isOpen)}
+					className={`cursor-pointer flex items-center justify-center p-2 rounded-md transition-all duration-150 ease-out active:scale-90 ${bg} hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50`}>
+					{loading ? <LoadingIndicator size="sm" /> : <Icon icon={icon} className={text} size="sm" />}
+				</button>
+			</Tooltip>
 
 			{isOpen && (
 				<div className="pop-in absolute right-0 top-full mt-2 w-96 chrome-panel rounded-md border border-white/10 shadow-xl overflow-hidden z-50 p-4">
@@ -114,6 +121,7 @@ function SystemStatusIndicator() {
 							<h2 className="text-sm font-semibold text-white">{t("systemStatus.title")}</h2>
 							<p className="text-xs text-gray-400">{t("systemStatus.subtitle")}</p>
 						</div>
+						<span className="text-[10px] text-gray-500 shrink-0">{t("header.version", { version })}</span>
 						<button
 							onClick={handleRecheck}
 							disabled={loadingStatus}

@@ -14,7 +14,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ icon, title, subtitle, action, cardHighlight = false, iconAccent = false, className }: PageHeaderProps) {
 	const cardClasses = cardHighlight ? "border-cta-500/50 bg-cta-500/5" : "border-white/10";
-	const iconWrapperClasses = iconAccent ? "bg-cta-500/10" : "bg-white/5 border border-white/10";
+	const iconWrapperClasses = iconAccent ? "bg-cta-500/10" : "bg-white/5";
 	const iconClasses = iconAccent ? "text-cta-400" : "text-gray-300";
 
 	return (

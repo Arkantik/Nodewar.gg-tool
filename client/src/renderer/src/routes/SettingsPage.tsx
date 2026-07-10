@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleCheckBig, LuInfo, LuNetwork } from "react-icons/lu";
 import { useConfigStore } from "../components/create-config/config-store";
+import HotkeyRecorder from "../components/settings/HotkeyRecorder";
 import Icon from "../components/ui/Icon";
 import PageHeader from "../components/ui/PageHeader";
 import ToggleSwitch from "../components/ui/ToggleSwitch";
@@ -12,14 +13,12 @@ function SettingsPage() {
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 	const updateConfig = useConfigStore((s) => s.updateConfig);
 	const [allInterfaces, setAllInterfaces] = useState(true);
-	const [ipFilter, setIpFilter] = useState(false);
 	const [saved, setSaved] = useState(false);
 
 	useEffect(() => {
 		(async () => {
 			const cfg = await ensureConfigLoaded();
 			setAllInterfaces(cfg.all_interfaces === true || cfg.all_interfaces === undefined);
-			setIpFilter(false);
 		})();
 	}, [ensureConfigLoaded]);
 
@@ -39,22 +38,24 @@ function SettingsPage() {
 	return (
 		<div className="flex flex-col h-full w-full p-8">
 			<div className="w-full space-y-6">
-				<PageHeader icon={LuInfo} title={t("settings.title")} subtitle={t("settings.subtitle")} iconAccent />
+				<PageHeader icon={LuInfo} title={t("settings.title")} subtitle={t("settings.subtitle")} />
 
-				<div className="glass-card rounded-md p-6 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
+				<div className="glass-card rounded-md p-4 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
 					<div className="flex items-center justify-between">
-						<div className="flex items-start gap-4 flex-1">
-							<div className="p-3 bg-white/5 border border-white/10 rounded-md">
-								<Icon icon={LuNetwork} className="text-gray-400" />
+						<div className="flex items-start gap-3 flex-1">
+							<div className="p-2 bg-white/5 border border-white/10 rounded-md">
+								<Icon icon={LuNetwork} size="sm" className="text-gray-400" />
 							</div>
 							<div className="flex-1">
-								<h3 className="text-lg font-semibold text-white mb-2">{t("settings.allInterfaces.title")}</h3>
-								<p className="text-sm text-gray-400 leading-relaxed">{t("settings.allInterfaces.description")}</p>
+								<h3 className="text-sm font-semibold text-white mb-1">{t("settings.allInterfaces.title")}</h3>
+								<p className="text-xs text-gray-400 leading-relaxed">{t("settings.allInterfaces.description")}</p>
 							</div>
 						</div>
 						<ToggleSwitch checked={allInterfaces} onChange={updateAllInterfaces} className="ml-6" />
 					</div>
 				</div>
+
+				<HotkeyRecorder />
 
 				{saved && (
 					<div className="glass-card rounded-md p-4 border border-green-500/50 bg-green-500/10">
@@ -66,8 +67,8 @@ function SettingsPage() {
 				)}
 
 				{config && (
-					<div className="glass-card rounded-md p-6 border border-white/10 mb-8">
-						<h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+					<div className="glass-card rounded-md p-4 border border-white/10 mb-8">
+						<h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
 							<Icon icon={LuInfo} size="sm" className="text-gray-400" />
 							{t("settings.configInfo.title")}
 						</h3>

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import type { Ref } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSave, LuUpload, LuX } from "react-icons/lu";
-import { List, type RowComponentProps } from "react-window";
+import { List, type ListImperativeAPI, type RowComponentProps } from "react-window";
 import { getCombatDeathLogs } from "../../logic/deathLogs";
 import { saveLogsToFile } from "../../logic/saveLogsToFile";
 import { useSaveLogsToHistory } from "../../logic/useSaveLogsToHistory";
@@ -19,6 +20,8 @@ interface LogEditorProps {
   loading?: boolean;
   onDeleteLog?: (index: number) => void;
   onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void;
+  listRef?: Ref<ListImperativeAPI>;
+  highlightIndex?: number | null;
 }
 
 interface RowProps {
@@ -31,6 +34,7 @@ interface RowProps {
     value: number,
   ) => void;
   onDeleteLog: (index: number) => void;
+  highlightIndex?: number | null;
   translations: {
     killed: string;
     diedTo: string;
@@ -44,6 +48,8 @@ function LogEditor({
   loading = false,
   onDeleteLog,
   onIndicesChange,
+  listRef,
+  highlightIndex,
 }: LogEditorProps) {
   const { t } = useTranslation();
   const { playerOneIndex, playerTwoIndex, guildIndex, updateNames } =
@@ -156,6 +162,7 @@ function LogEditor({
         ) : (
           <div className="flex-1 overflow-hidden">
             <List
+              listRef={listRef}
               rowComponent={RowComponent}
               rowCount={logs.length}
               rowHeight={40}
@@ -166,6 +173,7 @@ function LogEditor({
                 guildIndex,
                 updateNames,
                 onDeleteLog: (index: number) => onDeleteLog?.(index),
+                highlightIndex,
                 translations: {
                   killed: t("logger.killed"),
                   diedTo: t("logger.diedTo"),
@@ -213,13 +221,14 @@ function RowComponent({
   guildIndex,
   updateNames,
   onDeleteLog,
+  highlightIndex,
   translations,
 }: RowComponentProps<RowProps>) {
   const log = logs[index];
   return (
     <div
       style={style}
-      className="flex gap-2 items-center px-2 border-b border-white/5 hover:bg-white/5 group"
+      className={`flex gap-2 items-center px-2 border-b border-white/5 hover:bg-white/5 group ${index === highlightIndex ? "bg-cta-500/10" : ""}`}
     >
       <span className="text-xs text-gray-500 w-16">{log.time}</span>
       <Select

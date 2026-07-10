@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "../hooks/useClickOutside";
+import Tooltip from "./ui/Tooltip";
 
 const languages = [
 	{ code: "en", name: "English" },
@@ -33,12 +34,13 @@ function LanguageSelector() {
 
 	return (
 		<div className="relative" ref={dropdownRef}>
-			<button
-				onClick={() => setIsOpen(!isOpen)}
-				className="cursor-pointer flex items-center justify-center p-2.5 rounded-md transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 text-gray-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50"
-				title={t("header.changeLanguage")}>
-				<span className="w-4 h-4 flex items-center justify-center text-[10px] font-bold uppercase leading-none">{currentLang.code}</span>
-			</button>
+			<Tooltip content={t("header.changeLanguage")} side="bottom" gap={4}>
+				<button
+					onClick={() => setIsOpen(!isOpen)}
+					className="cursor-pointer flex items-center justify-center p-2 rounded-md transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 text-gray-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50">
+					<span className="w-4 h-4 flex items-center justify-center text-[10px] font-bold uppercase leading-none">{currentLang.code}</span>
+				</button>
+			</Tooltip>
 
 			{isOpen && (
 				<div className="pop-in absolute right-0 top-full mt-2 w-40 chrome-panel rounded-md border border-white/10 shadow-xl overflow-hidden z-50 p-1">

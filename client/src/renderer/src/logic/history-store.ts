@@ -9,6 +9,9 @@ export interface HistoryEntry {
   topGuild: string | null;
   topEnemy: string | null;
   logText: string;
+  recovered?: boolean;
+  tags?: string[];
+  notes?: string;
 }
 
 const HISTORY_STORAGE_KEY = "sessionHistory";
@@ -24,6 +27,7 @@ interface HistoryStore {
   ensureLoaded: () => Promise<HistoryEntry[]>;
   addEntry: (entry: Omit<HistoryEntry, "id">) => Promise<void>;
   removeEntry: (id: string) => Promise<void>;
+  updateEntry: (id: string, patch: Partial<Pick<HistoryEntry, "tags" | "notes">>) => Promise<void>;
 }
 
 let inFlight: Promise<HistoryEntry[]> | null = null;
@@ -49,6 +53,12 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
   removeEntry: async (id) => {
     await get().ensureLoaded();
     const updated = get().entries.filter((e) => e.id !== id);
+    await window.api.config.set(HISTORY_STORAGE_KEY, updated);
+    set({ entries: updated });
+  },
+  updateEntry: async (id, patch) => {
+    await get().ensureLoaded();
+    const updated = get().entries.map((e) => (e.id === id ? { ...e, ...patch } : e));
     await window.api.config.set(HISTORY_STORAGE_KEY, updated);
     set({ entries: updated });
   },

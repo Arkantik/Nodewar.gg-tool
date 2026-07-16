@@ -1,10 +1,13 @@
-// The victim's death coordinates sit a fixed distance past their own name
-// field, as 3 little-endian float32 values (X, Y/height, Z).
-const COORD_OFFSET_X = 262;
-const COORD_OFFSET_Y = 270;
-const COORD_OFFSET_Z = 278;
-
-const MAX_PLAUSIBLE_COORD = 1_000_000;
+// Combat log packets encode a world position as 3 consecutive little-endian
+// float32 values (X, Y/height, Z) somewhere past the name fields, but *where*
+// drifts with every game patch (verified: the same field moved between two
+// captures taken days apart). Rather than hardcode a byte offset that goes
+// stale, scan for the value pattern itself, the same way offsetHeuristics.ts
+// discovers name/kill positions dynamically instead of hardcoding them.
+// Lower bound rejects denormalized near-zero garbage (e.g. 9e-39) that reads
+// as a valid float but isn't a real coordinate.
+const MIN_PLAUSIBLE_COORD = 1;
+const MAX_PLAUSIBLE_COORD = 2_000_000;
 
 function readFloat32LE(hex: string, hexOffset: number): number | null {
 	if (hexOffset < 0 || hex.length < hexOffset + 8) return null;
@@ -19,24 +22,26 @@ function readFloat32LE(hex: string, hexOffset: number): number | null {
 	return new DataView(bytes.buffer).getFloat32(0, true);
 }
 
+function isPlausibleCoord(v: number | null): v is number {
+	return v !== null && Number.isFinite(v) && Math.abs(v) > MIN_PLAUSIBLE_COORD && Math.abs(v) < MAX_PLAUSIBLE_COORD;
+}
+
 export interface DeathCoordinates {
 	x: number;
 	y: number;
 	z: number;
 }
 
-export function extractDeathCoordinates(hex: string, playerOneOffset: number | undefined): DeathCoordinates | null {
-	if (playerOneOffset === undefined) return null;
+export function extractDeathCoordinates(hex: string, victimOffset: number | undefined): DeathCoordinates | null {
+	if (victimOffset === undefined) return null;
 
-	const x = readFloat32LE(hex, playerOneOffset + COORD_OFFSET_X);
-	const y = readFloat32LE(hex, playerOneOffset + COORD_OFFSET_Y);
-	const z = readFloat32LE(hex, playerOneOffset + COORD_OFFSET_Z);
-	if (x === null || y === null || z === null) return null;
-
-	const values = [x, y, z];
-	if (!values.every((v) => Number.isFinite(v) && Math.abs(v) < MAX_PLAUSIBLE_COORD)) return null;
-
-	return { x, y, z };
+	for (let offset = Math.max(0, victimOffset); offset + 24 <= hex.length; offset += 2) {
+		const x = readFloat32LE(hex, offset);
+		const y = readFloat32LE(hex, offset + 8);
+		const z = readFloat32LE(hex, offset + 16);
+		if (isPlausibleCoord(x) && isPlausibleCoord(y) && isPlausibleCoord(z)) return { x, y, z };
+	}
+	return null;
 }
 
 export function formatCoordinates(coords: DeathCoordinates): string {

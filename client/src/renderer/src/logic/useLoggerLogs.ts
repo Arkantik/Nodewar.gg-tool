@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { extractDeathCoordinates, formatCoordinates } from "./coordinates";
 import { getNetworkDeathLogs } from "./deathLogs";
-import { findKillOffset, findMostFrequentIdentifier, findPlayerOneIndexByName, rankNameOffsets } from "./offsetHeuristics";
+import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets } from "./offsetHeuristics";
 import { saveLogsToFile } from "./saveLogsToFile";
 import { useSaveLogsToHistory } from "./useSaveLogsToHistory";
-import { useNameIndices, type NameIndexTarget } from "./useNameIndices";
+import { useNameIndices } from "./useNameIndices";
 import { mostFrequent } from "./util";
 import { get_date, hexToString, type Config, type LogType } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
@@ -111,13 +111,7 @@ export function useLoggerLogs(
     const newPossibleNameOffsets = rankNameOffsets(logs, possibleNameOffsets);
     const identifier = findMostFrequentIdentifier(logs);
 
-    let resolvedIndices = { playerOne: playerOneIndex, playerTwo: playerTwoIndex, guild: guildIndex };
-    if (config?.my_family_name) {
-      const matched = findPlayerOneIndexByName(logs, config.my_family_name);
-      if (matched !== undefined && matched !== playerOneIndex) {
-        resolvedIndices = updateNames("player_one", matched);
-      }
-    }
+    const resolvedIndices = { playerOne: playerOneIndex, playerTwo: playerTwoIndex, guild: guildIndex };
 
     setPossibleNameOffsets(newPossibleNameOffsets);
     await updateConfigWrapper(identifier, {
@@ -150,15 +144,6 @@ export function useLoggerLogs(
 
     const updated = await updateConfig(newConfig);
     setConfig(updated);
-  }
-
-  function updateNamesAndPersist(target: NameIndexTarget, value: number) {
-    const resolved = updateNames(target, value);
-    void updateConfigWrapper(undefined, {
-      playerOneIndex: resolved.playerOne,
-      playerTwoIndex: resolved.playerTwo,
-      guildIndex: resolved.guild,
-    });
   }
 
   function getName(i: number, log: LogType) {
@@ -208,7 +193,9 @@ export function useLoggerLogs(
       const isKill = log.hex[possibleKillOffsets[killIndex]] === "1";
 
       const playerOneOffset = possibleNameOffsets[playerOneIndex]?.[nameIndicies[playerOneIndex]]?.offset;
-      const coords = extractDeathCoordinates(log.hex, playerOneOffset);
+      const playerTwoOffset = possibleNameOffsets[playerTwoIndex]?.[nameIndicies[playerTwoIndex]]?.offset;
+      const victimOffset = isKill ? playerTwoOffset : playerOneOffset;
+      const coords = extractDeathCoordinates(log.hex, victimOffset);
       const coordsSuffix = coords ? ` ${formatCoordinates(coords)}` : "";
 
       if (isKill) {
@@ -258,7 +245,7 @@ export function useLoggerLogs(
     setPlayerTwoIndex,
     guildIndex,
     setGuildIndex,
-    updateNames: updateNamesAndPersist,
+    updateNames,
     updateConfigWrapper,
     getNameOptions,
     saveLogs,

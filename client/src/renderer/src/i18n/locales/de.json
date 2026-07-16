@@ -113,11 +113,6 @@
     "settings": {
         "title": "Netzwerkeinstellungen",
         "subtitle": "Konfigurieren Sie, wie der Logger den Netzwerkverkehr erfasst",
-        "myFamilyName": {
-            "title": "Dein Familienname",
-            "description": "Sobald festgelegt, erkennt der Logger in jeder Sitzung automatisch, welcher Namensplatz du bist, anstatt sich auf eine gespeicherte Position zu verlassen, die nach Spiel-Updates abweichen kann.",
-            "placeholder": "z. B. DeinFamilienname"
-        },
         "allInterfaces": {
             "title": "Alle Netzwerkschnittstellen",
             "description": "Erfassen Sie Datenverkehr von allen verfügbaren Netzwerkschnittstellen. Deaktivieren Sie diese Option, um nur die Standardschnittstelle zu verwenden."

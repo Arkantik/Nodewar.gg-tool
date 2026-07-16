@@ -50,6 +50,14 @@ current_position = 0
 identifier_regex = r"[56][0-9a-f]0100[0-9a-f]{4}"
 name_regex = r"^[A-Z][a-zA-Z0-9_]{2,15}$"
 
+# Hex-char window scanned for the identifier + 5 names (unchanged, proven layout).
+NAME_WINDOW = 600
+# Hex-char window actually exported as `hex` for each log line. Wider than
+# NAME_WINDOW so it also reaches the death-location floats, which sit ~278
+# hex chars past the victim name's offset (i.e. past NAME_WINDOW in the
+# worst case), plus a safety margin for offset drift across patches.
+EXPORT_WINDOW = 800
+
 
 def package_handler(package, output, ip_filter=True):
     global last_payload
@@ -73,7 +81,7 @@ def package_handler(package, output, ip_filter=True):
         )
         > 0
     )
-    
+
     # checkes if the packages comes from a tcp stream
     uses_tcp = "TCP" in package and hasattr(package["TCP"].payload, "load")
     if is_bdo_ip and uses_tcp:
@@ -83,7 +91,7 @@ def package_handler(package, output, ip_filter=True):
         # iterate through the payload and try to find the identifier + player names + guild name + kill
         payload = last_payload + payload
         position = 0
-        while len(payload[position:]) >= 600:
+        while len(payload[position:]) >= EXPORT_WINDOW:
             payload = payload[position:]
             position = 0
             match_location = 0
@@ -95,7 +103,7 @@ def package_handler(package, output, ip_filter=True):
                 match_location = matches[0].start()
             else:
                 while len(matches) > 1:
-                    if matches[0].start() + 600 < matches[1].start():
+                    if matches[0].start() + EXPORT_WINDOW < matches[1].start():
                         match_location = matches[0].start()
                         break
                     elif len(matches) > 2:
@@ -106,11 +114,11 @@ def package_handler(package, output, ip_filter=True):
 
             payload = payload[match_location:]
 
-            if len(payload) >= 600:
-                possible_log = payload[0:600]
+            if len(payload) >= EXPORT_WINDOW:
+                possible_log = payload[0:EXPORT_WINDOW]
                 i = 0
                 names = []
-                while i < 600:
+                while i < NAME_WINDOW:
                     name = extract_string(possible_log, i, 64)
                     if name == -1:
                         i += 1
@@ -133,7 +141,7 @@ def package_handler(package, output, ip_filter=True):
                         + possible_log,
                         flush=True,
                     )
-                    position = 600
+                    position = EXPORT_WINDOW
                 else:
                     position = 1
 
@@ -158,7 +166,7 @@ def open_pcap(file, output, ip_filter=True):
                 print(f"{index}/{len(cap)} packages analyzed.", flush=True)
             index += 1
     else:
-        sniff(offline=file, filter="tcp", prn=package_handler, store=0)
+        sniff(offline=file, filter="tcp", prn=lambda x: package_handler(x, output, ip_filter), store=0)
 
     print(f"Logs saved under: {output}\nYou can close this window now.", flush=True)
 

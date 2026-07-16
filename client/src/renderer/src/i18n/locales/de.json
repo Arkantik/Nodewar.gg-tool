@@ -117,6 +117,10 @@
             "title": "Alle Netzwerkschnittstellen",
             "description": "Erfassen Sie Datenverkehr von allen verfügbaren Netzwerkschnittstellen. Deaktivieren Sie diese Option, um nur die Standardschnittstelle zu verwenden."
         },
+        "tracePackets": {
+            "title": "Pakete verfolgen",
+            "description": "Schreibt jedes dekodierte Kampflog-Paket in eine datierte .trace.jsonl-Datei zur Offline-Fehlersuche. Lassen Sie dies deaktiviert, außer Sie beheben ein Parsing-Problem."
+        },
         "hotkey": {
             "title": "Aufnahme-Hotkey",
             "description": "Globale Tastenkombination zum Starten, Fortsetzen oder Stoppen & Speichern einer Aufnahme, auch während das Spiel im Fokus ist. Muss eine 2-Tasten-Kombination sein, die mit Strg, Alt, Umschalt oder Cmd beginnt.",

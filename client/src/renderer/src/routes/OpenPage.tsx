@@ -110,7 +110,7 @@ function OpenPage() {
 			setLoading(true);
 			// Passed as separate argv entries (no shell involved), so the path never needs quoting
 			// regardless of what characters it contains.
-			start("analyze", ["-f", filePath, ...(config.ip_filter ? ["-p"] : [])], loggerCallback);
+			start("analyze", ["-f", filePath, ...(config.ip_filter ? ["-p"] : []), ...(config.trace_packets ? ["-t"] : [])], loggerCallback);
 		}
 	}
 

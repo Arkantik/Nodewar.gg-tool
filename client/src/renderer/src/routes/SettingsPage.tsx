@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCircleCheckBig, LuInfo, LuNetwork } from "react-icons/lu";
+import { LuCircleCheckBig, LuInfo, LuNetwork, LuBug } from "react-icons/lu";
 import { useConfigStore } from "../components/create-config/config-store";
 import HotkeyRecorder from "../components/settings/HotkeyRecorder";
 import Icon from "../components/ui/Icon";
@@ -13,12 +13,14 @@ function SettingsPage() {
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 	const updateConfig = useConfigStore((s) => s.updateConfig);
 	const [allInterfaces, setAllInterfaces] = useState(true);
+	const [tracePackets, setTracePackets] = useState(false);
 	const [saved, setSaved] = useState(false);
 
 	useEffect(() => {
 		(async () => {
 			const cfg = await ensureConfigLoaded();
 			setAllInterfaces(cfg.all_interfaces === true || cfg.all_interfaces === undefined);
+			setTracePackets(cfg.trace_packets === true);
 		})();
 	}, [ensureConfigLoaded]);
 
@@ -26,6 +28,14 @@ function SettingsPage() {
 		setAllInterfaces(value);
 		if (config) {
 			await updateConfig({ ...config, all_interfaces: value });
+			showSavedIndicator();
+		}
+	}
+
+	async function updateTracePackets(value: boolean) {
+		setTracePackets(value);
+		if (config) {
+			await updateConfig({ ...config, trace_packets: value });
 			showSavedIndicator();
 		}
 	}
@@ -52,6 +62,21 @@ function SettingsPage() {
 							</div>
 						</div>
 						<ToggleSwitch checked={allInterfaces} onChange={updateAllInterfaces} className="ml-6" />
+					</div>
+				</div>
+
+				<div className="glass-card rounded-md p-4 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
+					<div className="flex items-center justify-between">
+						<div className="flex items-start gap-3 flex-1">
+							<div className="p-2 bg-white/5 border border-white/10 rounded-md">
+								<Icon icon={LuBug} size="sm" className="text-gray-400" />
+							</div>
+							<div className="flex-1">
+								<h3 className="text-sm font-semibold text-white mb-1">{t("settings.tracePackets.title")}</h3>
+								<p className="text-xs text-gray-400 leading-relaxed">{t("settings.tracePackets.description")}</p>
+							</div>
+						</div>
+						<ToggleSwitch checked={tracePackets} onChange={updateTracePackets} className="ml-6" />
 					</div>
 				</div>
 

@@ -5,7 +5,7 @@ from scapy.all import sniff, rdpcap, get_if_list
 if sys.platform == "win32":
     from scapy.arch.windows import get_windows_if_list
 from time import localtime, strftime
-from .. import config
+from .. import config, trace
 
 
 def dec(bytes):
@@ -131,6 +131,16 @@ def package_handler(package, output, ip_filter=True):
                         i += 1
                 if len(names) == 5:
                     time = strftime("%I:%M:%S", localtime(int(package.time)))
+                    trace.tracer.write(
+                        {
+                            "epoch": package.time,
+                            "time": time,
+                            "src": package_src,
+                            "identifier": payload[0:10],
+                            "names": names,
+                            "hex": possible_log,
+                        }
+                    )
                     print(
                         payload[0:10]
                         + ","

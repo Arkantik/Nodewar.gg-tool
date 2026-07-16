@@ -117,6 +117,10 @@
             "title": "Toutes les interfaces réseau",
             "description": "Capturez le trafic de toutes les interfaces réseau disponibles. Désactivez pour utiliser uniquement l'interface par défaut."
         },
+        "tracePackets": {
+            "title": "Tracer les paquets",
+            "description": "Écrit chaque paquet de journal de combat décodé dans un fichier .trace.jsonl daté à des fins de débogage hors ligne. Laissez désactivé sauf en cas de dépannage d'un problème d'analyse."
+        },
         "hotkey": {
             "title": "Raccourci d'enregistrement",
             "description": "Raccourci global pour démarrer, reprendre ou arrêter et sauvegarder un enregistrement, même lorsque le jeu est au premier plan. Doit être une combinaison de 2 touches commençant par Ctrl, Alt, Maj ou Cmd.",

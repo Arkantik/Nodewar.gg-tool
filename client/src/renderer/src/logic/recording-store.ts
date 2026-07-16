@@ -125,7 +125,7 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 			pushOverlayPayload();
 
 			const cfg = await useConfigStore.getState().ensureLoaded();
-			const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : [])];
+			const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : []), ...(cfg.trace_packets ? ["-t"] : [])];
 
 			const { sessionId } = await window.api.logger.start(MODE, extraArgs);
 			activeSessionId = sessionId;

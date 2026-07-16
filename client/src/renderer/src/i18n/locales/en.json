@@ -117,6 +117,10 @@
             "title": "All Network Interfaces",
             "description": "Capture traffic from all available network interfaces. Disable to use only the default interface."
         },
+        "tracePackets": {
+            "title": "Trace Packets",
+            "description": "Write every decoded combat log packet to a dated .trace.jsonl file for offline debugging. Leave off unless you're troubleshooting a parsing issue."
+        },
         "hotkey": {
             "title": "Recording Hotkey",
             "description": "Global shortcut to start, resume or stop & save a recording, even while the game has focus. Must be a 2-key combination starting with Ctrl, Alt, Shift, or Cmd.",

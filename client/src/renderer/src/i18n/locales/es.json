@@ -117,6 +117,10 @@
             "title": "Todas las interfaces de red",
             "description": "Captura tráfico de todas las interfaces de red disponibles. Desactiva para usar solo la interfaz predeterminada."
         },
+        "tracePackets": {
+            "title": "Rastrear paquetes",
+            "description": "Escribe cada paquete de registro de combate decodificado en un archivo .trace.jsonl fechado para depuración sin conexión. Déjalo desactivado salvo que estés solucionando un problema de análisis."
+        },
         "hotkey": {
             "title": "Atajo de grabación",
             "description": "Atajo global para iniciar, reanudar o detener y guardar una grabación, incluso con el juego en primer plano. Debe ser una combinación de 2 teclas que empiece con Ctrl, Alt, Mayús o Cmd.",

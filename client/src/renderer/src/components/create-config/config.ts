@@ -9,6 +9,7 @@ export type Config = {
 	include_characters: boolean;
 	all_interfaces: boolean;
 	ip_filter: boolean;
+	trace_packets: boolean;
 };
 
 export type LogType = {
@@ -78,6 +79,9 @@ export async function get_config(): Promise<Config> {
 		if (config.include_characters === undefined) {
 			config.include_characters = true;
 		}
+		if (config.trace_packets === undefined) {
+			config.trace_packets = false;
+		}
 		return config;
 	}
 
@@ -92,6 +96,7 @@ export async function get_config(): Promise<Config> {
 		include_characters: true,
 		all_interfaces: true,
 		ip_filter: false,
+		trace_packets: false,
 	};
 }
 

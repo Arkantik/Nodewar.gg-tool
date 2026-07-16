@@ -1,4 +1,4 @@
-from src import config
+from src import config, trace
 from src.options import status_check, open, sniff, record, update_config, analyze
 
 import time
@@ -28,11 +28,14 @@ parser.add_argument("-i", "--allInterfaces",
                     help="Sniff all interfaces", action= BooleanOptionalAction)
 parser.add_argument("-p", "--ipFilter",
                     help="Enable Ip Filter to improve performance", action= BooleanOptionalAction)
+parser.add_argument("-t", "--trace",
+                    help="Write every decoded combat log packet to logger/.tmp/<date>.trace.jsonl for offline debugging", action= BooleanOptionalAction)
 
 
 args = parser.parse_args()
 
 config.init("config.ini")
+trace.init(args.trace or False)
 
 if args.status:
     status_check.check_health()

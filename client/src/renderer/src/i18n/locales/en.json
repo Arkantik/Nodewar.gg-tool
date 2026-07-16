@@ -113,11 +113,6 @@
     "settings": {
         "title": "Network Settings",
         "subtitle": "Configure how the logger captures network traffic",
-        "myFamilyName": {
-            "title": "Your Family Name",
-            "description": "Once set, the logger automatically detects which name slot is you in each session, instead of relying on a saved position that can drift after game updates.",
-            "placeholder": "e.g. YourFamilyName"
-        },
         "allInterfaces": {
             "title": "All Network Interfaces",
             "description": "Capture traffic from all available network interfaces. Disable to use only the default interface."

@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.5.0...v1.6.0) (2026-07-16)
+
+
+### Features
+
+* add family name config for player detection ([e91670d](https://github.com/Arkantik/Nodewar.gg-tool/commit/e91670d4df2633d4bb95ac5ec37e600f4f844279))
+* Extract and display death coordinates ([9ffcb58](https://github.com/Arkantik/Nodewar.gg-tool/commit/9ffcb58f9f7f75366782008075561b32c013258e))
+
 # [1.5.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.4.0...v1.5.0) (2026-07-10)
 
 

@@ -193,7 +193,9 @@ export function useLoggerLogs(
       const isKill = log.hex[possibleKillOffsets[killIndex]] === "1";
 
       const playerOneOffset = possibleNameOffsets[playerOneIndex]?.[nameIndicies[playerOneIndex]]?.offset;
-      const coords = extractDeathCoordinates(log.hex, playerOneOffset);
+      const playerTwoOffset = possibleNameOffsets[playerTwoIndex]?.[nameIndicies[playerTwoIndex]]?.offset;
+      const victimOffset = isKill ? playerTwoOffset : playerOneOffset;
+      const coords = extractDeathCoordinates(log.hex, victimOffset);
       const coordsSuffix = coords ? ` ${formatCoordinates(coords)}` : "";
 
       if (isKill) {

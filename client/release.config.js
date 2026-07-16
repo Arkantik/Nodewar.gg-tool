@@ -5,8 +5,14 @@
 module.exports = {
   branches: ["main"],
   plugins: [
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/commit-analyzer",
+      { releaseRules: [{ type: "refactor", release: "patch" }] }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      { presetConfig: { types: [{ type: "refactor", section: "Refactoring" }] } }
+    ],
     ["@semantic-release/changelog", { changelogFile: "CHANGELOG.md" }],
     ["@semantic-release/npm", { npmPublish: false }],
     [

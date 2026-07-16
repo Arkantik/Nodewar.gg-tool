@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.6.0...v1.6.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* **release:** let refactor commits trigger a patch release ([912bdbf](https://github.com/Arkantik/Nodewar.gg-tool/commit/912bdbfc61ea18bde075e4151ac847bbb4a2f236))
+
 # [1.6.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.5.0...v1.6.0) (2026-07-16)
 
 

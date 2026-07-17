@@ -158,10 +158,14 @@
             "showGuildsDescription": "Affiche les 3 guildes ennemies principales par nombre de membres sur l'overlay.",
             "showGuildKD": "Afficher le K/D des guildes",
             "showGuildKDDescription": "Affiche le ratio k/d de chaque guilde à côté de son nom.",
+            "showGuildKDDetails": "Afficher le décompte kills/morts des guildes",
+            "showGuildKDDetailsDescription": "Affiche le nombre de kills/morts entre parenthèses à côté du ratio k/d de la guilde.",
             "showPlayers": "Afficher les joueurs ennemis principaux",
             "showPlayersDescription": "Affiche les 3 joueurs ennemis les plus dangereux sur l'overlay.",
             "showPlayerKD": "Afficher le K/D des joueurs",
-            "showPlayerKDDescription": "Affiche le ratio k/d de chaque joueur à côté de son nom."
+            "showPlayerKDDescription": "Affiche le ratio k/d de chaque joueur à côté de son nom.",
+            "showPlayerKDDetails": "Afficher le décompte kills/morts des joueurs",
+            "showPlayerKDDetailsDescription": "Affiche le nombre de kills/morts entre parenthèses à côté du ratio k/d du joueur."
         }
     },
     "docs": {

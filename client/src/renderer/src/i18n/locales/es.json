@@ -158,10 +158,14 @@
             "showGuildsDescription": "Muestra los 3 gremios enemigos principales por número de miembros en la superposición.",
             "showGuildKD": "Mostrar K/D de gremio",
             "showGuildKDDescription": "Muestra el ratio de k/d de cada gremio junto a su nombre.",
+            "showGuildKDDetails": "Mostrar conteo de kills/muertes del gremio",
+            "showGuildKDDetailsDescription": "Muestra el número de kills/muertes entre paréntesis junto al ratio k/d del gremio.",
             "showPlayers": "Mostrar jugadores enemigos principales",
             "showPlayersDescription": "Muestra los 3 jugadores enemigos más peligrosos en la superposición.",
             "showPlayerKD": "Mostrar K/D de jugador",
-            "showPlayerKDDescription": "Muestra el ratio de k/d de cada jugador junto a su nombre."
+            "showPlayerKDDescription": "Muestra el ratio de k/d de cada jugador junto a su nombre.",
+            "showPlayerKDDetails": "Mostrar conteo de kills/muertes del jugador",
+            "showPlayerKDDetailsDescription": "Muestra el número de kills/muertes entre paréntesis junto al ratio k/d del jugador."
         }
     },
     "docs": {

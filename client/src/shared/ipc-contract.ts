@@ -48,8 +48,10 @@ export interface OverlaySettings {
   anchor: OverlayAnchor;
   showGuilds: boolean;
   showGuildKD: boolean;
+  showGuildKDDetails: boolean;
   showPlayers: boolean;
   showPlayerKD: boolean;
+  showPlayerKDDetails: boolean;
 }
 
 export const DEFAULT_OVERLAY_SETTINGS: OverlaySettings = {
@@ -57,8 +59,10 @@ export const DEFAULT_OVERLAY_SETTINGS: OverlaySettings = {
   anchor: "top-right",
   showGuilds: false,
   showGuildKD: false,
+  showGuildKDDetails: false,
   showPlayers: false,
-  showPlayerKD: false
+  showPlayerKD: false,
+  showPlayerKDDetails: false
 };
 
 export interface OverlayGuildEntry {

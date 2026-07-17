@@ -158,10 +158,14 @@
             "showGuildsDescription": "Display the top 3 enemy guilds by member count on the overlay.",
             "showGuildKD": "Show Guild K/D ratio",
             "showGuildKDDescription": "Show each guild's k/d ratio next to its name.",
+            "showGuildKDDetails": "Show Guild Kill/Death Counts",
+            "showGuildKDDetailsDescription": "Show the kill/death counts in parentheses next to the guild's k/d ratio.",
             "showPlayers": "Show Top Enemy Players",
             "showPlayersDescription": "Display the top 3 most dangerous enemy players on the overlay.",
             "showPlayerKD": "Show Player K/D ratio",
-            "showPlayerKDDescription": "Show each player's k/d ratio next to their name."
+            "showPlayerKDDescription": "Show each player's k/d ratio next to their name.",
+            "showPlayerKDDetails": "Show Player Kill/Death Counts",
+            "showPlayerKDDetailsDescription": "Show the kill/death counts in parentheses next to the player's k/d ratio."
         }
     },
     "docs": {

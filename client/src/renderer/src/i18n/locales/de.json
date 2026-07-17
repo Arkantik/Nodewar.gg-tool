@@ -158,10 +158,14 @@
             "showGuildsDescription": "Zeigt die Top 3 gegnerischen Gilden nach Mitgliederzahl im Overlay an.",
             "showGuildKD": "Gilden-K/D anzeigen",
             "showGuildKDDescription": "Zeigt das K/D-Verhältnis jeder Gilde neben ihrem Namen an.",
+            "showGuildKDDetails": "Gilden-Kill-/Todeszahlen anzeigen",
+            "showGuildKDDetailsDescription": "Zeigt die Anzahl der Kills/Tode in Klammern neben dem K/D-Verhältnis der Gilde an.",
             "showPlayers": "Top-Gegnerspieler anzeigen",
             "showPlayersDescription": "Zeigt die 3 gefährlichsten gegnerischen Spieler im Overlay an.",
             "showPlayerKD": "Spieler-K/D anzeigen",
-            "showPlayerKDDescription": "Zeigt das K/D-Verhältnis jedes Spielers neben seinem Namen an."
+            "showPlayerKDDescription": "Zeigt das K/D-Verhältnis jedes Spielers neben seinem Namen an.",
+            "showPlayerKDDetails": "Spieler-Kill-/Todeszahlen anzeigen",
+            "showPlayerKDDetailsDescription": "Zeigt die Anzahl der Kills/Tode in Klammern neben dem K/D-Verhältnis des Spielers an."
         }
     },
     "docs": {

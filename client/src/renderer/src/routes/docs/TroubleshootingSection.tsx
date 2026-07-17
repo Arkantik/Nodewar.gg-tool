@@ -107,6 +107,15 @@ function TroubleshootingSection({ registerRef }: TroubleshootingSectionProps) {
 					<li>{t("docs.troubleshooting.cantSave.step3")}</li>
 				</ol>
 			</Accordion>
+
+			<Accordion id={TROUBLESHOOTING_IDS.overlayFullscreen} ref={(el) => registerRef(TROUBLESHOOTING_IDS.overlayFullscreen, el)} title={t("docs.troubleshooting.overlayFullscreen.title")}>
+				<p className="font-semibold text-white">{t("docs.troubleshooting.overlayFullscreen.problem")}</p>
+				<p className="mt-2">{t("docs.troubleshooting.overlayFullscreen.explanation")}</p>
+				<ol className="list-decimal list-inside space-y-2 ml-2 mt-3">
+					<li>{t("docs.troubleshooting.overlayFullscreen.step1")}</li>
+					<li>{t("docs.troubleshooting.overlayFullscreen.step2")}</li>
+				</ol>
+			</Accordion>
 		</div>
 	);
 }

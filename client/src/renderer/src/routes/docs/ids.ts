@@ -4,6 +4,7 @@ export const TROUBLESHOOTING_IDS = {
 	noLogs: "docs-no-logs",
 	wrongNames: "docs-wrong-names",
 	cantSave: "docs-cant-save",
+	overlayFullscreen: "docs-overlay-fullscreen",
 } as const;
 
 export const FAQ_IDS = {

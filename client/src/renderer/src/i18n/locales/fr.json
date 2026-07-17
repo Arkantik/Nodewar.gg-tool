@@ -140,6 +140,8 @@
     "overlay": {
         "title": "Overlay",
         "subtitle": "Gérer la position et le contenu de l'overlay en jeu",
+        "enabled": "Activer l'overlay",
+        "enabledDescription": "Afficher l'overlay en jeu pendant l'enregistrement d'une session.",
         "position": {
             "title": "Position à l'écran",
             "topLeft": "Haut Gauche",
@@ -229,6 +231,13 @@
                 "step1": "Assurez-vous d'avoir correctement ajusté les noms",
                 "step2": "Vérifiez que vous avez les permissions d'écriture à l'emplacement de sauvegarde",
                 "step3": "Essayez de sauvegarder dans un autre dossier (comme Documents)"
+            },
+            "overlayFullscreen": {
+                "title": "L'overlay ne s'affiche pas en plein écran",
+                "problem": "Problème : l'overlay s'affiche en mode Fenêtré ou Sans bordure, mais disparaît lorsque le jeu est en mode Plein écran",
+                "explanation": "Il s'agit d'une limitation de Windows, pas d'un bug. En mode Fenêtré ou Sans bordure (plein écran fenêtré), le jeu reste composé par Windows comme n'importe quelle autre fenêtre, ce qui permet à l'overlay de s'afficher par-dessus. En mode Plein écran exclusif, le jeu contourne le compositeur de Windows et s'affiche directement à l'écran, donc aucune fenêtre externe - y compris cet overlay - ne peut s'afficher par-dessus.",
+                "step1": "Passez le mode d'affichage du jeu en Fenêtré ou Sans bordure (plein écran fenêtré) - c'est la solution la plus fiable et elle n'a aucun inconvénient sur les systèmes modernes",
+                "step2": "Si le jeu ne propose qu'un mode Plein écran exclusif, faites un clic droit sur son .exe, allez dans Propriétés > Compatibilité, et assurez-vous que « Désactiver les optimisations plein écran » n'est pas cochée"
             }
         },
         "faq": {

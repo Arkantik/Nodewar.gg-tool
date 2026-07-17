@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, shell } from "electron";
+import { app, BrowserWindow, dialog, Menu, shell } from "electron";
 import { join } from "node:path";
 import type { AppAction } from "../shared/ipc-contract";
 import { registerAppIpc } from "./ipc/app";
@@ -20,7 +20,12 @@ import { setupOverlay, type OverlayController } from "./overlay";
 import { setupTray, type TrayApi } from "./tray";
 import { setupUpdater } from "./updater";
 
+app.commandLine.appendSwitch("disable-background-timer-throttling");
+app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
+app.commandLine.appendSwitch("disable-renderer-backgrounding");
+
 let mainWindow: BrowserWindow | null = null;
+let isQuitConfirmed = false;
 let trayApi: TrayApi | null = null;
 let hotkeyApi: HotkeyApi | null = null;
 let overlayApi: OverlayController | null = null;
@@ -55,12 +60,34 @@ function createWindow() {
 
   mainWindow.once("ready-to-show", () => mainWindow?.show());
 
-  mainWindow.on("close", () => {
-    void loggerManager.stop();
+  mainWindow.on("close", (event) => {
+    if (isQuitConfirmed || trayApi?.getStatus() !== "recording") {
+      void loggerManager.stop();
+      return;
+    }
+
+    event.preventDefault();
+    void dialog
+      .showMessageBox(mainWindow!, {
+        type: "warning",
+        buttons: ["Cancel", "Quit Anyway"],
+        defaultId: 0,
+        cancelId: 0,
+        title: "Recording in progress",
+        message: "A recording is currently in progress.",
+        detail: "Closing the app now will stop the recording. Are you sure you want to quit?"
+      })
+      .then(({ response }) => {
+        if (response !== 1) return;
+        isQuitConfirmed = true;
+        mainWindow?.close();
+      });
   });
 
   mainWindow.on("closed", () => {
     mainWindow = null;
+    overlayApi?.destroy();
+    app.quit();
   });
 
   mainWindow.on("maximize", () => mainWindow?.webContents.send("window:stateChanged", true));

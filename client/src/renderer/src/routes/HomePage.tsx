@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import Icon from "../components/ui/Icon";
 import { formatSessionDate } from "../logic/date";
 import { useHistoryStore, type HistoryEntry } from "../logic/history-store";
+import { useRecordingStore } from "../logic/recording-store";
 
 function HomePage() {
 	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
 	const ensureLoaded = useHistoryStore((s) => s.ensureLoaded);
+	const restart = useRecordingStore((s) => s.restart);
 	const [lastEntry, setLastEntry] = useState<HistoryEntry | null>(null);
 
 	useEffect(() => {
@@ -28,7 +30,10 @@ function HomePage() {
 					<p className="text-sm text-gray-400 max-w-md">{t("home.welcome.subtitle")}</p>
 
 					<button
-						onClick={() => navigate("/record")}
+						onClick={() => {
+							void restart();
+							navigate("/record");
+						}}
 						className="cursor-pointer mt-2 flex items-center gap-2 px-6 h-12 rounded-md bg-cta-500 hover:bg-cta-600 text-gray-900 font-semibold text-sm transition-all duration-150 ease-out active:scale-[0.97] shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta-500/50">
 						<Icon icon={LuPlay} size="sm" />
 						{t("home.actions.record.title")}

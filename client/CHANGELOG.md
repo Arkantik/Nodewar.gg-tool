@@ -1,3 +1,45 @@
+## [1.6.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.6.0...v1.6.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* **release:** let refactor commits trigger a patch release ([912bdbf](https://github.com/Arkantik/Nodewar.gg-tool/commit/912bdbfc61ea18bde075e4151ac847bbb4a2f236))
+
+# [1.6.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.5.0...v1.6.0) (2026-07-16)
+
+
+### Features
+
+* add family name config for player detection ([e91670d](https://github.com/Arkantik/Nodewar.gg-tool/commit/e91670d4df2633d4bb95ac5ec37e600f4f844279))
+* Extract and display death coordinates ([9ffcb58](https://github.com/Arkantik/Nodewar.gg-tool/commit/9ffcb58f9f7f75366782008075561b32c013258e))
+
+# [1.5.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.4.0...v1.5.0) (2026-07-10)
+
+
+### Bug Fixes
+
+* **ci:** update Node.js to v22 in workflows ([3ecb1af](https://github.com/Arkantik/Nodewar.gg-tool/commit/3ecb1af34bd901f90ba0e47d65c2ac1b431d6141))
+* **overlay:** correct stats logic and layout shifts ([14beaa1](https://github.com/Arkantik/Nodewar.gg-tool/commit/14beaa14b64e7e3c526e337cab317aca50ffd685))
+* prevent concurrent session recovery ([8373e3f](https://github.com/Arkantik/Nodewar.gg-tool/commit/8373e3fe405e16c65194442b1943112f08075d4b))
+
+
+### Features
+
+* **client:** add hotkey, tray, and recovery ([723b5be](https://github.com/Arkantik/Nodewar.gg-tool/commit/723b5be9a1da9932a97ac1873167bafda017c8eb))
+* Implement custom window title bar ([d13d3b8](https://github.com/Arkantik/Nodewar.gg-tool/commit/d13d3b8e3f84a50aad0033438fe1b42e0e57b1d8))
+* **overlay:** add in-game combat stats overlay ([f10be99](https://github.com/Arkantik/Nodewar.gg-tool/commit/f10be99664ae0f11d534b53ed90716f678ca62ed))
+* **overlay:** add settings and dynamic resizing ([b369bd0](https://github.com/Arkantik/Nodewar.gg-tool/commit/b369bd0a491983d45a4256608b47e1bf34d85a22))
+* **timeline:** add interactive scrubbing and tags ([8c854b2](https://github.com/Arkantik/Nodewar.gg-tool/commit/8c854b2f1de7f2d96bf827cc6bba8a4467c050fd))
+* **ui:** add recording status indicator ([222e93d](https://github.com/Arkantik/Nodewar.gg-tool/commit/222e93de1e7765cc7cba83cc4a530aee11b0ee0d))
+* **ui:** add reusable Tooltip component ([d8072f1](https://github.com/Arkantik/Nodewar.gg-tool/commit/d8072f15a025cd3230a2fecb1a1a108b4b989439))
+
+# [1.4.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.3.1...v1.4.0) (2026-07-06)
+
+
+### Features
+
+* **record:** add resume and restart recording ([855a9a1](https://github.com/Arkantik/Nodewar.gg-tool/commit/855a9a1a236363e85a71e97cb65dd377c07d11f4))
+
 ## [1.3.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.3.0...v1.3.1) (2026-07-06)
 
 

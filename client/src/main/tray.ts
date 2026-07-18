@@ -4,6 +4,7 @@ import { resolveTrayIconPath } from "./resources";
 
 export interface TrayApi {
   setRecordingStatus: (status: RecordingStatus) => void;
+  getStatus: () => RecordingStatus;
   destroy: () => void;
 }
 
@@ -37,6 +38,9 @@ export function setupTray(getWindow: () => BrowserWindow | null, send: (action: 
       status = next;
       tray.setToolTip(next === "recording" ? "Nodewar.gg Tool - Recording" : "Nodewar.gg Tool");
       tray.setContextMenu(buildMenu());
+    },
+    getStatus() {
+      return status;
     },
     destroy() {
       tray.destroy();

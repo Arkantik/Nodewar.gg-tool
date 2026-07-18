@@ -144,6 +144,8 @@
     "overlay": {
         "title": "Overlay",
         "subtitle": "Manage the in-game overlay's position and content",
+        "enabled": "Enable Overlay",
+        "enabledDescription": "Show the in-game overlay while recording a session.",
         "position": {
             "title": "Screen Position",
             "topLeft": "Top Left",
@@ -160,10 +162,14 @@
             "showGuildsDescription": "Display the top 3 enemy guilds by member count on the overlay.",
             "showGuildKD": "Show Guild K/D ratio",
             "showGuildKDDescription": "Show each guild's k/d ratio next to its name.",
+            "showGuildKDDetails": "Show Guild Kill/Death Counts",
+            "showGuildKDDetailsDescription": "Show the kill/death counts in parentheses next to the guild's k/d ratio.",
             "showPlayers": "Show Top Enemy Players",
             "showPlayersDescription": "Display the top 3 most dangerous enemy players on the overlay.",
             "showPlayerKD": "Show Player K/D ratio",
-            "showPlayerKDDescription": "Show each player's k/d ratio next to their name."
+            "showPlayerKDDescription": "Show each player's k/d ratio next to their name.",
+            "showPlayerKDDetails": "Show Player Kill/Death Counts",
+            "showPlayerKDDetailsDescription": "Show the kill/death counts in parentheses next to the player's k/d ratio."
         }
     },
     "docs": {
@@ -233,6 +239,13 @@
                 "step1": "Make sure you've adjusted the names correctly",
                 "step2": "Check that you have write permissions in the save location",
                 "step3": "Try saving to a different folder (like Documents)"
+            },
+            "overlayFullscreen": {
+                "title": "Overlay Not Showing in Fullscreen",
+                "problem": "Problem: The overlay shows up in Windowed or Borderless mode, but disappears when the game is set to Fullscreen",
+                "explanation": "This is a Windows limitation, not a bug. In Windowed or Borderless (Windowed Fullscreen) mode, the game is still composited by Windows like any other window, so the overlay can be drawn on top of it. In true exclusive Fullscreen, the game bypasses Windows' compositor and renders directly to the screen, so no external window - including this overlay - can be displayed over it.",
+                "step1": "Switch your in-game display mode to Windowed or Borderless (Windowed Fullscreen) - this is the most reliable fix and has no downside on modern systems",
+                "step2": "If the game only offers a true Fullscreen mode, right-click its .exe, go to Properties > Compatibility, and make sure \"Disable fullscreen optimizations\" is left unchecked"
             }
         },
         "faq": {

@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from collections import OrderedDict
 from scapy.all import sniff, rdpcap, get_if_list
 if sys.platform == "win32":
     from scapy.arch.windows import get_windows_if_list
@@ -44,7 +45,6 @@ def extract_string(hex, offset, length):
         return -1
 
 
-last_payload = ""
 current_position = 0
 
 identifier_regex = r"[56][0-9a-f]0100[0-9a-f]{4}"
@@ -58,10 +58,28 @@ NAME_WINDOW = 600
 # worst case), plus a safety margin for offset drift across patches.
 EXPORT_WINDOW = 800
 
+# identifier_regex is fixed-length; this many trailing hex chars are enough
+# to catch an identifier split across a packet boundary on the next call.
+IDENTIFIER_LEN = 10
+MAX_TRACKED_CONNECTIONS = 128
+_pending_by_connection = OrderedDict()
+
+
+def get_pending(conn_key):
+    if conn_key in _pending_by_connection:
+        _pending_by_connection.move_to_end(conn_key)
+        return _pending_by_connection[conn_key]
+    return ""
+
+
+def set_pending(conn_key, value):
+    _pending_by_connection[conn_key] = value
+    _pending_by_connection.move_to_end(conn_key)
+    while len(_pending_by_connection) > MAX_TRACKED_CONNECTIONS:
+        _pending_by_connection.popitem(last=False)
+
 
 def package_handler(package, output, ip_filter=True):
-    global last_payload
-
     if "IP" not in package:
         return
 
@@ -88,8 +106,12 @@ def package_handler(package, output, ip_filter=True):
         # loads the payload as raw hex
         payload = bytes(package["TCP"].payload).hex()
 
+        # scope the pending buffer to this specific connection so interleaved
+        # packets from other connections can never corrupt or evict it
+        conn_key = (package["IP"].src, package["TCP"].sport, package["IP"].dst, package["TCP"].dport)
+
         # iterate through the payload and try to find the identifier + player names + guild name + kill
-        payload = last_payload + payload
+        payload = get_pending(conn_key) + payload
         position = 0
         while len(payload[position:]) >= EXPORT_WINDOW:
             payload = payload[position:]
@@ -98,7 +120,12 @@ def package_handler(package, output, ip_filter=True):
             matches = list(re.finditer(identifier_regex, payload))
 
             if len(matches) == 0:
-                return  # no match found, return - could cause issue if the identifier is split between two packages
+                # won't drop the payload outright (that loses an identifier split across
+                # this packet boundary) and don't keep the whole thing either
+                # (non-combat traffic would make this grow without bound)
+                # - keep just enough trailing hex to bridge a split.
+                set_pending(conn_key, payload[-(IDENTIFIER_LEN - 1):])
+                return
             elif len(matches) == 1:
                 match_location = matches[0].start()
             else:
@@ -158,7 +185,7 @@ def package_handler(package, output, ip_filter=True):
             else:
                 break
 
-        last_payload = payload[position:]
+        set_pending(conn_key, payload[position:])
 
 
 def open_pcap(file, output, ip_filter=True):
@@ -184,9 +211,23 @@ def open_pcap(file, output, ip_filter=True):
 def read_network_interfaces():
     if sys.platform == "win32":
         winList = get_windows_if_list()
+        # get_if_list() returns pcap device paths like \Device\NPF_{GUID}, while
+        # get_windows_if_list() gives bare GUIDs like {GUID} - an exact-match lookup
+        # between the two never hits, which silently made this return [] and made
+        # all_interfaces a no-op (always falling back to scapy's single default
+        # interface). Match by substring instead so the friendly-name lookup works.
         intfList = get_if_list()
-        guidToNameDict = {e["guid"]: e["name"] for e in winList}
-        return list(filter(None, [guidToNameDict.get(e) for e in intfList]))
+        # Hyper-V virtual switch adapters mirror whatever physical adapter they're 
+        # bound to at the NDIS level, so listening on both means every real packet 
+        # gets captured (and processed)twice. They never carry traffic that isn't also 
+        # visible on the underlying physical adapter, unlike a VPN's tunnel adapter, so skipping them is safe.
+        names = []
+        for entry in winList:
+            if "hyper-v virtual ethernet adapter" in entry.get("description", "").lower():
+                continue
+            if any(entry["guid"] in dev for dev in intfList):
+                names.append(entry["name"])
+        return names
     return get_if_list()
 
 

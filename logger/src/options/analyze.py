@@ -129,6 +129,7 @@ def package_handler(package, output, ip_filter=True):
             elif len(matches) == 1:
                 match_location = matches[0].start()
             else:
+                all_offsets = [m.start() for m in matches]
                 while len(matches) > 1:
                     if matches[0].start() + EXPORT_WINDOW < matches[1].start():
                         match_location = matches[0].start()
@@ -138,6 +139,21 @@ def package_handler(package, output, ip_filter=True):
                     else:
                         match_location = matches[1].start()
                         break
+
+                # Debug-only: capture every ambiguous "multiple candidate
+                # identifiers" case as-is, without changing behavior, so it can
+                # be replayed offline to see what the discarded candidate(s)
+                # actually contained.
+                trace.tracer.write(
+                    {
+                        "kind": "ambiguous_match",
+                        "epoch": package.time,
+                        "conn": [str(part) for part in conn_key],
+                        "candidate_offsets": all_offsets,
+                        "chosen_offset": match_location,
+                        "hex": payload[0 : min(len(payload), all_offsets[-1] + EXPORT_WINDOW)],
+                    }
+                )
 
             payload = payload[match_location:]
 

@@ -54,6 +54,7 @@ export function setupOverlay(): OverlayController {
   // available so the window exactly fits its content - the static estimate below only serves
   // as a first-paint placeholder before that first report arrives.
   let contentSize: OverlaySize | null = null;
+  let wantsVisible = false;
 
   function applyBounds(target: BrowserWindow) {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -109,12 +110,15 @@ export function setupOverlay(): OverlayController {
 
   return {
     show() {
+      wantsVisible = true;
       if (process.platform !== "win32") return;
+      if (!settings.enabled) return;
       win ??= createWindow();
       win.showInactive();
     },
 
     hide() {
+      wantsVisible = false;
       win?.hide();
     },
 
@@ -129,9 +133,20 @@ export function setupOverlay(): OverlayController {
     updateSettings(next) {
       settings = next;
       contentSize = null;
+
+      if (!settings.enabled) {
+        win?.hide();
+        return;
+      }
+
       if (win) {
         applyBounds(win);
         win.webContents.send("overlay:settings", settings);
+      }
+
+      if (wantsVisible && process.platform === "win32") {
+        win ??= createWindow();
+        win.showInactive();
       }
     },
 

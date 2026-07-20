@@ -70,7 +70,17 @@ function Overlay() {
 						{payload.topGuilds.map((guild) => (
 							<div key={guild.name} className="flex items-center justify-between gap-3 text-xs">
 								<span className="font-medium truncate max-w-36">{guild.name}</span>
-								{settings.showGuildKD && <span className="tabular-nums text-gray-300 shrink-0 min-w-[5ch] text-right">{formatKdr(guild.kills, guild.deaths)}</span>}
+								{settings.showGuildKD && (
+									<span className="tabular-nums text-gray-300 shrink-0 text-right">
+										{formatKdr(guild.kills, guild.deaths)}
+										{settings.showGuildKDDetails && (
+											<span className="text-gray-500">
+												{" "}
+												({guild.kills}/{guild.deaths})
+											</span>
+										)}
+									</span>
+								)}
 							</div>
 						))}
 					</div>
@@ -84,7 +94,17 @@ function Overlay() {
 									{player.name}
 									{player.guild && <span className="text-gray-400"> ({player.guild})</span>}
 								</span>
-								{settings.showPlayerKD && <span className="tabular-nums text-gray-300 shrink-0 min-w-[5ch] text-right">{formatKdr(player.kills, player.deaths)}</span>}
+								{settings.showPlayerKD && (
+									<span className="tabular-nums text-gray-300 shrink-0 text-right">
+										{formatKdr(player.kills, player.deaths)}
+										{settings.showPlayerKDDetails && (
+											<span className="text-gray-500">
+												{" "}
+												({player.kills}/{player.deaths})
+											</span>
+										)}
+									</span>
+								)}
 							</div>
 						))}
 					</div>

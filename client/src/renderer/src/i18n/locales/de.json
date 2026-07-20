@@ -140,6 +140,8 @@
     "overlay": {
         "title": "Overlay",
         "subtitle": "Position und Inhalt des Ingame-Overlays verwalten",
+        "enabled": "Overlay aktivieren",
+        "enabledDescription": "Das Ingame-Overlay während der Aufnahme einer Sitzung anzeigen.",
         "position": {
             "title": "Bildschirmposition",
             "topLeft": "Oben Links",
@@ -156,10 +158,14 @@
             "showGuildsDescription": "Zeigt die Top 3 gegnerischen Gilden nach Mitgliederzahl im Overlay an.",
             "showGuildKD": "Gilden-K/D anzeigen",
             "showGuildKDDescription": "Zeigt das K/D-Verhältnis jeder Gilde neben ihrem Namen an.",
+            "showGuildKDDetails": "Gilden-Kill-/Todeszahlen anzeigen",
+            "showGuildKDDetailsDescription": "Zeigt die Anzahl der Kills/Tode in Klammern neben dem K/D-Verhältnis der Gilde an.",
             "showPlayers": "Top-Gegnerspieler anzeigen",
             "showPlayersDescription": "Zeigt die 3 gefährlichsten gegnerischen Spieler im Overlay an.",
             "showPlayerKD": "Spieler-K/D anzeigen",
-            "showPlayerKDDescription": "Zeigt das K/D-Verhältnis jedes Spielers neben seinem Namen an."
+            "showPlayerKDDescription": "Zeigt das K/D-Verhältnis jedes Spielers neben seinem Namen an.",
+            "showPlayerKDDetails": "Spieler-Kill-/Todeszahlen anzeigen",
+            "showPlayerKDDetailsDescription": "Zeigt die Anzahl der Kills/Tode in Klammern neben dem K/D-Verhältnis des Spielers an."
         }
     },
     "docs": {
@@ -229,6 +235,13 @@
                 "step1": "Stellen Sie sicher, dass Sie die Namen richtig angepasst haben",
                 "step2": "Überprüfen Sie, ob Sie Schreibrechte am Speicherort haben",
                 "step3": "Versuchen Sie, in einen anderen Ordner zu speichern (z.B. Dokumente)"
+            },
+            "overlayFullscreen": {
+                "title": "Overlay wird im Vollbildmodus nicht angezeigt",
+                "problem": "Problem: Das Overlay wird im Fenster- oder Fensterlos-Modus angezeigt, verschwindet jedoch, wenn das Spiel auf Vollbild eingestellt ist",
+                "explanation": "Dies ist eine Einschränkung von Windows, kein Fehler in der App. Im Fenster- oder Fensterlos-Modus (Vollbild im Fenster) wird das Spiel weiterhin von Windows wie jedes andere Fenster zusammengesetzt (compositing), sodass das Overlay darüber angezeigt werden kann. Im echten exklusiven Vollbildmodus umgeht das Spiel den Windows-Compositor und rendert direkt auf den Bildschirm, sodass kein externes Fenster - einschließlich dieses Overlays - darüber angezeigt werden kann.",
+                "step1": "Stellen Sie den Anzeigemodus im Spiel auf Fenster- oder Fensterlos-Modus (Vollbild im Fenster) um - dies ist die zuverlässigste Lösung und hat auf modernen Systemen keine Nachteile",
+                "step2": "Falls das Spiel nur einen echten Vollbildmodus anbietet, klicken Sie mit der rechten Maustaste auf die .exe-Datei, gehen Sie zu Eigenschaften > Kompatibilität, und stellen Sie sicher, dass \"Vollbildoptimierungen deaktivieren\" nicht aktiviert ist"
             }
         },
         "faq": {

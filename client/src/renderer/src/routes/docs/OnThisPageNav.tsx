@@ -49,6 +49,7 @@ function OnThisPageNav({ activeId, onNavigateTroubleshooting }: OnThisPageNavPro
 		{ id: TROUBLESHOOTING_IDS.noLogs, label: t("docs.troubleshooting.noLogs.title") },
 		{ id: TROUBLESHOOTING_IDS.wrongNames, label: t("docs.troubleshooting.wrongNames.title") },
 		{ id: TROUBLESHOOTING_IDS.cantSave, label: t("docs.troubleshooting.cantSave.title") },
+		{ id: TROUBLESHOOTING_IDS.overlayFullscreen, label: t("docs.troubleshooting.overlayFullscreen.title") },
 	];
 
 	const faqLinks: NavLink[] = [

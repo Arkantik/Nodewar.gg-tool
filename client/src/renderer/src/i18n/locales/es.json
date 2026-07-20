@@ -140,6 +140,8 @@
     "overlay": {
         "title": "Superposición",
         "subtitle": "Gestiona la posición y el contenido de la superposición en el juego",
+        "enabled": "Activar superposición",
+        "enabledDescription": "Muestra la superposición en el juego mientras grabas una sesión.",
         "position": {
             "title": "Posición en pantalla",
             "topLeft": "Arriba Izquierda",
@@ -156,10 +158,14 @@
             "showGuildsDescription": "Muestra los 3 gremios enemigos principales por número de miembros en la superposición.",
             "showGuildKD": "Mostrar K/D de gremio",
             "showGuildKDDescription": "Muestra el ratio de k/d de cada gremio junto a su nombre.",
+            "showGuildKDDetails": "Mostrar conteo de kills/muertes del gremio",
+            "showGuildKDDetailsDescription": "Muestra el número de kills/muertes entre paréntesis junto al ratio k/d del gremio.",
             "showPlayers": "Mostrar jugadores enemigos principales",
             "showPlayersDescription": "Muestra los 3 jugadores enemigos más peligrosos en la superposición.",
             "showPlayerKD": "Mostrar K/D de jugador",
-            "showPlayerKDDescription": "Muestra el ratio de k/d de cada jugador junto a su nombre."
+            "showPlayerKDDescription": "Muestra el ratio de k/d de cada jugador junto a su nombre.",
+            "showPlayerKDDetails": "Mostrar conteo de kills/muertes del jugador",
+            "showPlayerKDDetailsDescription": "Muestra el número de kills/muertes entre paréntesis junto al ratio k/d del jugador."
         }
     },
     "docs": {
@@ -229,6 +235,13 @@
                 "step1": "Asegúrate de haber ajustado los nombres correctamente",
                 "step2": "Verifica que tienes permisos de escritura en la ubicación de guardado",
                 "step3": "Intenta guardar en una carpeta diferente (como Documentos)"
+            },
+            "overlayFullscreen": {
+                "title": "La superposición no aparece en pantalla completa",
+                "problem": "Problema: la superposición aparece en modo Ventana o Sin bordes, pero desaparece cuando el juego está en modo Pantalla completa",
+                "explanation": "Esto es una limitación de Windows, no un error de la aplicación. En modo Ventana o Sin bordes (pantalla completa en ventana), el juego sigue siendo compuesto por Windows como cualquier otra ventana, por lo que la superposición puede mostrarse encima. En el modo Pantalla completa exclusivo real, el juego evita el compositor de Windows y renderiza directamente en la pantalla, por lo que ninguna ventana externa - incluida esta superposición - puede mostrarse encima.",
+                "step1": "Cambia el modo de pantalla del juego a Ventana o Sin bordes (pantalla completa en ventana) - es la solución más fiable y no tiene desventajas en sistemas modernos",
+                "step2": "Si el juego solo ofrece un modo de Pantalla completa real, haz clic derecho en su .exe, ve a Propiedades > Compatibilidad, y asegúrate de que \"Deshabilitar las optimizaciones de pantalla completa\" no esté marcada"
             }
         },
         "faq": {

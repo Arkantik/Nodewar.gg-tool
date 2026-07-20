@@ -56,11 +56,21 @@ function OverlayPage() {
 	}
 
 	return (
-		<div className="flex flex-col h-full w-full p-8">
+		<div className="flex flex-col min-h-full w-full p-8">
 			<div className="w-full space-y-6">
 				<PageHeader icon={LuMonitor} title={t("overlay.title")} subtitle={t("overlay.subtitle")} />
 
 				<div className="glass-card rounded-md p-4 border border-white/10">
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-white">{t("overlay.enabled")}</p>
+							<p className="text-xs text-gray-400">{t("overlay.enabledDescription")}</p>
+						</div>
+						<ToggleSwitch checked={settings.enabled} onChange={(checked) => update({ enabled: checked })} className="ml-6" />
+					</div>
+				</div>
+
+				<div className={`glass-card rounded-md p-4 border border-white/10 transition-opacity duration-150 ${settings.enabled ? "" : "opacity-50 pointer-events-none"}`}>
 					<h3 className="text-sm font-semibold text-white mb-3">{t("overlay.position.title")}</h3>
 					<div className="grid grid-cols-3 gap-2 max-w-xs">
 						{positionAt("top-left")}
@@ -75,7 +85,7 @@ function OverlayPage() {
 					</div>
 				</div>
 
-				<div className="glass-card rounded-md p-4 border border-white/10 space-y-3">
+				<div className={`glass-card rounded-md p-4 border border-white/10 space-y-3 transition-opacity duration-150 ${settings.enabled ? "" : "opacity-50 pointer-events-none"}`}>
 					<h3 className="text-sm font-semibold text-white">{t("overlay.content.title")}</h3>
 
 					<div className="flex items-center justify-between">
@@ -94,6 +104,14 @@ function OverlayPage() {
 						<ToggleSwitch checked={settings.showGuildKD} onChange={(checked) => update({ showGuildKD: checked })} disabled={!settings.showGuilds} className="ml-6" />
 					</div>
 
+					<div className="ml-4 pl-3 border-l border-white/10 flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-white">{t("overlay.content.showGuildKDDetails")}</p>
+							<p className="text-xs text-gray-400">{t("overlay.content.showGuildKDDetailsDescription")}</p>
+						</div>
+						<ToggleSwitch checked={settings.showGuildKDDetails} onChange={(checked) => update({ showGuildKDDetails: checked })} disabled={!settings.showGuilds || !settings.showGuildKD} className="ml-6" />
+					</div>
+
 					<hr className="border-white/5" />
 
 					<div className="flex items-center justify-between">
@@ -110,6 +128,14 @@ function OverlayPage() {
 							<p className="text-xs text-gray-400">{t("overlay.content.showPlayerKDDescription")}</p>
 						</div>
 						<ToggleSwitch checked={settings.showPlayerKD} onChange={(checked) => update({ showPlayerKD: checked })} disabled={!settings.showPlayers} className="ml-6" />
+					</div>
+
+					<div className="ml-4 pl-3 border-l border-white/10 flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-white">{t("overlay.content.showPlayerKDDetails")}</p>
+							<p className="text-xs text-gray-400">{t("overlay.content.showPlayerKDDetailsDescription")}</p>
+						</div>
+						<ToggleSwitch checked={settings.showPlayerKDDetails} onChange={(checked) => update({ showPlayerKDDetails: checked })} disabled={!settings.showPlayers || !settings.showPlayerKD} className="ml-6" />
 					</div>
 				</div>
 			</div>

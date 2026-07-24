@@ -304,6 +304,18 @@
             "result": "Resultado",
             "playerTwo": "Jugador Dos",
             "guild": "Gremio"
+        },
+        "saveWarning": {
+            "title": "Los offsets pueden haber cambiado",
+            "message": "Estos campos ya no parecen válidos para esta sesión: {{fields}}.\nEs posible que el juego se haya actualizado. Revisa la tabla antes de guardar — un registro exportado no se podrá corregir después.",
+            "saveAnyway": "Guardar de todos modos",
+            "cancel": "Cancelar",
+            "fields": {
+                "kill": "kill / muerte",
+                "guild": "gremio",
+                "player_one": "tu jugador",
+                "player_two": "jugador enemigo"
+            }
         }
     },
     "config": {

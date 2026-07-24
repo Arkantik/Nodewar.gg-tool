@@ -9,10 +9,12 @@ import GuildStats from "../components/ui/GuildStats";
 import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import StatCard from "../components/ui/StatCard";
-import { getNetworkDeathLogs, getNetworkIsKill } from "../logic/deathLogs";
+import { getNetworkDeathLogs } from "../logic/deathLogs";
+import { enrichLogs, readNameAt } from "../logic/configNames";
 import { mostFrequent } from "../logic/util";
 import { useElementHeight } from "../logic/useElementHeight";
 import { useRecordingStore } from "../logic/recording-store";
+import { useConfigStore } from "../components/create-config/config-store";
 
 function formatDuration(ms: number) {
 	const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -58,20 +60,22 @@ function RecordPage() {
 		return () => registerSaveHandler(null);
 	}, [registerSaveHandler]);
 
+	const config = useConfigStore((s) => s.config);
+
 	const deathLogs = useMemo(() => getNetworkDeathLogs(logs, killOffset), [logs, killOffset]);
 
 	const enrichedLogs: NamedLog[] = useMemo(
-		() => logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, killOffset) })),
-		[logs, killOffset],
+		() => enrichLogs(logs, config, guildStatsKey, killOffset),
+		[logs, config, guildStatsKey, killOffset],
 	);
 
 	const recap = useMemo(() => {
 		if (sessionActive) return null;
 		return {
-			topGuild: mostFrequent(logs.map((log) => log.names[guildStatsKey.guild]?.name)),
-			topEnemy: mostFrequent(deathLogs.map((log) => log.names[guildStatsKey.playerTwo]?.name)),
+			topGuild: config ? mostFrequent(logs.map((log) => readNameAt(log.hex, config.guild))) : undefined,
+			topEnemy: config ? mostFrequent(deathLogs.map((log) => readNameAt(log.hex, config.player_two))) : undefined,
 		};
-	}, [sessionActive, logs, deathLogs, guildStatsKey]);
+	}, [sessionActive, logs, deathLogs, config]);
 
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] grid-rows-[auto_minmax(0,1fr)] gap-4 h-full w-full p-8">

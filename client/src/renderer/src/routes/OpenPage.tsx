@@ -14,7 +14,7 @@ import Icon from "../components/ui/Icon";
 import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
-import { getNetworkIsKill } from "../logic/deathLogs";
+import { enrichLogs } from "../logic/configNames";
 import { open_file } from "../logic/file";
 import { appendUniqueLog, parseLoggerLine, parseTextLog } from "../logic/logParsing";
 import { useElementHeight } from "../logic/useElementHeight";
@@ -41,6 +41,7 @@ function OpenPage() {
 	const [scrubIndex, setScrubIndex] = useState<number | null>(null);
 	const { start } = useLoggerSession();
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
+	const config = useConfigStore((s) => s.config);
 	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
 	const logListRef = useListRef(null);
 
@@ -64,9 +65,9 @@ function OpenPage() {
 	const stats = isNetwork ? networkStats : combatLogStats;
 
 	const enrichedLogs: NamedLog[] = useMemo(() => {
-		if (isNetwork) return logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, killOffset) }));
+		if (isNetwork) return enrichLogs(logs, config, guildStatsKey, killOffset);
 		return combatLogs.map((log) => ({ names: log.names.map((name) => ({ name })), isKill: log.kill }));
-	}, [isNetwork, logs, combatLogs, killOffset]);
+	}, [isNetwork, logs, combatLogs, config, guildStatsKey, killOffset]);
 
 	const loggerCallback: LoggerSessionCallback = (data, status) => {
 		if (status === "running") {

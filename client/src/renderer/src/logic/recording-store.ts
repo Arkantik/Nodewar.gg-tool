@@ -4,9 +4,9 @@ import type { LogType } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
 import i18n from "../i18n";
 import type { LoggerMode } from "../../../shared/ipc-contract";
-import { getNetworkIsKill } from "./deathLogs";
 import { aggregateGuilds, aggregatePlayers, kdRatio } from "./enemyAggregation";
 import { appendUniqueLog, parseLoggerLine } from "./logParsing";
+import { enrichLogs } from "./configNames";
 
 const MAX_RETRIES = 3;
 const MODE: LoggerMode = "analyze";
@@ -60,7 +60,8 @@ function flushPendingLines(sessionId: string) {
 
 function pushOverlayPayload() {
 	const state = useRecordingStore.getState();
-	const enrichedLogs = state.logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, state.killOffset) }));
+	const config = useConfigStore.getState().config;
+	const enrichedLogs = enrichLogs(state.logs, config, state.guildStatsKey, state.killOffset);
 
 	const topGuilds = aggregateGuilds(enrichedLogs, state.guildStatsKey.guild, state.guildStatsKey.playerTwo)
 		.slice()

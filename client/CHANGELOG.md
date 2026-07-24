@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.6.1...v1.7.0) (2026-07-20)
+
+
+### Bug Fixes
+
+* **analyze:** fix tracking and win interfaces ([d27e264](https://github.com/Arkantik/Nodewar.gg-tool/commit/d27e264286c633d148cce73efe8f12133950e9b2))
+
+
+### Features
+
+* prevent accidental quit during recording ([5801056](https://github.com/Arkantik/Nodewar.gg-tool/commit/58010569b9bddf427582e9081b9fc65c56194308))
+
 ## [1.6.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.6.0...v1.6.1) (2026-07-16)
 
 

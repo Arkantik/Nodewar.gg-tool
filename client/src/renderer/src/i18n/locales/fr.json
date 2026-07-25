@@ -308,6 +308,18 @@
             "result": "Résultat",
             "playerTwo": "Joueur Deux",
             "guild": "Guilde"
+        },
+        "saveWarning": {
+            "title": "Les offsets ont peut-être changé",
+            "message": "Ces champs ne semblent plus valides pour cette session : {{fields}}.\nLe jeu a peut-être été mis à jour. Vérifiez le tableau avant d'enregistrer — un journal exporté ne pourra pas être corrigé ensuite.",
+            "saveAnyway": "Enregistrer quand même",
+            "cancel": "Annuler",
+            "fields": {
+                "kill": "kill / mort",
+                "guild": "guilde",
+                "player_one": "votre joueur",
+                "player_two": "joueur ennemi"
+            }
         }
     },
     "config": {

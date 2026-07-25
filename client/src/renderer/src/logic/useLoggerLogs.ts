@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { extractDeathCoordinates, formatCoordinates } from "./coordinates";
 import { getNetworkDeathLogs } from "./deathLogs";
-import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets } from "./offsetHeuristics";
+import { findKillOffset, findMostFrequentIdentifier, invalidConfigOffsets, isKillFlagOffset, rankNameOffsets, readNameAt } from "./offsetHeuristics";
+import i18n from "../i18n";
+import { ModalManager } from "../components/modal/modal-store";
+import ConfirmModal from "../components/modal/ConfirmModal";
+import { ToastManager } from "../components/toast/toast-store";
 import { saveLogsToFile } from "./saveLogsToFile";
 import { useSaveLogsToHistory } from "./useSaveLogsToHistory";
 import { useNameIndices } from "./useNameIndices";
@@ -101,8 +105,19 @@ export function useLoggerLogs(
     if (autoScroll) setTimeout(scroll);
 
     if (logs.length < 50 || logs.length % 100 === 0) {
-      const killOffsets = findKillOffset(logs);
-      setPossibleKillOffsets(killOffsets);
+      const seed = config?.kill;
+      if (seed !== undefined && isKillFlagOffset(logs, seed)) {
+        if (possibleKillOffsets.length !== 1 || possibleKillOffsets[0] !== seed) {
+          setPossibleKillOffsets([seed]);
+          setKillIndex(0);
+        }
+      } else {
+        const detected = findKillOffset(logs);
+        if (detected.length > 0 && detected[0] !== possibleKillOffsets[killIndex]) {
+          setPossibleKillOffsets(detected);
+          setKillIndex(0);
+        }
+      }
       calculateConfig();
     }
   }
@@ -207,12 +222,36 @@ export function useLoggerLogs(
     return output;
   }
 
+  function offsetWarning() {
+    const bad = config ? invalidConfigOffsets(logs, config) : [];
+    if (bad.length === 0) return null;
+    const fields = bad.map((f) => i18n.t(`logger.saveWarning.fields.${f}`)).join(", ");
+    return i18n.t("logger.saveWarning.message", { fields });
+  }
+
   async function saveLogs() {
-    const text = getLogsString();
-    await saveLogsToFile(text);
+    const message = offsetWarning();
+    const doSave = async () => {
+      const text = getLogsString();
+      await saveLogsToFile(text);
+    };
+    if (!message) {
+      await doSave();
+      return;
+    }
+    ModalManager.open(ConfirmModal, {
+      title: i18n.t("logger.saveWarning.title"),
+      message,
+      confirmLabel: i18n.t("logger.saveWarning.saveAnyway"),
+      cancelLabel: i18n.t("logger.saveWarning.cancel"),
+      onConfirm: doSave,
+    });
   }
 
   async function saveCurrentSessionToHistory() {
+    const message = offsetWarning();
+    if (message) ToastManager.warning(message);
+
     const { kills, deaths, kdr } = stats ?? { kills: 0, deaths: 0, kdr: 0 };
 
     const deathLogs = getNetworkDeathLogs(logs, possibleKillOffsets[killIndex]);
@@ -222,8 +261,8 @@ export function useLoggerLogs(
       kills,
       deaths,
       kdr,
-      topGuild: mostFrequent(logs.map((log) => log.names[guildIndex]?.name)),
-      topEnemy: mostFrequent(deathLogs.map((log) => log.names[playerTwoIndex]?.name)),
+      topGuild: config ? mostFrequent(logs.map((log) => readNameAt(log.hex, config.guild))) : "",
+      topEnemy: config ? mostFrequent(deathLogs.map((log) => readNameAt(log.hex, config.player_two))) : "",
     });
   }
 

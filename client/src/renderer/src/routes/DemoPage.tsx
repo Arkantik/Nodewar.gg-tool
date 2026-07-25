@@ -11,7 +11,8 @@ import KDTimeline from "../components/ui/KDTimeline";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/ui/StatCard";
 import { DemoLogGenerator } from "../logic/demoGenerator";
-import { getNetworkIsKill } from "../logic/deathLogs";
+import { enrichLogs } from "../logic/configNames";
+import { useConfigStore } from "../components/create-config/config-store";
 import { useElementHeight } from "../logic/useElementHeight";
 
 function DemoPage() {
@@ -21,6 +22,7 @@ function DemoPage() {
 	const [isRunning, setIsRunning] = useState(false);
 	const [guildStatsKey, setGuildStatsKey] = useState({ playerTwo: 1, guild: 2 });
 	const [killOffset, setKillOffset] = useState<number>();
+	const config = useConfigStore((s) => s.config);
 	const generatorRef = useRef<DemoLogGenerator | null>(null);
 	const { ref: headerBlockRef, height: headerBlockHeight } = useElementHeight<HTMLDivElement>();
 
@@ -64,8 +66,8 @@ function DemoPage() {
 	};
 
 	const enrichedLogs: NamedLog[] = useMemo(
-		() => logs.map((log) => ({ names: log.names, isKill: getNetworkIsKill(log.hex, killOffset) })),
-		[logs, killOffset],
+		() => enrichLogs(logs, config, guildStatsKey, killOffset),
+		[logs, config, guildStatsKey, killOffset],
 	);
 
 	return (

@@ -82,9 +82,9 @@ function LogEditor({
             : "";
 
         if (useNewFormat) {
-          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "killed" : "was slain by"} ${log.names[playerTwoIndex]} ${log.kill ? "from the" : "of the"} ${log.names[guildIndex]}${characters}`;
+          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "killed" : "was slain by"} ${log.names[playerTwoIndex]} ${log.kill ? "from the" : "of the"} ${log.names[guildIndex]}${characters}${log.coords}`;
         } else {
-          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "has killed" : "died to"} ${log.names[playerTwoIndex]} from ${log.names[guildIndex]}${characters}`;
+          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "has killed" : "died to"} ${log.names[playerTwoIndex]} from ${log.names[guildIndex]}${characters}${log.coords}`;
         }
       })
       .join("\n");

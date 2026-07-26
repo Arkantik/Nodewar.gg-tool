@@ -1,5 +1,7 @@
 import { ToastManager } from "../components/toast/toast-store";
+import { get_config } from "../components/create-config/config";
 import i18n from "../i18n";
+import { readNameAt } from "./configNames";
 import { getNetworkDeathLogs, getNetworkIsKill } from "./deathLogs";
 import { useHistoryStore } from "./history-store";
 import { parseLoggerLine } from "./logParsing";
@@ -25,9 +27,10 @@ async function recoverOrphanedSessionsInternal() {
 	const addEntry = useHistoryStore.getState().addEntry;
 
 	let recoveredCount = 0;
+	const config = await get_config();
 
 	for (const session of orphaned) {
-		const { killOffset, guildStatsKey } = session.meta;
+		const { killOffset } = session.meta;
 		const logs = session.lines.map(parseLoggerLine).filter((log) => log !== null);
 
 		if (logs.length === 0) {
@@ -48,8 +51,8 @@ async function recoverOrphanedSessionsInternal() {
 		const text = logs
 			.map((log) => {
 				const isKill = getNetworkIsKill(log.hex, killOffset);
-				const playerTwo = log.names[guildStatsKey.playerTwo]?.name ?? "?";
-				const guild = log.names[guildStatsKey.guild]?.name ?? "?";
+				const playerTwo = readNameAt(log.hex, config.player_two) || "?";
+				const guild = readNameAt(log.hex, config.guild) || "?";
 				return `[${log.time}] ${isKill ? "killed" : "died to"} ${playerTwo} from ${guild}`;
 			})
 			.join("\n");
@@ -59,8 +62,8 @@ async function recoverOrphanedSessionsInternal() {
 			kills,
 			deaths,
 			kdr,
-			topGuild: mostFrequent(logs.map((log) => log.names[guildStatsKey.guild]?.name)),
-			topEnemy: mostFrequent(deathLogs.map((log) => log.names[guildStatsKey.playerTwo]?.name)),
+			topGuild: mostFrequent(logs.map((log) => readNameAt(log.hex, config.guild))),
+			topEnemy: mostFrequent(deathLogs.map((log) => readNameAt(log.hex, config.player_two))),
 			logText: text,
 			recovered: true,
 		});

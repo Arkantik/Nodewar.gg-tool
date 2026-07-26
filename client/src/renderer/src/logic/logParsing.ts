@@ -1,6 +1,6 @@
 import type { Log, LogType } from "../components/create-config/config";
 
-const TEXT_LOG_REGEX = /\[(.+)\] (\w+) (died to|has killed|killed|was slain by) (\w+) (?:from|of|from the) (?:the )?(\w+|-1)(?: \((\w+),(\w+)\))?/;
+const TEXT_LOG_REGEX = /\[(.+)\] (\w+) (died to|has killed|killed|was slain by) (\w+) (?:from|of|from the) (?:the )?(\w+|-1)(?: \((\w+),(\w+)\))?( \{[^}]*\})?/;
 
 export function parseTextLog(data: string): Log[] {
 	const lines = data.split("\n");
@@ -13,6 +13,7 @@ export function parseTextLog(data: string): Log[] {
 				time: match[1],
 				names: [match[2], match[4], match[5], match[6] || "", match[7] || ""].filter((n) => n),
 				kill: match[3] === "has killed" || match[3] === "killed",
+				coords: match[8] || "",
 			});
 		}
 	}

@@ -22,6 +22,7 @@ export type Log = {
 	time: string;
 	names: string[];
 	kill: boolean;
+	coords: string;
 };
 
 export type NamedLog = {

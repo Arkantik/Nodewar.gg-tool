@@ -304,6 +304,18 @@
             "result": "Result",
             "playerTwo": "Player Two",
             "guild": "Guild"
+        },
+        "saveWarning": {
+            "title": "Offsets may have shifted",
+            "message": "These fields no longer look valid for this session: {{fields}}.\nThe game may have been patched. Check the log table before saving — an exported log can't be corrected afterwards.",
+            "saveAnyway": "Save anyway",
+            "cancel": "Cancel",
+            "fields": {
+                "kill": "kill / death",
+                "guild": "guild",
+                "player_one": "your player",
+                "player_two": "enemy player"
+            }
         }
     },
     "config": {

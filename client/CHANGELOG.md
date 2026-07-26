@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.7.0...v1.8.0) (2026-07-26)
+
+
+### Features
+
+* **logger:** add offset validation and save warning ([ffa7b3a](https://github.com/Arkantik/Nodewar.gg-tool/commit/ffa7b3a1ae8fc0dc8771699c95739ad49aac0b97))
+
 # [1.7.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.6.1...v1.7.0) (2026-07-20)
 
 

@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.0...v1.8.1) (2026-07-27)
+
+
+### Bug Fixes
+
+* trigger release to publish missing v1.8.0 windows installer assets ([dd6e758](https://github.com/Arkantik/Nodewar.gg-tool/commit/dd6e7583de16a3647e656cc25cbe860acaaca6f3))
+
 # [1.8.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.7.0...v1.8.0) (2026-07-26)
 
 

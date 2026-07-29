@@ -1,10 +1,16 @@
 version: 2
 updates:
   - package-ecosystem: "npm" 
-    directory: "/"
+    directory: "/client"
     schedule:
       interval: "weekly"
     target-branch: "dev"
+
+  - package-ecosystem: "pip"
+    directory: "/logger"
+    schedule:
+      interval: weekly
+    target-branch: dev
 
   - package-ecosystem: "github-actions"
     directory: "/"

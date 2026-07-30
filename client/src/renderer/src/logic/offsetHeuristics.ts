@@ -2,7 +2,9 @@ import { hexToString, type Config, type LogType } from "../components/create-con
 import { find_all_indicies } from "./util";
 
 export function readNameAt(hex: string, offset: number): string {
-	return hexToString(hex.slice(offset, offset + 64)).replaceAll("\0", "").replaceAll(" ", "");
+	return hexToString(hex.slice(offset, offset + 64))
+		.replaceAll("\0", "")
+		.replaceAll(" ", "");
 }
 
 function phantomOffsets(logs: LogType[], slot: number, offsets: number[]): Set<number> {
@@ -65,9 +67,7 @@ export function findKillOffset(logs: LogType[]): number[] {
 	// Candidate positions: anywhere a "01" appears outside a name's byte range.
 	const candidates = new Set<number>();
 	for (const log of logs) {
-		const indicies = find_all_indicies(log.hex, "01").filter((index) =>
-			log.names.every((n) => index > n.offset + 64 || index < n.offset),
-		);
+		const indicies = find_all_indicies(log.hex, "01").filter((index) => log.names.every((n) => index > n.offset + 64 || index < n.offset));
 		for (const index of indicies) candidates.add(index);
 	}
 
@@ -85,7 +85,7 @@ export function findKillOffset(logs: LogType[]): number[] {
 	}
 
 	return Array.from(toggleStats.entries())
-		.filter(([, s]) => s.kills > 0 && s.deaths > 0)
+		.filter(([, s]) => s.kills > 0 && s.deaths > 0 && (s.kills + s.deaths) / logs.length >= KILL_FLAG_COVERAGE)
 		.sort((a, b) => {
 			const coverage = b[1].kills + b[1].deaths - (a[1].kills + a[1].deaths);
 			if (coverage !== 0) return coverage;
@@ -93,6 +93,14 @@ export function findKillOffset(logs: LogType[]): number[] {
 		})
 		.slice(0, MAX_KILL_OFFSET_CANDIDATES)
 		.map(([index]) => index + 1);
+}
+
+export function mergeKillOffsets(logs: LogType[], seed: number | undefined): number[] {
+	const detected = findKillOffset(logs);
+	if (seed === undefined || seed <= 0) return detected;
+
+	const rest = detected.filter((offset) => offset !== seed);
+	return isKillFlagOffset(logs, seed) || rest.length === 0 ? [seed, ...rest] : [...rest, seed];
 }
 
 export interface NameOffsetCandidate {
@@ -116,7 +124,11 @@ export function rankNameOffsets(logs: LogType[], possibleNameOffsets: NameOffset
 	}
 
 	for (let i = 0; i < next.length; i++) {
-		const phantom = phantomOffsets(logs, i, next[i].map((c) => c.offset));
+		const phantom = phantomOffsets(
+			logs,
+			i,
+			next[i].map((c) => c.offset),
+		);
 		next[i] = next[i].sort((a, b) => {
 			const pa = phantom.has(a.offset) ? 1 : 0;
 			const pb = phantom.has(b.offset) ? 1 : 0;

@@ -1,3 +1,5 @@
+## [1.8.3](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.2...v1.8.3) (2026-07-30)
+
 ## [1.8.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.1...v1.8.2) (2026-07-29)
 
 

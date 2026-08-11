@@ -8,6 +8,8 @@ import Select from "./Select";
 
 export type ConfigModalOptions = ConfigSelection;
 
+const MAX_OPTIONS = 5;
+
 export interface ConfigModalProps {
 	config: Config;
 	options: ConfigModalOptions;
@@ -25,7 +27,7 @@ function ConfigModal({ config, options, onChange }: ConfigModalProps) {
 	}
 
 	function nameRow(slot: number) {
-		return <Select options={(options.possible_name_offsets[slot] ?? []).map((entry) => entry.offset)} selectedValue={options.name_indicies[slot] ?? 0} onChange={(value) => selectNameIndex(slot, value)} />;
+		return <Select options={(options.possible_name_offsets[slot] ?? []).slice(0, MAX_OPTIONS).map((entry) => entry.offset)} selectedValue={options.name_indicies[slot] ?? 0} onChange={(value) => selectNameIndex(slot, value)} />;
 	}
 
 	return (
@@ -49,7 +51,7 @@ server_2\t= \t20.76.14
 [PACKAGE]
 identifier\t= \t${config.identifier}
 kill\t\t= \t`}
-				<Select options={options.possible_kill_offsets} selectedValue={options.kill_index} onChange={(value) => onChange({ ...options, kill_index: value })} />
+				<Select options={options.possible_kill_offsets.slice(0, MAX_OPTIONS)} selectedValue={options.kill_index} onChange={(value) => onChange({ ...options, kill_index: value })} />
 				{`
 player_one\t= \t`}
 				{nameRow(options.player_one_index)}

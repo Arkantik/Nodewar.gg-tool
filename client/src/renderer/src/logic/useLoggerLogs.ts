@@ -10,6 +10,8 @@ import { useNameIndices } from "./useNameIndices";
 import { useSaveLogsToHistory } from "./useSaveLogsToHistory";
 import { mostFrequent } from "./util";
 
+const PINNED_OFFSET_MAX_RANK = 5;
+
 export interface LoggerStats {
 	kills: number;
 	deaths: number;
@@ -101,18 +103,13 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 		const killOffsets = detected.length > 0 ? detected : possibleKillOffsets;
 		const nameOffsets = rankNameOffsets(logs, possibleNameOffsets);
 
-		// `killIndex` is a position in a list that detection rebuilds every recalc, so
-		// on its own it silently comes to mean a different offset one log later --
-		// which is what destroyed a manual fix seconds after the user made it. Once
-		// the user has picked, follow the offset they chose rather than its old slot.
-		// Unpinned, killIndex stays 0 and keeps tracking the top-ranked candidate.
 		let nextKillIndex = killIndex;
 		if (killPinned.current) {
 			const pinnedOffset = possibleKillOffsets[killIndex];
 			const at = pinnedOffset === undefined ? -1 : killOffsets.indexOf(pinnedOffset);
-			// Fall back to the top candidate only if their pick stopped toggling and
-			// dropped out of the list entirely.
-			nextKillIndex = at === -1 ? 0 : at;
+			const stillTrusted = at !== -1 && at < PINNED_OFFSET_MAX_RANK;
+			nextKillIndex = stillTrusted ? at : 0;
+			killPinned.current = stillTrusted;
 		}
 
 		setPossibleKillOffsets(killOffsets);

@@ -26,10 +26,14 @@ export function findKillOffset(logs: LogType[]): number[] {
 			}
 			return { index, kills, deaths };
 		})
-		.filter((s) => s.kills > 0 && s.deaths > 0)
+		.filter((s) => s.kills + s.deaths > 0)
 		.sort((a, b) => {
 			const coverage = b.kills + b.deaths - (a.kills + a.deaths);
 			if (coverage !== 0) return coverage;
+
+			const toggles = (b.kills > 0 && b.deaths > 0 ? 1 : 0) - (a.kills > 0 && a.deaths > 0 ? 1 : 0);
+			if (toggles !== 0) return toggles;
+
 			return a.index - b.index;
 		})
 		.map((s) => s.index + 1);

@@ -6,7 +6,7 @@ from scapy.all import sniff, rdpcap, get_if_list
 if sys.platform == "win32":
     from scapy.arch.windows import get_windows_if_list
 from time import localtime, strftime
-from .. import config
+from .. import config, trace
 
 
 def dec(bytes):
@@ -47,22 +47,21 @@ def extract_string(hex, offset, length):
 
 current_position = 0
 
-identifier_regex = r"[56][0-9a-f]0100[0-9a-f]{4}"
+identifier_regex = r"[0-9a-f]{2}0100[0-9a-f]{4}"
 name_regex = r"^[A-Z][a-zA-Z0-9_]{2,15}$"
 
-# Hex-char window scanned for the identifier + 5 names (unchanged, proven layout).
-NAME_WINDOW = 600
-# Hex-char window actually exported as `hex` for each log line. Wider than
-# NAME_WINDOW so it also reaches the death-location floats, which sit ~278
-# hex chars past the victim name's offset (i.e. past NAME_WINDOW in the
-# worst case), plus a safety margin for offset drift across patches.
-EXPORT_WINDOW = 800
+name_start_regex = r"(?=(?:4[1-9a-f]|5[0-9a])00)"
 
-# identifier_regex is fixed-length; this many trailing hex chars are enough
-# to catch an identifier split across a packet boundary on the next call.
+NAME_WINDOW = 600
+EXPORT_WINDOW = 800
+HEADER_LOOKBACK = 64
 IDENTIFIER_LEN = 10
 MAX_TRACKED_CONNECTIONS = 128
 _pending_by_connection = OrderedDict()
+
+_identifier_pattern = re.compile(identifier_regex)
+_name_start_pattern = re.compile(name_start_regex)
+_name_pattern = re.compile(name_regex)
 
 
 def get_pending(conn_key):
@@ -77,6 +76,50 @@ def set_pending(conn_key, value):
     _pending_by_connection.move_to_end(conn_key)
     while len(_pending_by_connection) > MAX_TRACKED_CONNECTIONS:
         _pending_by_connection.popitem(last=False)
+
+
+def scan_names(payload):
+    names = []
+    guard = 0
+    for match in _name_start_pattern.finditer(payload):
+        offset = match.start()
+        if offset < guard:
+            continue
+        name = extract_string(payload, offset, 64)
+        if name != -1 and _name_pattern.match(name):
+            names.append((name, offset))
+            guard = offset + 64
+    return names
+
+
+def find_logs(payload):
+    names = scan_names(payload)
+    index = 0
+    while index + 4 < len(names):
+        first = names[index][1]
+
+        start = None
+        for match in _identifier_pattern.finditer(payload, max(0, first - HEADER_LOOKBACK), first):
+            start = match.start()
+        if start is None:
+            index += 1
+            continue
+
+        if len(payload) - start < EXPORT_WINDOW:
+            return
+
+        if names[index + 4][1] - start >= NAME_WINDOW:
+            index += 1
+            continue
+        if index > 0 and names[index - 1][1] >= start:
+            index += 1
+            continue
+        if index + 5 < len(names) and names[index + 5][1] - start < NAME_WINDOW:
+            index += 1
+            continue
+
+        yield start, [(name, offset - start) for name, offset in names[index : index + 5]]
+        index += 5
 
 
 def package_handler(package, output, ip_filter=True):
@@ -112,70 +155,52 @@ def package_handler(package, output, ip_filter=True):
 
         # iterate through the payload and try to find the identifier + player names + guild name + kill
         payload = get_pending(conn_key) + payload
-        position = 0
-        while len(payload[position:]) >= EXPORT_WINDOW:
-            payload = payload[position:]
-            position = 0
-            match_location = 0
-            matches = list(re.finditer(identifier_regex, payload))
+        consumed = 0
+        found = 0
+        for start, names in find_logs(payload):
+            found += 1
+            consumed = start + IDENTIFIER_LEN
+            possible_log = payload[start : start + EXPORT_WINDOW]
+            labelled = [name + " " + str(offset) for name, offset in names]
+            time = strftime("%I:%M:%S", localtime(int(package.time)))
+            trace.tracer.write(
+                {
+                    "epoch": package.time,
+                    "time": time,
+                    "src": package_src,
+                    "identifier": payload[start : start + IDENTIFIER_LEN],
+                    "names": labelled,
+                    "hex": possible_log,
+                }
+            )
+            print(
+                payload[start : start + IDENTIFIER_LEN]
+                + ","
+                + time
+                + ","
+                + ",".join(labelled)
+                + ","
+                + possible_log,
+                flush=True,
+            )
 
-            if len(matches) == 0:
-                # won't drop the payload outright (that loses an identifier split across
-                # this packet boundary) and don't keep the whole thing either
-                # (non-combat traffic would make this grow without bound)
-                # - keep just enough trailing hex to bridge a split.
-                set_pending(conn_key, payload[-(IDENTIFIER_LEN - 1):])
-                return
-            elif len(matches) == 1:
-                match_location = matches[0].start()
-            else:
-                while len(matches) > 1:
-                    if matches[0].start() + EXPORT_WINDOW < matches[1].start():
-                        match_location = matches[0].start()
-                        break
-                    elif len(matches) > 2:
-                        matches.pop(0)
-                    else:
-                        match_location = matches[1].start()
-                        break
+        set_pending(conn_key, payload[max(consumed, len(payload) - (EXPORT_WINDOW - 1), 0) :])
 
-            payload = payload[match_location:]
-
-            if len(payload) >= EXPORT_WINDOW:
-                possible_log = payload[0:EXPORT_WINDOW]
-                i = 0
-                names = []
-                while i < NAME_WINDOW:
-                    name = extract_string(possible_log, i, 64)
-                    if name == -1:
-                        i += 1
-                        continue
-                    is_valid = re.match(name_regex, name)
-                    if is_valid:
-                        names.append(name + " " + str(i))
-                        i += 64
-                    else:
-                        i += 1
-                if len(names) == 5:
-                    time = strftime("%I:%M:%S", localtime(int(package.time)))
-                    print(
-                        payload[0:10]
-                        + ","
-                        + time
-                        + ","
-                        + ",".join(names)
-                        + ","
-                        + possible_log,
-                        flush=True,
-                    )
-                    position = EXPORT_WINDOW
-                else:
-                    position = 1
-
-            else:
-                break
-
-        set_pending(conn_key, payload[position:])
+        # Debug-only: a packet carrying enough names for a record that produced
+        # nothing is the signature of a patch moving the layout - exactly the
+        # case that is impossible to diagnose after the fact without the bytes.
+        if found == 0 and trace.tracer.enabled:
+            all_names = scan_names(payload)
+            if len(all_names) >= 5:
+                trace.tracer.write(
+                    {
+                        "kind": "unmatched_names",
+                        "epoch": package.time,
+                        "conn": [str(part) for part in conn_key],
+                        "name_offsets": [offset for _, offset in all_names],
+                        "hex": payload,
+                    }
+                )
 
 
 def open_pcap(file, output, ip_filter=True):

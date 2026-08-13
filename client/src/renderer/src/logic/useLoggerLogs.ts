@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { get_date, hexToString, type Config, type LogType } from "../components/create-config/config";
+import { get_date, type LogType } from "../components/create-config/config";
 import { useConfigStore } from "../components/create-config/config-store";
-import ConfirmModal from "../components/modal/ConfirmModal";
-import { ModalManager } from "../components/modal/modal-store";
-import { ToastManager } from "../components/toast/toast-store";
-import i18n from "../i18n";
+import { findKillOffset, findMostFrequentIdentifier, rankNameOffsets, type NameOffsetCandidate } from "./configDetection";
+import { readNameAt } from "./configNames";
 import { extractDeathCoordinates, formatCoordinates } from "./coordinates";
-import { getNetworkDeathLogs } from "./deathLogs";
-import { findMostFrequentIdentifier, invalidConfigOffsets, mergeKillOffsets, rankNameOffsets, readNameAt } from "./offsetHeuristics";
+import { getNetworkDeathLogs, getNetworkIsKill } from "./deathLogs";
 import { saveLogsToFile } from "./saveLogsToFile";
 import { useNameIndices } from "./useNameIndices";
 import { useSaveLogsToHistory } from "./useSaveLogsToHistory";
 import { mostFrequent } from "./util";
+
+const PINNED_OFFSET_MAX_RANK = 5;
 
 export interface LoggerStats {
 	kills: number;
@@ -19,20 +18,9 @@ export interface LoggerStats {
 	kdr: number;
 }
 
-export interface ConfigOverrides {
-	possibleKillOffsets?: number[];
-	possibleNameOffsets?: { offset: number; count: number }[][];
-	nameIndicies?: number[];
-	playerOneIndex?: number;
-	playerTwoIndex?: number;
-	guildIndex?: number;
-	killIndex?: number;
-	includeCharacters?: boolean;
-}
-
 export interface ConfigSelection {
 	possible_kill_offsets: number[];
-	possible_name_offsets: { offset: number; count: number }[][];
+	possible_name_offsets: NameOffsetCandidate[][];
 	name_indicies: number[];
 	player_one_index: number;
 	player_two_index: number;
@@ -41,27 +29,28 @@ export interface ConfigSelection {
 	include_characters: boolean;
 }
 
-function sameOffsets(a: number[], b: number[]) {
-	return a.length === b.length && a.every((value, i) => value === b[i]);
-}
-
 export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerStats) => void, onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void, onKillOffsetChange?: (offset: number | undefined) => void) {
-	const [possibleNameOffsets, setPossibleNameOffsets] = useState<{ offset: number; count: number }[][]>([]);
+	const [possibleNameOffsets, setPossibleNameOffsets] = useState<NameOffsetCandidate[][]>([]);
 	const [nameIndicies, setNameIndicies] = useState<number[]>([0, 0, 0, 0, 0]);
-	const { playerOneIndex, playerTwoIndex, guildIndex, setPlayerOneIndex, setPlayerTwoIndex, setGuildIndex, updateNames } = useNameIndices(onIndicesChange);
 	const [possibleKillOffsets, setPossibleKillOffsets] = useState<number[]>([]);
 	const [killIndex, setKillIndex] = useState(0);
-	const [pinnedNameSlots, setPinnedNameSlots] = useState<number[]>([]);
-	const [config, setConfig] = useState<Config | null>(null);
 	const [autoScroll, setAutoScroll] = useState(true);
+	const { playerOneIndex, playerTwoIndex, guildIndex, setPlayerOneIndex, setPlayerTwoIndex, setGuildIndex, updateNames } = useNameIndices(onIndicesChange);
+
+	const config = useConfigStore((s) => s.config);
 	const ensureConfigLoaded = useConfigStore((s) => s.ensureLoaded);
 	const updateConfig = useConfigStore((s) => s.updateConfig);
 	const saveLogsToHistory = useSaveLogsToHistory();
 
+	const killPinned = useRef(false);
+
+	const seeded = useRef(false);
 	useEffect(() => {
 		(async () => {
 			const cfg = await ensureConfigLoaded();
-			setConfig(cfg);
+			if (seeded.current) return;
+			seeded.current = true;
+
 			setPossibleKillOffsets([cfg.kill]);
 			setPossibleNameOffsets([[{ offset: cfg.player_one, count: 1 }], [{ offset: cfg.player_two, count: 1 }], [{ offset: cfg.guild, count: 1 }]]);
 			setAutoScroll(cfg.auto_scroll);
@@ -69,89 +58,95 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 	}, [ensureConfigLoaded]);
 
 	useEffect(() => {
-		if (logs.length > 0) logsChanged();
+		if (logs.length === 0) return;
+		if (autoScroll) setTimeout(scrollToBottom);
+		if (logs.length < 50 || logs.length % 100 === 0) void recalculate();
 	}, [logs]);
 
+	const killOffset = possibleKillOffsets[killIndex];
+
 	const stats = useMemo(() => {
-		if (logs.length === 0 || possibleKillOffsets.length === 0) return null;
+		if (logs.length === 0 || killOffset === undefined) return null;
 
 		let kills = 0;
 		let deaths = 0;
+		for (const log of logs) {
+			const isKill = getNetworkIsKill(log.hex, killOffset);
+			if (isKill === undefined) continue;
+			if (isKill) kills++;
+			else deaths++;
+		}
 
-		logs.forEach((log) => {
-			const killOffset = possibleKillOffsets[killIndex];
-			if (killOffset !== undefined && log.hex.length > killOffset) {
-				const isKill = log.hex[killOffset] === "1";
-				isKill ? kills++ : deaths++;
-			}
-		});
-
-		const kdr = deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills;
-		return { kills, deaths, kdr };
-	}, [logs, possibleKillOffsets, killIndex]);
+		return { kills, deaths, kdr: deaths > 0 ? parseFloat((kills / deaths).toFixed(2)) : kills };
+	}, [logs, killOffset]);
 
 	useEffect(() => {
 		if (stats) onStatsUpdate?.(stats);
-		onKillOffsetChange?.(possibleKillOffsets[killIndex]);
-	}, [stats, onStatsUpdate, possibleKillOffsets, killIndex, onKillOffsetChange]);
+		onKillOffsetChange?.(killOffset);
+	}, [stats, onStatsUpdate, killOffset, onKillOffsetChange]);
 
-	function setAutoScrollAndPersist(checked: boolean) {
-		setAutoScroll(checked);
-		if (config) updateConfig({ ...config, auto_scroll: checked });
+	function currentSelection(): ConfigSelection {
+		return {
+			possible_kill_offsets: possibleKillOffsets,
+			possible_name_offsets: possibleNameOffsets,
+			name_indicies: nameIndicies,
+			player_one_index: playerOneIndex,
+			player_two_index: playerTwoIndex,
+			guild_index: guildIndex,
+			kill_index: killIndex,
+			include_characters: config?.include_characters ?? true,
+		};
 	}
 
-	function logsChanged() {
-		if (autoScroll) setTimeout(scroll);
+	async function recalculate() {
+		const detected = findKillOffset(logs);
+		const killOffsets = detected.length > 0 ? detected : possibleKillOffsets;
+		const nameOffsets = rankNameOffsets(logs, possibleNameOffsets);
 
-		if (logs.length < 50 || logs.length % 100 === 0) {
-			const merged = mergeKillOffsets(logs, config?.kill);
-			const nextKillIndex = holdKillIndex(merged);
-
-			if (merged.length > 0 && (!sameOffsets(merged, possibleKillOffsets) || nextKillIndex !== killIndex)) {
-				setPossibleKillOffsets(merged);
-				setKillIndex(nextKillIndex);
-			}
-
-			calculateConfig(merged.length > 0 ? merged : possibleKillOffsets, nextKillIndex);
+		let nextKillIndex = killIndex;
+		if (killPinned.current) {
+			const pinnedOffset = possibleKillOffsets[killIndex];
+			const at = pinnedOffset === undefined ? -1 : killOffsets.indexOf(pinnedOffset);
+			const stillTrusted = at !== -1 && at < PINNED_OFFSET_MAX_RANK;
+			nextKillIndex = stillTrusted ? at : 0;
+			killPinned.current = stillTrusted;
 		}
+
+		setPossibleKillOffsets(killOffsets);
+		setPossibleNameOffsets(nameOffsets);
+		setKillIndex(nextKillIndex);
+
+		await persistConfig(
+			{
+				...currentSelection(),
+				possible_kill_offsets: killOffsets,
+				possible_name_offsets: nameOffsets,
+				kill_index: nextKillIndex,
+			},
+			findMostFrequentIdentifier(logs),
+		);
 	}
 
-	function holdKillIndex(candidates: number[]) {
-		const current = possibleKillOffsets[killIndex];
-		if (current === undefined) return 0;
+	async function persistConfig(selection: ConfigSelection, identifier?: string) {
+		const stored = useConfigStore.getState().config;
+		if (!stored) return;
 
-		const at = candidates.indexOf(current);
-		return at === -1 ? 0 : at;
-	}
+		const offsetAt = (slot: number) => selection.possible_name_offsets[slot]?.[selection.name_indicies[slot]]?.offset || 0;
 
-	async function calculateConfig(killOffsets: number[], kIndex: number) {
-		const selectedOffsets = possibleNameOffsets.map((list, i) => list[nameIndicies[i]]?.offset);
-		const newPossibleNameOffsets = rankNameOffsets(logs, possibleNameOffsets);
-		const slotCount = Math.max(nameIndicies.length, newPossibleNameOffsets.length);
-		const newNameIndicies = Array.from({ length: slotCount }, (_, i) => {
-			if (!pinnedNameSlots.includes(i)) return 0;
-			const selected = selectedOffsets[i];
-			const kept = selected === undefined ? -1 : (newPossibleNameOffsets[i] ?? []).findIndex((c) => c.offset === selected);
-			return kept === -1 ? 0 : kept;
-		});
-		const identifier = findMostFrequentIdentifier(logs);
-
-		setPossibleNameOffsets(newPossibleNameOffsets);
-		setNameIndicies(newNameIndicies);
-		await updateConfigWrapper(identifier, {
-			possibleKillOffsets: killOffsets,
-			possibleNameOffsets: newPossibleNameOffsets,
-			nameIndicies: newNameIndicies,
-			killIndex: kIndex,
-			playerOneIndex,
-			playerTwoIndex,
-			guildIndex,
+		await updateConfig({
+			...stored,
+			patch: get_date(),
+			identifier: identifier || stored.identifier,
+			player_one: offsetAt(selection.player_one_index),
+			player_two: offsetAt(selection.player_two_index),
+			guild: offsetAt(selection.guild_index),
+			kill: selection.possible_kill_offsets[selection.kill_index] ?? stored.kill,
+			include_characters: selection.include_characters,
 		});
 	}
 
 	async function applyConfigSelectionImpl(selection: ConfigSelection) {
-		const newlyPinned = selection.name_indicies.map((value, slot) => (value !== nameIndicies[slot] ? slot : -1)).filter((slot) => slot !== -1 && !pinnedNameSlots.includes(slot));
-		if (newlyPinned.length > 0) setPinnedNameSlots((prev) => [...prev, ...newlyPinned]);
+		if (selection.kill_index !== killIndex) killPinned.current = true;
 
 		setPossibleKillOffsets(selection.possible_kill_offsets);
 		setPossibleNameOffsets(selection.possible_name_offsets);
@@ -161,135 +156,63 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 		setGuildIndex(selection.guild_index);
 		setKillIndex(selection.kill_index);
 
-		await updateConfigWrapper(undefined, {
-			possibleKillOffsets: selection.possible_kill_offsets,
-			possibleNameOffsets: selection.possible_name_offsets,
-			nameIndicies: selection.name_indicies,
-			playerOneIndex: selection.player_one_index,
-			playerTwoIndex: selection.player_two_index,
-			guildIndex: selection.guild_index,
-			killIndex: selection.kill_index,
-			includeCharacters: selection.include_characters,
-		});
-	}
-
-	async function updateConfigWrapper(identifier?: string, overrides: ConfigOverrides = {}) {
-		if (!config) return;
-
-		const offsets = overrides.possibleNameOffsets ?? possibleNameOffsets;
-		const indices = overrides.nameIndicies ?? nameIndicies;
-		const p1 = overrides.playerOneIndex ?? playerOneIndex;
-		const p2 = overrides.playerTwoIndex ?? playerTwoIndex;
-		const g = overrides.guildIndex ?? guildIndex;
-		const kIdx = overrides.killIndex ?? killIndex;
-		const killOffsets = overrides.possibleKillOffsets ?? possibleKillOffsets;
-
-		const newConfig = {
-			...config,
-			patch: get_date(),
-			identifier: identifier || config.identifier,
-			player_one: offsets[p1]?.[indices[p1]]?.offset || 0,
-			player_two: offsets[p2]?.[indices[p2]]?.offset || 0,
-			guild: offsets[g]?.[indices[g]]?.offset || 0,
-			kill: killOffsets[kIdx] ?? config.kill,
-			include_characters: overrides.includeCharacters ?? config.include_characters,
-		};
-
-		const updated = await updateConfig(newConfig);
-		setConfig(updated);
+		await persistConfig(selection);
 	}
 
 	const applyRef = useRef(applyConfigSelectionImpl);
 	applyRef.current = applyConfigSelectionImpl;
 	const applyConfigSelection = useCallback((selection: ConfigSelection) => applyRef.current(selection), []);
 
-	function getName(i: number, log: LogType) {
-		const list = possibleNameOffsets[i];
-		if (!list) return "";
-		const selected = nameIndicies[i];
-		return hexToString(log.hex.slice(list[selected]?.offset, list[selected]?.offset + 64))
-			.replaceAll("\0", "")
-			.replaceAll(" ", "");
+	function setAutoScrollAndPersist(checked: boolean) {
+		setAutoScroll(checked);
+		if (config) void updateConfig({ ...config, auto_scroll: checked });
+	}
+
+	function getName(slot: number, log: LogType) {
+		const offset = possibleNameOffsets[slot]?.[nameIndicies[slot]]?.offset;
+		return offset === undefined ? "" : readNameAt(log.hex, offset);
 	}
 
 	function getNameOptions(log: LogType) {
-		return possibleNameOffsets.map((list, index) => {
-			const selected = nameIndicies[index];
-			return hexToString(log.hex.slice(list[selected]?.offset, list[selected]?.offset + 64))
-				.replaceAll("\0", "")
-				.replaceAll(" ", "");
-		});
+		return possibleNameOffsets.map((_, slot) => getName(slot, log));
 	}
 
-	function scroll() {
+	function scrollToBottom() {
 		const container = document.querySelector(".react-window-list");
 		if (container) container.scrollTop = container.scrollHeight;
 	}
 
 	function getLogsString() {
-		let output = "";
-		for (const log of logs) {
-			let characters = "";
-			const playerOneName = getName(playerOneIndex, log);
-			const playerTwoName = getName(playerTwoIndex, log);
-			const guildName = getName(guildIndex, log);
+		return logs
+			.map((log) => {
+				const playerOneName = getName(playerOneIndex, log);
+				const playerTwoName = getName(playerTwoIndex, log);
+				const guildName = getName(guildIndex, log);
 
-			if (config?.include_characters) {
-				const remainingIndicies = [0, 1, 2, 3, 4].filter((i) => i !== playerOneIndex && i !== playerTwoIndex && i !== guildIndex);
-				const remainingNames = remainingIndicies.map((i) => getName(i, log));
-				characters = ` (${remainingNames.join(",")})`;
-			}
+				let characters = "";
+				if (config?.include_characters) {
+					const remaining = [0, 1, 2, 3, 4].filter((i) => i !== playerOneIndex && i !== playerTwoIndex && i !== guildIndex);
+					characters = ` (${remaining.map((i) => getName(i, log)).join(",")})`;
+				}
 
-			const isKill = log.hex[possibleKillOffsets[killIndex]] === "1";
+				const isKill = getNetworkIsKill(log.hex, killOffset);
+				const victimSlot = isKill ? playerTwoIndex : playerOneIndex;
+				const coords = extractDeathCoordinates(log.hex, possibleNameOffsets[victimSlot]?.[nameIndicies[victimSlot]]?.offset);
+				const coordsSuffix = coords ? ` ${formatCoordinates(coords)}` : "";
 
-			const playerOneOffset = possibleNameOffsets[playerOneIndex]?.[nameIndicies[playerOneIndex]]?.offset;
-			const playerTwoOffset = possibleNameOffsets[playerTwoIndex]?.[nameIndicies[playerTwoIndex]]?.offset;
-			const victimOffset = isKill ? playerTwoOffset : playerOneOffset;
-			const coords = extractDeathCoordinates(log.hex, victimOffset);
-			const coordsSuffix = coords ? ` ${formatCoordinates(coords)}` : "";
-
-			if (isKill) {
-				output += `[${log.time}] ${playerOneName} has killed ${playerTwoName} from ${guildName}${characters}${coordsSuffix}\n`;
-			} else {
-				output += `[${log.time}] ${playerOneName} died to ${playerTwoName} from ${guildName}${characters}${coordsSuffix}\n`;
-			}
-		}
-		return output;
-	}
-
-	function offsetWarning() {
-		const bad = config ? invalidConfigOffsets(logs, config) : [];
-		if (bad.length === 0) return null;
-		const fields = bad.map((f) => i18n.t(`logger.saveWarning.fields.${f}`)).join(", ");
-		return i18n.t("logger.saveWarning.message", { fields });
+				const verb = isKill ? "has killed" : "died to";
+				return `[${log.time}] ${playerOneName} ${verb} ${playerTwoName} from ${guildName}${characters}${coordsSuffix}`;
+			})
+			.join("\n");
 	}
 
 	async function saveLogs() {
-		const message = offsetWarning();
-		const doSave = async () => {
-			const text = getLogsString();
-			await saveLogsToFile(text);
-		};
-		if (!message) {
-			await doSave();
-			return;
-		}
-		ModalManager.open(ConfirmModal, {
-			title: i18n.t("logger.saveWarning.title"),
-			message,
-			confirmLabel: i18n.t("logger.saveWarning.saveAnyway"),
-			cancelLabel: i18n.t("logger.saveWarning.cancel"),
-			onConfirm: doSave,
-		});
+		await saveLogsToFile(getLogsString());
 	}
 
 	async function saveCurrentSessionToHistory() {
-		const message = offsetWarning();
-		if (message) ToastManager.warning(message);
-
 		const { kills, deaths, kdr } = stats ?? { kills: 0, deaths: 0, kdr: 0 };
-
-		const deathLogs = getNetworkDeathLogs(logs, possibleKillOffsets[killIndex]);
+		const deathLogs = getNetworkDeathLogs(logs, killOffset);
 
 		await saveLogsToHistory({
 			text: getLogsString(),

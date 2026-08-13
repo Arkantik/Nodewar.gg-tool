@@ -1,3 +1,26 @@
+## [1.8.3](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.2...v1.8.3) (2026-07-30)
+
+## [1.8.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.1...v1.8.2) (2026-07-29)
+
+
+### Bug Fixes
+
+* trigger release to publish missing v1.8.0 windows installer assets ([3c1a091](https://github.com/Arkantik/Nodewar.gg-tool/commit/3c1a0911b0a5da7dfeea8219a66fc09c83fe41fc))
+
+## [1.8.1](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.0...v1.8.1) (2026-07-27)
+
+
+### Bug Fixes
+
+* trigger release to publish missing v1.8.0 windows installer assets ([dd6e758](https://github.com/Arkantik/Nodewar.gg-tool/commit/dd6e7583de16a3647e656cc25cbe860acaaca6f3))
+
+# [1.8.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.7.0...v1.8.0) (2026-07-26)
+
+
+### Features
+
+* **logger:** add offset validation and save warning ([ffa7b3a](https://github.com/Arkantik/Nodewar.gg-tool/commit/ffa7b3a1ae8fc0dc8771699c95739ad49aac0b97))
+
 # [1.7.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.6.1...v1.7.0) (2026-07-20)
 
 

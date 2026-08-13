@@ -308,18 +308,6 @@
             "result": "Ergebnis",
             "playerTwo": "Spieler Zwei",
             "guild": "Gilde"
-        },
-        "saveWarning": {
-            "title": "Offsets haben sich möglicherweise geändert",
-            "message": "Diese Felder wirken für diese Sitzung nicht mehr gültig: {{fields}}.\nDas Spiel wurde möglicherweise aktualisiert. Prüfe die Tabelle vor dem Speichern — ein exportiertes Log lässt sich danach nicht mehr korrigieren.",
-            "saveAnyway": "Trotzdem speichern",
-            "cancel": "Abbrechen",
-            "fields": {
-                "kill": "Kill / Tod",
-                "guild": "Gilde",
-                "player_one": "dein Spieler",
-                "player_two": "Gegner"
-            }
         }
     },
     "config": {

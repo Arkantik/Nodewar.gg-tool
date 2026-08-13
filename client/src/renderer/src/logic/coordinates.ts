@@ -1,11 +1,3 @@
-// Combat log packets encode a world position as 3 consecutive little-endian
-// float32 values (X, Y/height, Z) somewhere past the name fields, but *where*
-// drifts with every game patch (verified: the same field moved between two
-// captures taken days apart). Rather than hardcode a byte offset that goes
-// stale, scan for the value pattern itself, the same way offsetHeuristics.ts
-// discovers name/kill positions dynamically instead of hardcoding them.
-// Lower bound rejects denormalized near-zero garbage (e.g. 9e-39) that reads
-// as a valid float but isn't a real coordinate.
 const MIN_PLAUSIBLE_COORD = 1;
 const MAX_PLAUSIBLE_COORD = 2_000_000;
 

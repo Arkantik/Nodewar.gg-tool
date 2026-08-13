@@ -26,11 +26,9 @@ function Sidebar() {
 
 	return (
 		<aside className="relative w-16 shrink-0 h-full flex flex-col chrome-panel border-r border-white/10 border-b-0">
-			<NavLink to="/" className="flex items-center justify-center gap-2.5 px-4 h-16 shrink-0 border-white/10 transition-colors duration-150 ease-out hover:bg-white/5">
-				<img src="./logo.svg" alt="" className="w-6 h-6 shrink-0" />
+			<NavLink to="/" className="flex items-center justify-center gap-2.5 px-4 h-18 shrink-0">
+				<img src="./logo.svg" alt="" className="w-8 h-8 shrink-0" />
 			</NavLink>
-
-			<hr className="border-white/10" />
 
 			<nav className="flex-1 flex flex-col gap-1 p-2 overflow-y-auto">
 				{navItems.map((item) => (

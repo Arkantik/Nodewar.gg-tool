@@ -1,3 +1,10 @@
+## [1.8.4](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.3...v1.8.4) (2026-08-13)
+
+
+### Bug Fixes
+
+* **logger:** refine kill offset detection logic ([48d58f2](https://github.com/Arkantik/Nodewar.gg-tool/commit/48d58f2a5bf7d01516e666d3720295b952f1acde))
+
 ## [1.8.3](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.2...v1.8.3) (2026-07-30)
 
 ## [1.8.2](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.1...v1.8.2) (2026-07-29)

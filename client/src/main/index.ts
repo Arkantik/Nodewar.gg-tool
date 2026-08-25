@@ -24,6 +24,14 @@ app.commandLine.appendSwitch("disable-background-timer-throttling");
 app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
 app.commandLine.appendSwitch("disable-renderer-backgrounding");
 
+process.on("uncaughtException", (err) => {
+	console.error("Uncaught exception in main process:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+	console.error("Unhandled promise rejection in main process:", reason);
+});
+
 let mainWindow: BrowserWindow | null = null;
 let isQuitConfirmed = false;
 let trayApi: TrayApi | null = null;
@@ -32,125 +40,128 @@ let overlayApi: OverlayController | null = null;
 const getWindow = () => mainWindow;
 
 const loggerManager = new LoggerProcessManager((evt) => {
-  mainWindow?.webContents.send("logger:event", evt);
+	mainWindow?.webContents.send("logger:event", evt);
 });
 
 function sendCommand(action: AppAction) {
-  mainWindow?.webContents.send("commands:trigger", action);
+	mainWindow?.webContents.send("commands:trigger", action);
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    minWidth: 1000,
-    minHeight: 700,
-    resizable: true,
-    show: false,
-    backgroundColor: "#0a0a0c",
-    icon: app.isPackaged ? undefined : join(app.getAppPath(), "..", "logger", "icon", "icon-2.ico"),
-    frame: false,
-    webPreferences: {
-      preload: join(__dirname, "../preload/index.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true
-    }
-  });
+	mainWindow = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		minWidth: 1000,
+		minHeight: 700,
+		resizable: true,
+		show: false,
+		backgroundColor: "#0a0a0c",
+		icon: app.isPackaged ? undefined : join(app.getAppPath(), "..", "logger", "icon", "icon-2.ico"),
+		frame: false,
+		webPreferences: {
+			preload: join(__dirname, "../preload/index.js"),
+			contextIsolation: true,
+			nodeIntegration: false,
+			sandbox: true,
+		},
+	});
 
-  mainWindow.once("ready-to-show", () => mainWindow?.show());
+	mainWindow.once("ready-to-show", () => mainWindow?.show());
 
-  mainWindow.on("close", (event) => {
-    if (isQuitConfirmed || trayApi?.getStatus() !== "recording") {
-      void loggerManager.stop();
-      return;
-    }
+	mainWindow.on("close", (event) => {
+		if (isQuitConfirmed || trayApi?.getStatus() !== "recording") {
+			void loggerManager.stop();
+			return;
+		}
 
-    event.preventDefault();
-    void dialog
-      .showMessageBox(mainWindow!, {
-        type: "warning",
-        buttons: ["Cancel", "Quit Anyway"],
-        defaultId: 0,
-        cancelId: 0,
-        title: "Recording in progress",
-        message: "A recording is currently in progress.",
-        detail: "Closing the app now will stop the recording. Are you sure you want to quit?"
-      })
-      .then(({ response }) => {
-        if (response !== 1) return;
-        isQuitConfirmed = true;
-        mainWindow?.close();
-      });
-  });
+		event.preventDefault();
+		void dialog
+			.showMessageBox(mainWindow!, {
+				type: "warning",
+				buttons: ["Cancel", "Quit Anyway"],
+				defaultId: 0,
+				cancelId: 0,
+				title: "Recording in progress",
+				message: "A recording is currently in progress.",
+				detail: "Closing the app now will stop the recording. Are you sure you want to quit?",
+			})
+			.then(({ response }) => {
+				if (response !== 1) return;
+				isQuitConfirmed = true;
+				mainWindow?.close();
+			});
+	});
 
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-    overlayApi?.destroy();
-    app.quit();
-  });
+	mainWindow.on("closed", () => {
+		mainWindow = null;
+		overlayApi?.destroy();
+		app.quit();
+	});
 
-  mainWindow.on("maximize", () => mainWindow?.webContents.send("window:stateChanged", true));
-  mainWindow.on("unmaximize", () => mainWindow?.webContents.send("window:stateChanged", false));
+	mainWindow.on("maximize", () => mainWindow?.webContents.send("window:stateChanged", true));
+	mainWindow.on("unmaximize", () => mainWindow?.webContents.send("window:stateChanged", false));
 
-  const rendererUrl = process.env.ELECTRON_RENDERER_URL;
-  const isAppUrl = (url: string) => (rendererUrl ? url.startsWith(rendererUrl) : url.startsWith("file://"));
+	const rendererUrl = process.env.ELECTRON_RENDERER_URL;
+	const isAppUrl = (url: string) => (rendererUrl ? url.startsWith(rendererUrl) : url.startsWith("file://"));
 
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    void shell.openExternal(url);
-    return { action: "deny" };
-  });
-  mainWindow.webContents.on("will-navigate", (event, url) => {
-    if (isAppUrl(url)) return;
-    event.preventDefault();
-    void shell.openExternal(url);
-  });
+	mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+		void shell.openExternal(url);
+		return { action: "deny" };
+	});
+	mainWindow.webContents.on("will-navigate", (event, url) => {
+		if (isAppUrl(url)) return;
+		event.preventDefault();
+		void shell.openExternal(url);
+	});
 
-  if (rendererUrl) {
-    mainWindow.loadURL(rendererUrl);
-  } else {
-    mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
-  }
+	if (rendererUrl) {
+		mainWindow.loadURL(rendererUrl);
+	} else {
+		mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
+	}
 }
 
 app.whenReady().then(() => {
-  Menu.setApplicationMenu(null);
+	Menu.setApplicationMenu(null);
 
-  registerLoggerIpc(loggerManager);
-  registerDialogIpc(getWindow);
-  registerFsIpc();
-  registerClipboardIpc();
-  registerConfigIpc();
-  registerShellIpc();
-  registerUpdaterIpc(setupUpdater(getWindow));
-  registerAppIpc();
-  overlayApi = setupOverlay();
-  registerTrayIpc(() => trayApi, () => overlayApi);
-  registerHotkeyIpc(() => hotkeyApi);
-  registerOverlayIpc(() => overlayApi);
-  registerSessionLogIpc();
-  registerWindowIpc(getWindow);
+	registerLoggerIpc(loggerManager);
+	registerDialogIpc(getWindow);
+	registerFsIpc();
+	registerClipboardIpc();
+	registerConfigIpc();
+	registerShellIpc();
+	registerUpdaterIpc(setupUpdater(getWindow));
+	registerAppIpc();
+	overlayApi = setupOverlay();
+	registerTrayIpc(
+		() => trayApi,
+		() => overlayApi,
+	);
+	registerHotkeyIpc(() => hotkeyApi);
+	registerOverlayIpc(() => overlayApi);
+	registerSessionLogIpc();
+	registerWindowIpc(getWindow);
 
-  createWindow();
+	createWindow();
 
-  try {
-    trayApi = setupTray(getWindow, sendCommand);
-  } catch (err) {
-    console.error("Failed to create tray icon:", err);
-  }
+	try {
+		trayApi = setupTray(getWindow, sendCommand);
+	} catch (err) {
+		console.error("Failed to create tray icon:", err);
+	}
 
-  hotkeyApi = setupGlobalHotkey(sendCommand);
-  if (!hotkeyApi.getAccelerator()) {
-    console.error("Failed to register global recording hotkey (likely already bound by another app).");
-  }
+	hotkeyApi = setupGlobalHotkey(sendCommand);
+	if (!hotkeyApi.getAccelerator()) {
+		console.error("Failed to register global recording hotkey (likely already bound by another app).");
+	}
 });
 
 app.on("will-quit", () => {
-  hotkeyApi?.destroy();
-  trayApi?.destroy();
-  overlayApi?.destroy();
+	hotkeyApi?.destroy();
+	trayApi?.destroy();
+	overlayApi?.destroy();
 });
 
 app.on("window-all-closed", () => {
-  app.quit();
+	app.quit();
 });

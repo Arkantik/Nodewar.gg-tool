@@ -188,6 +188,7 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 				const playerOneName = getName(playerOneIndex, log);
 				const playerTwoName = getName(playerTwoIndex, log);
 				const guildName = getName(guildIndex, log);
+				if (!playerOneName || !playerTwoName || !guildName) return null;
 
 				let characters = "";
 				if (config?.include_characters) {
@@ -204,6 +205,7 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 				const verb = isKill ? "has killed" : "died to";
 				return `[${log.time}] ${playerOneName} ${verb} ${playerTwoName} from ${guildName}${characters}${coordsSuffix}`;
 			})
+			.filter((line): line is string => line !== null)
 			.join("\n");
 	}
 

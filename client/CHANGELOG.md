@@ -1,3 +1,10 @@
+## [1.8.6](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.5...v1.8.6) (2026-08-25)
+
+
+### Bug Fixes
+
+* **logger:** render character names only if valid ([37564ec](https://github.com/Arkantik/Nodewar.gg-tool/commit/37564ecc931e5b6e5a743d698111ed986857f295))
+
 ## [1.8.5](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.4...v1.8.5) (2026-08-13)
 
 ## [1.8.4](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.3...v1.8.4) (2026-08-13)

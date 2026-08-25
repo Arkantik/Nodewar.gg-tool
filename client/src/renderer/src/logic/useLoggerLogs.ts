@@ -192,7 +192,8 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 				let characters = "";
 				if (config?.include_characters) {
 					const remaining = [0, 1, 2, 3, 4].filter((i) => i !== playerOneIndex && i !== playerTwoIndex && i !== guildIndex);
-					characters = ` (${remaining.map((i) => getName(i, log)).join(",")})`;
+					const remainingNames = remaining.map((i) => getName(i, log));
+					if (remainingNames.every(Boolean)) characters = ` (${remainingNames.join(",")})`;
 				}
 
 				const isKill = getNetworkIsKill(log.hex, killOffset);

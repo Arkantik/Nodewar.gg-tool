@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { LuKeyboard } from "react-icons/lu";
 import { acceleratorFromKeyEvent, formatAccelerator } from "../../logic/hotkey";
 import { ToastManager } from "../toast/toast-store";
 import Button from "../ui/Button";
-import Icon from "../ui/Icon";
 
 function HotkeyRecorder() {
 	const { t } = useTranslation();
@@ -60,38 +58,32 @@ function HotkeyRecorder() {
 	}
 
 	return (
-		<div className="glass-card rounded-md p-4 border border-white/10 hover:border-white/20 transition-colors duration-150 ease-out">
-			<div className="flex items-center justify-between gap-4">
-				<div className="flex items-start gap-3 flex-1">
-					<div className="p-2 bg-white/5 border border-white/10 rounded-md">
-						<Icon icon={LuKeyboard} size="sm" className="text-gray-400" />
-					</div>
-					<div className="flex-1">
-						<h3 className="text-sm font-semibold text-white mb-1">{t("settings.hotkey.title")}</h3>
-						<p className="text-xs text-gray-400 leading-relaxed">{t("settings.hotkey.description")}</p>
-					</div>
-				</div>
-
-				{listening ? (
-					<div className="text-right shrink-0">
-						<button autoFocus onKeyDown={handleKeyDown} onBlur={() => stopListening(false)} className="text-sm text-cta-400 font-medium whitespace-nowrap outline-none cursor-default">
-							{t("settings.hotkey.listening")}
-						</button>
-						{lastKeyDebug && <div className="text-xs text-gray-500 font-mono mt-1">{lastKeyDebug}</div>}
-					</div>
-				) : (
-					<div className="flex items-center gap-3 shrink-0">
-						<span className="font-mono text-sm text-white bg-white/5 border border-white/10 rounded-md px-3 py-1.5">
-							{hotkey ? formatAccelerator(hotkey) : t("settings.hotkey.notRegistered")}
-						</span>
-						<Button size="sm" color="secondary" onClick={startListening}>
-							{t("settings.hotkey.change")}
-						</Button>
-					</div>
+		<div className="py-4 flex items-center justify-between gap-4">
+			<div className="flex-1 min-w-0">
+				<p className="text-sm font-medium text-white">{t("settings.hotkey.title")}</p>
+				<p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{t("settings.hotkey.description")}</p>
+				{captureError && !listening && (
+					<p className="text-xs text-red-400 mt-2">
+						{t("settings.hotkey.updateError")} ({captureError})
+					</p>
 				)}
 			</div>
 
-			{captureError && !listening && <p className="text-xs text-red-400 mt-3 text-right">{t("settings.hotkey.updateError")} ({captureError})</p>}
+			{listening ? (
+				<div className="text-right shrink-0">
+					<button autoFocus onKeyDown={handleKeyDown} onBlur={() => stopListening(false)} className="text-sm text-cta-400 font-medium whitespace-nowrap outline-none cursor-default">
+						{t("settings.hotkey.listening")}
+					</button>
+					{lastKeyDebug && <div className="text-xs text-gray-500 font-mono mt-1">{lastKeyDebug}</div>}
+				</div>
+			) : (
+				<div className="flex items-center gap-3 shrink-0">
+					<span className="font-mono text-sm text-white bg-white/5 border border-white/10 rounded-md px-3 py-1.5">{hotkey ? formatAccelerator(hotkey) : t("settings.hotkey.notRegistered")}</span>
+					<Button size="sm" color="secondary" onClick={startListening}>
+						{t("settings.hotkey.change")}
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 }

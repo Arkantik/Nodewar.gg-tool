@@ -111,8 +111,14 @@
         }
     },
     "settings": {
-        "title": "Paramètres réseau",
-        "subtitle": "Configurez comment le logger capture le trafic réseau",
+        "title": "Paramètres",
+        "subtitle": "Gérez la capture, les raccourcis et la version de l'application",
+        "sections": {
+            "capture": "Capture",
+            "shortcuts": "Raccourcis",
+            "about": "À propos",
+            "advanced": "Avancé"
+        },
         "allInterfaces": {
             "title": "Toutes les interfaces réseau",
             "description": "Capturez le trafic de toutes les interfaces réseau disponibles. Désactivez pour utiliser uniquement l'interface par défaut."
@@ -126,9 +132,20 @@
             "updateSuccess": "Raccourci mis à jour : {{accelerator}}",
             "updateError": "Impossible d'enregistrer cette combinaison - elle est peut-être déjà utilisée par une autre application."
         },
+        "downgrade": {
+            "title": "Revenir à une version antérieure",
+            "description": "Les anciennes versions peuvent ne pas être compatibles avec les données enregistrées par celle-ci (config, historique des sessions). Ne revenez en arrière que si vous savez ce que vous faites.",
+            "currentVersion": "Vous êtes actuellement en v{{version}}",
+            "apply": "Rétrograder",
+            "confirm": "Rétrograder l'application vers la v{{version}} ? L'application redémarrera pour appliquer le changement.",
+            "loadError": "Impossible de charger la liste des versions précédentes.",
+            "applyError": "Échec de la rétrogradation : {{message}}",
+            "empty": "Aucune version antérieure disponible."
+        },
         "saved": "Paramètres enregistrés avec succès",
-        "configInfo": {
+        "about": {
             "title": "Informations de configuration",
+            "version": "Version de l'application",
             "patchDate": "Date du patch",
             "identifier": "Identifiant",
             "autoScroll": "Défilement automatique",

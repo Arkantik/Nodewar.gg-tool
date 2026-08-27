@@ -1,6 +1,7 @@
 import { app, BrowserWindow, dialog, Menu, shell } from "electron";
 import { join } from "node:path";
 import type { AppAction } from "../shared/ipc-contract";
+import { setupGlobalHotkey, type HotkeyApi } from "./hotkey";
 import { registerAppIpc } from "./ipc/app";
 import { registerClipboardIpc } from "./ipc/clipboard";
 import { registerConfigIpc } from "./ipc/config";
@@ -13,12 +14,13 @@ import { registerSessionLogIpc } from "./ipc/session-log";
 import { registerShellIpc } from "./ipc/shell";
 import { registerTrayIpc } from "./ipc/tray";
 import { registerUpdaterIpc } from "./ipc/updater";
+import { registerVersionsIpc } from "./ipc/versions";
 import { registerWindowIpc } from "./ipc/window";
-import { setupGlobalHotkey, type HotkeyApi } from "./hotkey";
 import { LoggerProcessManager } from "./logger/process-manager";
 import { setupOverlay, type OverlayController } from "./overlay";
 import { setupTray, type TrayApi } from "./tray";
 import { setupUpdater } from "./updater";
+import { createVersionManager } from "./version-manager";
 
 app.commandLine.appendSwitch("disable-background-timer-throttling");
 app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
@@ -42,6 +44,7 @@ const getWindow = () => mainWindow;
 const loggerManager = new LoggerProcessManager((evt) => {
 	mainWindow?.webContents.send("logger:event", evt);
 });
+const versionManager = createVersionManager(getWindow);
 
 function sendCommand(action: AppAction) {
 	mainWindow?.webContents.send("commands:trigger", action);
@@ -131,6 +134,7 @@ app.whenReady().then(() => {
 	registerConfigIpc();
 	registerShellIpc();
 	registerUpdaterIpc(setupUpdater(getWindow));
+	registerVersionsIpc(versionManager);
 	registerAppIpc();
 	overlayApi = setupOverlay();
 	registerTrayIpc(

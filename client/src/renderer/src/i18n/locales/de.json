@@ -111,8 +111,14 @@
         }
     },
     "settings": {
-        "title": "Netzwerkeinstellungen",
-        "subtitle": "Konfigurieren Sie, wie der Logger den Netzwerkverkehr erfasst",
+        "title": "Einstellungen",
+        "subtitle": "Erfassung, Tastenkombinationen und App-Version verwalten",
+        "sections": {
+            "capture": "Erfassung",
+            "shortcuts": "Tastenkombinationen",
+            "about": "Info",
+            "advanced": "Erweitert"
+        },
         "allInterfaces": {
             "title": "Alle Netzwerkschnittstellen",
             "description": "Erfassen Sie Datenverkehr von allen verfügbaren Netzwerkschnittstellen. Deaktivieren Sie diese Option, um nur die Standardschnittstelle zu verwenden."
@@ -126,9 +132,20 @@
             "updateSuccess": "Hotkey auf {{accelerator}} aktualisiert",
             "updateError": "Diese Kombination konnte nicht registriert werden - sie wird möglicherweise bereits von einer anderen App verwendet."
         },
+        "downgrade": {
+            "title": "Auf eine frühere Version zurückstufen",
+            "description": "Ältere Versionen sind möglicherweise nicht mit den von dieser Version gespeicherten Daten kompatibel (Konfiguration, Sitzungsverlauf). Nur zurückstufen, wenn du weißt, was du tust.",
+            "currentVersion": "Du bist aktuell auf v{{version}}",
+            "apply": "Zurückstufen",
+            "confirm": "App auf v{{version}} zurückstufen? Die App wird neu gestartet, um die Änderung anzuwenden.",
+            "loadError": "Die Liste früherer Versionen konnte nicht geladen werden.",
+            "applyError": "Zurückstufen fehlgeschlagen: {{message}}",
+            "empty": "Keine früheren Versionen verfügbar."
+        },
         "saved": "Einstellungen erfolgreich gespeichert",
-        "configInfo": {
+        "about": {
             "title": "Konfigurationsinformationen",
+            "version": "App-Version",
             "patchDate": "Patch-Datum",
             "identifier": "Kennung",
             "autoScroll": "Auto-Scrollen",

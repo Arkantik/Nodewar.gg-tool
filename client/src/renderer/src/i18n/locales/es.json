@@ -111,8 +111,14 @@
         }
     },
     "settings": {
-        "title": "Configuración de red",
-        "subtitle": "Configura cómo el logger captura el tráfico de red",
+        "title": "Configuración",
+        "subtitle": "Gestiona la captura, los atajos y la versión de la aplicación",
+        "sections": {
+            "capture": "Captura",
+            "shortcuts": "Atajos",
+            "about": "Acerca de",
+            "advanced": "Avanzado"
+        },
         "allInterfaces": {
             "title": "Todas las interfaces de red",
             "description": "Captura tráfico de todas las interfaces de red disponibles. Desactiva para usar solo la interfaz predeterminada."
@@ -126,9 +132,20 @@
             "updateSuccess": "Atajo actualizado a {{accelerator}}",
             "updateError": "No se pudo registrar esa combinación - puede que ya esté en uso por otra aplicación."
         },
+        "downgrade": {
+            "title": "Volver a una versión anterior",
+            "description": "Las versiones anteriores pueden no ser compatibles con los datos guardados por esta (config, historial de sesiones). Solo hazlo si sabes lo que estás haciendo.",
+            "currentVersion": "Actualmente tienes la v{{version}}",
+            "apply": "Volver a esta versión",
+            "confirm": "¿Volver a la versión v{{version}}? La aplicación se reiniciará para aplicar el cambio.",
+            "loadError": "No se pudo cargar la lista de versiones anteriores.",
+            "applyError": "Error al volver a la versión anterior: {{message}}",
+            "empty": "No hay versiones anteriores disponibles."
+        },
         "saved": "Configuración guardada exitosamente",
-        "configInfo": {
+        "about": {
             "title": "Información de configuración",
+            "version": "Versión de la app",
             "patchDate": "Fecha del parche",
             "identifier": "Identificador",
             "autoScroll": "Desplazamiento automático",

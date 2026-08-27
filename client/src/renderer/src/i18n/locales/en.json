@@ -111,8 +111,14 @@
         }
     },
     "settings": {
-        "title": "Network Settings",
-        "subtitle": "Configure how the logger captures network traffic",
+        "title": "Settings",
+        "subtitle": "Manage capture, shortcuts and app version",
+        "sections": {
+            "capture": "Capture",
+            "shortcuts": "Shortcuts",
+            "about": "About",
+            "advanced": "Advanced"
+        },
         "allInterfaces": {
             "title": "All Network Interfaces",
             "description": "Capture traffic from all available network interfaces. Disable to use only the default interface."
@@ -126,9 +132,20 @@
             "updateSuccess": "Hotkey updated to {{accelerator}}",
             "updateError": "Couldn't register that combination - it may already be in use by another app."
         },
+        "downgrade": {
+            "title": "Downgrade App Version",
+            "description": "Older versions may not be compatible with data saved by this one (config, session history). Only downgrade if you know what you're doing.",
+            "currentVersion": "You're currently on v{{version}}",
+            "apply": "Downgrade",
+            "confirm": "Downgrade the app to v{{version}}? The app will restart to apply it.",
+            "loadError": "Couldn't load the list of past versions.",
+            "applyError": "Downgrade failed: {{message}}",
+            "empty": "No older versions available to downgrade to."
+        },
         "saved": "Settings saved successfully",
-        "configInfo": {
+        "about": {
             "title": "Configuration Information",
+            "version": "App Version",
             "patchDate": "Patch Date",
             "identifier": "Identifier",
             "autoScroll": "Auto Scroll",

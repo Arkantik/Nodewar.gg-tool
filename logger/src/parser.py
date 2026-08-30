@@ -3,11 +3,24 @@ from collections import OrderedDict
 from . import config
 from scapy.all import wrpcap
 import os
+import re
+
+_NAME_RE = re.compile(r"[A-Z][A-Za-z0-9_]*")
+
 
 def dec(bytes):
     message = str(bytes, "latin-1")
     message = message.replace("\x00", "")
     return message
+
+
+def clean_name(value):
+    # captures sometimes include stray bytes (0xFF filler, tabs, leftover buffer
+    # data) around the name field - keep only the first valid name token
+    if value == -1:
+        return -1
+    match = _NAME_RE.search(value)
+    return match.group(0) if match else value
 
 
 def extract_string(hex, offset, length):
@@ -98,11 +111,11 @@ def package_handler(package, output, record=False):
 
             # extract log information
             timestamp = strftime("%I:%M:%S", localtime(int(package.time)))
-            guild = extract_string(payload, config.config.guild_offset, config.config.name_length)
-            player_one = extract_string(
-                payload, config.config.player_one_offset, config.config.name_length)
-            player_two = extract_string(
-                payload, config.config.player_two_offset, config.config.name_length)
+            guild = clean_name(extract_string(payload, config.config.guild_offset, config.config.name_length))
+            player_one = clean_name(extract_string(
+                payload, config.config.player_one_offset, config.config.name_length))
+            player_two = clean_name(extract_string(
+                payload, config.config.player_two_offset, config.config.name_length))
             is_kill = payload[config.config.kill_offset: config.config.kill_offset+1] == "1"
 
             if guild != -1 and player_one != -1 and player_two != -1:

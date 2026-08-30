@@ -31,7 +31,23 @@ export class LoggerProcessManager {
 		const flag = ARG_MAPPING[mode];
 		const argv = flag ? [flag, ...extraArgs] : extraArgs;
 		const id = randomUUID();
-		const proc = spawn(resolveLoggerExePath(), argv, { windowsHide: true });
+
+		let proc: ChildProcessWithoutNullStreams;
+		try {
+			proc = spawn(resolveLoggerExePath(), argv, { windowsHide: true });
+		} catch (err) {
+			// spawn() throws synchronously (not via the "error" event) when the OS refuses
+			// the launch outright: a missing/blocked executable, or on Windows an antivirus
+			// block, which surfaces as "spawn UNKNOWN". Report it through the normal event
+			// stream instead of rejecting the IPC call. Defer so the caller can subscribe first.
+			const message = err instanceof Error ? err.message : String(err);
+			setImmediate(() => {
+				this.onEvent({ sessionId: id, kind: "stderr", data: message });
+				this.onEvent({ sessionId: id, kind: "exit", data: "" });
+			});
+			return { sessionId: id };
+		}
+
 		this.session = { id, proc };
 
 		const emit = (kind: LoggerEvent["kind"], data: string) => {

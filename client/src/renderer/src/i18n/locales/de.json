@@ -40,7 +40,7 @@
         },
         "actions": {
             "record": {
-                "title": "Aufnehmen",
+                "title": "Aufnahme starten",
                 "description": "Live-Aufnahme starten"
             },
             "openFile": {

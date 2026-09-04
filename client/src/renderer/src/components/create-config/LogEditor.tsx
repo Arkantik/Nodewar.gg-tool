@@ -80,11 +80,12 @@ function LogEditor({
           config?.include_characters && remainingNames.every(Boolean)
             ? ` (${remainingNames.join(",")})`
             : "";
+        const coords = config?.include_coordinates ? log.coords : "";
 
         if (useNewFormat) {
-          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "killed" : "was slain by"} ${log.names[playerTwoIndex]} ${log.kill ? "from the" : "of the"} ${log.names[guildIndex]}${characters}${log.coords}`;
+          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "killed" : "was slain by"} ${log.names[playerTwoIndex]} ${log.kill ? "from the" : "of the"} ${log.names[guildIndex]}${characters}${coords}`;
         } else {
-          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "has killed" : "died to"} ${log.names[playerTwoIndex]} from ${log.names[guildIndex]}${characters}${log.coords}`;
+          return `[${log.time}] ${log.names[playerOneIndex]} ${log.kill ? "has killed" : "died to"} ${log.names[playerTwoIndex]} from ${log.names[guildIndex]}${characters}${coords}`;
         }
       })
       .join("\n");

@@ -7,6 +7,7 @@ export type Config = {
 	kill: number;
 	auto_scroll: boolean;
 	include_characters: boolean;
+	include_coordinates: boolean;
 	all_interfaces: boolean;
 	ip_filter: boolean;
 };
@@ -79,6 +80,9 @@ export async function get_config(): Promise<Config> {
 		if (config.include_characters === undefined) {
 			config.include_characters = true;
 		}
+		if (config.include_coordinates === undefined) {
+			config.include_coordinates = true;
+		}
 		return config;
 	}
 
@@ -91,6 +95,7 @@ export async function get_config(): Promise<Config> {
 		patch: "",
 		auto_scroll: true,
 		include_characters: true,
+		include_coordinates: true,
 		all_interfaces: true,
 		ip_filter: false,
 	};

@@ -326,6 +326,7 @@
     "config": {
         "title": "Configuration",
         "characters": "Personnages",
+        "coordinates": "Coordonnées",
         "copyToClipboard": "Copier dans le presse-papiers"
     },
     "guildStats": {

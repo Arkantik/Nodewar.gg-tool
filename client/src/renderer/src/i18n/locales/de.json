@@ -326,6 +326,7 @@
     "config": {
         "title": "Konfiguration",
         "characters": "Charaktere",
+        "coordinates": "Koordinaten",
         "copyToClipboard": "In Zwischenablage kopieren"
     },
     "guildStats": {

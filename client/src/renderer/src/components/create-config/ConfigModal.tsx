@@ -42,6 +42,10 @@ function ConfigModal({ config, options, onChange }: ConfigModalProps) {
 				<Checkbox checked={options.include_characters} onChange={(e) => onChange({ ...options, include_characters: e.target.checked })} className="mr-1" />
 				<span className="text-sm">{t("config.characters")}</span>
 			</div>
+			<div className="flex items-center">
+				<Checkbox checked={options.include_coordinates} onChange={(e) => onChange({ ...options, include_coordinates: e.target.checked })} className="mr-1" />
+				<span className="text-sm">{t("config.coordinates")}</span>
+			</div>
 			<pre className="text-xs mt-1">
 				{`[GENERAL]
 patch\t\t= \t${config.patch}

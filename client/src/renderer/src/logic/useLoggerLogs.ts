@@ -27,6 +27,7 @@ export interface ConfigSelection {
 	guild_index: number;
 	kill_index: number;
 	include_characters: boolean;
+	include_coordinates: boolean;
 }
 
 export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerStats) => void, onIndicesChange?: (indices: { playerTwo: number; guild: number }) => void, onKillOffsetChange?: (offset: number | undefined) => void) {
@@ -95,6 +96,7 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 			guild_index: guildIndex,
 			kill_index: killIndex,
 			include_characters: config?.include_characters ?? true,
+			include_coordinates: config?.include_coordinates ?? true,
 		};
 	}
 
@@ -142,6 +144,7 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 			guild: offsetAt(selection.guild_index),
 			kill: selection.possible_kill_offsets[selection.kill_index] ?? stored.kill,
 			include_characters: selection.include_characters,
+			include_coordinates: selection.include_coordinates,
 		});
 	}
 
@@ -199,7 +202,7 @@ export function useLoggerLogs(logs: LogType[], onStatsUpdate?: (stats: LoggerSta
 
 				const isKill = getNetworkIsKill(log.hex, killOffset);
 				const victimSlot = isKill ? playerTwoIndex : playerOneIndex;
-				const coords = extractDeathCoordinates(log.hex, possibleNameOffsets[victimSlot]?.[nameIndicies[victimSlot]]?.offset);
+				const coords = config?.include_coordinates ? extractDeathCoordinates(log.hex, possibleNameOffsets[victimSlot]?.[nameIndicies[victimSlot]]?.offset) : undefined;
 				const coordsSuffix = coords ? ` ${formatCoordinates(coords)}` : "";
 
 				const verb = isKill ? "has killed" : "died to";

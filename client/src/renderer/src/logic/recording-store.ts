@@ -51,11 +51,15 @@ let pendingLines: string[] = [];
 let flushTimer: ReturnType<typeof setInterval> | null = null;
 let overlayTimer: ReturnType<typeof setInterval> | null = null;
 
+function ignoreSessionLogError(promise: Promise<unknown>) {
+	void promise.catch((err) => console.error("Session log operation failed:", err));
+}
+
 function flushPendingLines(sessionId: string) {
 	if (pendingLines.length === 0) return;
 	const lines = pendingLines;
 	pendingLines = [];
-	void window.api.sessionLog.append(sessionId, lines);
+	ignoreSessionLogError(window.api.sessionLog.append(sessionId, lines));
 }
 
 function pushOverlayPayload() {
@@ -120,7 +124,7 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 			const isNewSession = get().sessionId === null;
 			const durableSessionId = get().sessionId ?? crypto.randomUUID();
 			set({ hasStarted: true, sessionActive: true, sessionId: durableSessionId });
-			if (isNewSession) void window.api.sessionLog.begin(durableSessionId);
+			if (isNewSession) ignoreSessionLogError(window.api.sessionLog.begin(durableSessionId));
 			flushTimer = setInterval(() => flushPendingLines(durableSessionId), 1000);
 			overlayTimer = setInterval(pushOverlayPayload, 1000);
 			pushOverlayPayload();
@@ -128,7 +132,16 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 			const cfg = await useConfigStore.getState().ensureLoaded();
 			const extraArgs = [...(cfg.all_interfaces ? ["-i"] : []), ...(cfg.ip_filter ? ["-p"] : [])];
 
-			const { sessionId } = await window.api.logger.start(MODE, extraArgs);
+			let sessionId: string;
+			try {
+				({ sessionId } = await window.api.logger.start(MODE, extraArgs));
+			} catch (err) {
+				console.error("Failed to start logger process:", err);
+				ToastManager.error(i18n.t("record.errors.loggerError", { message: String(err) }));
+				await stopUnderlyingSession();
+				set({ sessionActive: false });
+				return;
+			}
 			activeSessionId = sessionId;
 
 			unsubscribe = window.api.logger.onEvent((evt) => {
@@ -149,6 +162,7 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 				if (evt.kind === "stderr") {
 					console.error(evt.data);
 					ToastManager.error(i18n.t("record.errors.loggerError", { message: evt.data }));
+					return;
 				}
 
 				if (retryCount < MAX_RETRIES) {
@@ -177,13 +191,13 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 
 		if (get().logs.length === 0) {
 			set({ saved: true });
-			if (durableSessionId) void window.api.sessionLog.discard(durableSessionId);
+			if (durableSessionId) ignoreSessionLogError(window.api.sessionLog.discard(durableSessionId));
 			return;
 		}
 		if (saveHandler) {
 			await saveHandler();
 			set({ saved: true });
-			if (durableSessionId) void window.api.sessionLog.discard(durableSessionId);
+			if (durableSessionId) ignoreSessionLogError(window.api.sessionLog.discard(durableSessionId));
 		} else {
 			ToastManager.warning(i18n.t("record.errors.saveDeferred"));
 		}
@@ -197,7 +211,7 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 	restart: async () => {
 		retryCount = 0;
 		const oldSessionId = get().sessionId;
-		if (oldSessionId) void window.api.sessionLog.discard(oldSessionId);
+		if (oldSessionId) ignoreSessionLogError(window.api.sessionLog.discard(oldSessionId));
 
 		set({
 			logs: [],
@@ -221,13 +235,13 @@ export const useRecordingStore = create<RecordingState>((set, get) => ({
 		set({ guildStatsKey });
 		pushOverlayPayload();
 		const sessionId = get().sessionId;
-		if (sessionId) void window.api.sessionLog.setMeta(sessionId, { killOffset: get().killOffset, guildStatsKey });
+		if (sessionId) ignoreSessionLogError(window.api.sessionLog.setMeta(sessionId, { killOffset: get().killOffset, guildStatsKey }));
 	},
 	setKillOffset: (killOffset) => {
 		set({ killOffset });
 		pushOverlayPayload();
 		const sessionId = get().sessionId;
-		if (sessionId) void window.api.sessionLog.setMeta(sessionId, { killOffset, guildStatsKey: get().guildStatsKey });
+		if (sessionId) ignoreSessionLogError(window.api.sessionLog.setMeta(sessionId, { killOffset, guildStatsKey: get().guildStatsKey }));
 	},
 	registerSaveHandler: (handler) => {
 		saveHandler = handler;

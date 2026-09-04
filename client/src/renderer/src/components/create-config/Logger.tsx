@@ -62,6 +62,7 @@ const Logger = forwardRef<LoggerHandle, LoggerProps>(function Logger({ logs, loa
 					guild_index: guildIndex,
 					kill_index: killIndex,
 					include_characters: config.include_characters,
+					include_coordinates: config.include_coordinates,
 				},
 				onChange: applyConfigSelection,
 			},

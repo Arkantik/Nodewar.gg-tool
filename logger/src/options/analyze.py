@@ -7,43 +7,7 @@ if sys.platform == "win32":
     from scapy.arch.windows import get_windows_if_list
 from time import localtime, strftime
 from .. import config, trace
-
-
-def dec(bytes):
-    message = str(bytes, "latin-1")
-    message = message.replace("\x00", "")
-    return message
-
-
-def extract_string(hex, offset, length):
-    # check whether the string begins with a 0x00, if so, return -1
-    if hex[offset : offset + 2] == "00":
-        return -1
-
-    # check whether the characters are always spaced by 1 byte (0x00), if not, return -1
-    test_offset = offset + 2
-    actual_length = length
-    while test_offset < offset + length - 2:
-        byte = hex[test_offset : test_offset + 2]
-        previous_byte = hex[test_offset - 2 : test_offset]
-
-        if previous_byte == "00":
-            actual_length = test_offset - offset
-            break
-        if byte != "00":
-            return -1
-        test_offset += 4
-
-    try:
-        actual_length = min(len(hex) - offset, actual_length)
-        if length < 0:
-            raise ValueError("Package too short")
-
-        return dec(bytes.fromhex(hex[offset : offset + actual_length]))
-    except ValueError as e:
-        # print(e, flush=True)
-        return -1
-
+from ..parser import extract_string
 
 current_position = 0
 
@@ -122,26 +86,26 @@ def find_logs(payload):
         index += 5
 
 
+DEFAULT_IPS = ["20.76.13", "20.76.14", "13.64.17", "13.93.181", "52.137.41", "52.137.42", "44.228.191", "54.150.104"]
+_allowed_ips_cache = None
+
+
+def allowed_ips():
+    global _allowed_ips_cache
+    if _allowed_ips_cache is None:
+        configured = getattr(config.config, "ips", None) or []
+        _allowed_ips_cache = list(dict.fromkeys(DEFAULT_IPS + list(configured)))
+    return _allowed_ips_cache
+
+
 def package_handler(package, output, ip_filter=True):
     if "IP" not in package:
         return
 
     package_src = package["IP"].src
 
-
     # checks if the package derives from bdo
-    is_bdo_ip = (not ip_filter) or (
-        len(
-            (
-                [
-                    ip
-                    for ip in ["20.76.13", "20.76.14", "13.64.17", "13.93.181", "52.137.41", "52.137.42", "44.228.191", "54.150.104"]
-                    if ip in package_src
-                ]
-            )
-        )
-        > 0
-    )
+    is_bdo_ip = (not ip_filter) or any(ip in package_src for ip in allowed_ips())
 
     # checkes if the packages comes from a tcp stream
     uses_tcp = "TCP" in package and hasattr(package["TCP"].payload, "load")
@@ -204,7 +168,7 @@ def package_handler(package, output, ip_filter=True):
 
 
 def open_pcap(file, output, ip_filter=True):
-    if file != None and not os.path.isfile(file):
+    if file is None or not os.path.isfile(file):
         print("Invalid file", flush=True)
         return
     print("Reading " + file, flush=True)

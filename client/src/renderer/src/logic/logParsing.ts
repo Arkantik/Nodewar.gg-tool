@@ -25,13 +25,18 @@ export function parseLoggerLine(data: string): LogType | null {
 	const d = data.split(",");
 	if (d.length !== 8 || data.includes("Network Interfaces:")) return null;
 
+	const names: LogType["names"] = [];
+	for (const name of d.slice(2, 7)) {
+		const split = name.split(" ");
+		const offset = +split[1];
+		if (split[0] === undefined || Number.isNaN(offset)) return null;
+		names.push({ name: split[0], offset });
+	}
+
 	return {
 		identifier: d[0],
 		time: d[1],
-		names: d.slice(2, 7).map((name) => {
-			const split = name.split(" ");
-			return { name: split[0], offset: +split[1] };
-		}),
+		names,
 		hex: d[7],
 	};
 }

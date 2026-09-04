@@ -6,7 +6,7 @@ def open_pcap(file, output):
     if config.config.invalid:
         print("Could not locate config file or config is invalid", flush=True)
         return
-    if file != None and not os.path.isfile(file):
+    if file is None or not os.path.isfile(file):
         print("Invalid file", flush=True)
         return
     print("Reading " + file, flush=True)

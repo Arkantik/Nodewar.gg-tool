@@ -1,3 +1,20 @@
+# [1.9.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.6...v1.9.0) (2026-09-04)
+
+
+### Bug Fixes
+
+* **client:** improve error handling and validation ([c9ff1a4](https://github.com/Arkantik/Nodewar.gg-tool/commit/c9ff1a4ce115e294306a8cd6af62d80fc53a3aee))
+* **i18n:** update record action title labels ([bf8d47e](https://github.com/Arkantik/Nodewar.gg-tool/commit/bf8d47ee5a7c74283d5f2747bf0387879786ca65))
+* **logger:** handle sync spawn launch failures ([4d24e6d](https://github.com/Arkantik/Nodewar.gg-tool/commit/4d24e6de04a726d588b8bd528d6c2cf441146c87))
+* **logger:** improve packet parsing and stability ([92d12d1](https://github.com/Arkantik/Nodewar.gg-tool/commit/92d12d175cc317955e561dc761d9177d8509ffe7))
+* **parser:** clean stray bytes from names ([7fbb8a4](https://github.com/Arkantik/Nodewar.gg-tool/commit/7fbb8a41b0d3c8059c733fe56f30ea2fd61c1fc4))
+
+
+### Features
+
+* add app version downgrade functionality ([bcb0d7e](https://github.com/Arkantik/Nodewar.gg-tool/commit/bcb0d7ea06213bcfb0f97646c0097b1110fee3f2))
+* **config:** add option to toggle coordinates ([48d92ae](https://github.com/Arkantik/Nodewar.gg-tool/commit/48d92ae7b41047972a83486da5ecbb0b9e30e560))
+
 ## [1.8.6](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.5...v1.8.6) (2026-08-25)
 
 

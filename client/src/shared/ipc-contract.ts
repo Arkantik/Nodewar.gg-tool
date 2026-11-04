@@ -155,6 +155,8 @@ export interface IpcApi {
 	app: {
 		getVersion: () => Promise<string>;
 		exit: () => Promise<void>;
+		getLoggerPath: () => Promise<string>;
+		grantLinuxCapability: () => Promise<{ success: boolean; error?: string }>;
 	};
 	tray: {
 		setRecordingStatus: (status: RecordingStatus) => Promise<void>;

@@ -18,7 +18,12 @@
             "linux": {
                 "label": "Permiso de captura",
                 "installed": "Concedido",
-                "helpText": "Ejecuta: sudo setcap cap_net_raw+eip <ruta al logger>"
+                "copyCommand": "Copiar comando",
+                "fixAutomatically": "Corregir automáticamente",
+                "fixing": "Aplicando…",
+                "fixSuccess": "¡Listo! Vuelve a comprobar.",
+                "fixFailed": "Fallido. Intenta manualmente:",
+                "updatedNote": "Recopiado tras actualización — vuelve a conceder permisos."
             }
         },
         "update": {

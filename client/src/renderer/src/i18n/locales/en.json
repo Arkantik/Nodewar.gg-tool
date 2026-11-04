@@ -18,7 +18,12 @@
             "linux": {
                 "label": "Capture Permission",
                 "installed": "Granted",
-                "helpText": "Run: sudo setcap cap_net_raw+eip <path to logger>"
+                "copyCommand": "Copy command",
+                "fixAutomatically": "Fix automatically",
+                "fixing": "Applying…",
+                "fixSuccess": "Done! Click recheck.",
+                "fixFailed": "Failed. Try manually:",
+                "updatedNote": "Recopy after update — re-grant caps too."
             }
         },
         "update": {

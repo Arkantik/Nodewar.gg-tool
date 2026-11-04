@@ -18,7 +18,12 @@
             "linux": {
                 "label": "Aufnahmeberechtigung",
                 "installed": "Erteilt",
-                "helpText": "Ausführen: sudo setcap cap_net_raw+eip <Pfad zum Logger>"
+                "copyCommand": "Befehl kopieren",
+                "fixAutomatically": "Automatisch beheben",
+                "fixing": "Wird angewendet…",
+                "fixSuccess": "Fertig! Neu prüfen.",
+                "fixFailed": "Fehlgeschlagen. Manuell versuchen:",
+                "updatedNote": "Nach Update neu kopiert – Berechtigungen erneut erteilen."
             }
         },
         "update": {

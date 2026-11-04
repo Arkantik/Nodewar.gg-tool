@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuRefreshCw, LuShieldAlert, LuShieldCheck, LuShieldX } from "react-icons/lu";
+import { LuClipboard, LuRefreshCw, LuShieldAlert, LuShieldCheck, LuShieldX, LuWrench } from "react-icons/lu";
 import { useClickOutside } from "../hooks/useClickOutside";
 import { check_status, type LoggerStatus } from "../logic/logger-status";
 import Button from "./ui/Button";
@@ -25,6 +25,10 @@ function SystemStatusIndicator() {
 	const [updating, setUpdating] = useState(false);
 	const [updateFailed, setUpdateFailed] = useState(false);
 
+	const [loggerPath, setLoggerPath] = useState<string | null>(null);
+	const [grantLoading, setGrantLoading] = useState(false);
+	const [grantResult, setGrantResult] = useState<{ success: boolean; error?: string } | null>(null);
+
 	useClickOutside(containerRef, () => setIsOpen(false));
 
 	const runStatusCheck = useCallback(async () => {
@@ -46,11 +50,30 @@ function SystemStatusIndicator() {
 		window.api.app.getVersion().then(setVersion);
 	}, []);
 
+	useEffect(() => {
+		window.api.app.getLoggerPath().then(setLoggerPath).catch(() => {});
+	}, []);
+
 	function handleRecheck() {
 		if (loadingStatus) return;
 		runStatusCheck();
 		setUpdateFailed(false);
+		setGrantResult(null);
 		window.api.updater.check();
+	}
+
+	async function handleCopyCommand() {
+		if (!loggerPath) return;
+		await window.api.clipboard.writeText(`sudo setcap cap_net_raw+eip ${loggerPath}`);
+	}
+
+	async function handleFixAutomatically() {
+		if (grantLoading) return;
+		setGrantLoading(true);
+		setGrantResult(null);
+		const result = await window.api.app.grantLinuxCapability();
+		setGrantResult(result);
+		setGrantLoading(false);
 	}
 
 	useEffect(() => {
@@ -147,8 +170,32 @@ function SystemStatusIndicator() {
 										}
 									: undefined
 							}
-							helpText={!status?.capture_ready && status?.capture_platform === "linux" ? t("systemStatus.capture.linux.helpText") : undefined}
 						/>
+
+						{!loadingStatus && !status?.capture_ready && status?.capture_platform === "linux" && loggerPath && (
+							<div className="flex flex-col gap-2">
+								<code className="text-xs font-mono text-gray-300 bg-white/5 border border-white/10 px-2 py-1.5 rounded break-all select-all">
+									sudo setcap cap_net_raw+eip {loggerPath}
+								</code>
+								<div className="flex gap-2">
+									<Button size="sm" onClick={handleCopyCommand} className="flex items-center gap-1.5">
+										<Icon icon={LuClipboard} size="sm" />
+										{t("systemStatus.capture.linux.copyCommand")}
+									</Button>
+									<Button size="sm" onClick={handleFixAutomatically} disabled={grantLoading} className="flex items-center gap-1.5">
+										{grantLoading ? <LoadingIndicator size="sm" /> : <Icon icon={LuWrench} size="sm" />}
+										{grantLoading ? t("systemStatus.capture.linux.fixing") : t("systemStatus.capture.linux.fixAutomatically")}
+									</Button>
+								</div>
+								{grantResult && (
+									<span className={`text-xs ${grantResult.success ? "text-green-400" : "text-red-400"}`}>
+										{grantResult.success
+											? t("systemStatus.capture.linux.fixSuccess")
+											: `${t("systemStatus.capture.linux.fixFailed")} ${grantResult.error ?? ""}`}
+									</span>
+								)}
+							</div>
+						)}
 
 						<div className="h-px bg-white/10" />
 

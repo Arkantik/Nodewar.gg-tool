@@ -44,6 +44,8 @@ const api: IpcApi = {
 	app: {
 		getVersion: () => ipcRenderer.invoke("app:getVersion"),
 		exit: () => ipcRenderer.invoke("app:exit"),
+		getLoggerPath: () => ipcRenderer.invoke("app:getLoggerPath"),
+		grantLinuxCapability: () => ipcRenderer.invoke("app:grantLinuxCapability"),
 	},
 	tray: {
 		setRecordingStatus: (status: RecordingStatus) => ipcRenderer.invoke("tray:setRecordingStatus", status),

@@ -16,6 +16,7 @@ import { registerTrayIpc } from "./ipc/tray";
 import { registerUpdaterIpc } from "./ipc/updater";
 import { registerVersionsIpc } from "./ipc/versions";
 import { registerWindowIpc } from "./ipc/window";
+import { ensurePersistentLoggerCopy } from "./logger/resolve-exe-path";
 import { LoggerProcessManager } from "./logger/process-manager";
 import { setupOverlay, type OverlayController } from "./overlay";
 import { setupTray, type TrayApi } from "./tray";
@@ -126,6 +127,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
 	Menu.setApplicationMenu(null);
+	ensurePersistentLoggerCopy();
 
 	registerLoggerIpc(loggerManager);
 	registerDialogIpc(getWindow);

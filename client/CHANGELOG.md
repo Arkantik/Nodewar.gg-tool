@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.9.0...v1.10.0) (2026-11-04)
+
+
+### Features
+
+* **linux:** add UI and IPC for capture capabilities ([a36b67a](https://github.com/Arkantik/Nodewar.gg-tool/commit/a36b67acba4d74fc373faeca7d40e1d816d5cf25))
+
 # [1.9.0](https://github.com/Arkantik/Nodewar.gg-tool/compare/v1.8.6...v1.9.0) (2026-09-04)
 
 
